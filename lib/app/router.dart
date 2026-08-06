@@ -5,6 +5,7 @@ import '../features/auth/domain/providers/auth_state_provider.dart';
 import '../features/auth/domain/models/auth_state.dart';
 import '../features/auth/presentation/pages/login_page.dart';
 import '../features/dashboard/presentation/pages/dashboard_page.dart';
+import '../features/player/presentation/pages/player_cabinet_page.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: "/login",
@@ -23,8 +24,12 @@ final GoRouter appRouter = GoRouter(
       return null;
     }
 
-    // Если на логине и уже авторизован — редиректим на dashboard
+    // Если на логине и уже авторизован — редиректим в зависимости от роли
     if (isLoginRoute && isAuthenticated) {
+      final role = authState.userRole ?? "admin";
+      if (role == "player") {
+        return "/cabinet";
+      }
       return "/dashboard";
     }
 
@@ -45,6 +50,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: "/dashboard",
       builder: (context, state) => const DashboardPage(),
+    ),
+    GoRoute(
+      path: "/cabinet",
+      builder: (context, state) => const PlayerCabinetPage(),
     ),
   ],
 );
