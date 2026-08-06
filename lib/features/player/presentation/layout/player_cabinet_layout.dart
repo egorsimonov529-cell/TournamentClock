@@ -5,7 +5,7 @@ import '../widgets/player_header.dart';
 import '../pages/overview_page.dart';
 import '../pages/tournaments_page.dart';
 import '../pages/my_tournaments_page.dart';
-import '../pages/balance_page.dart';
+import '../pages/membership_page.dart';
 import '../pages/profile_settings_page.dart';
 
 class PlayerCabinetLayout extends StatefulWidget {
@@ -42,9 +42,9 @@ class _PlayerCabinetLayoutState extends State<PlayerCabinetLayout> {
       page: () => const MyTournamentsPage(),
     ),
     _MenuItem(
-      icon: Icons.account_balance_wallet_rounded,
-      title: "Баланс",
-      page: () => const BalancePage(),
+      icon: Icons.receipt_long_rounded,
+      title: "Подписки",
+      page: () => const MembershipPage(),
     ),
     _MenuItem(
       icon: Icons.person_rounded,
