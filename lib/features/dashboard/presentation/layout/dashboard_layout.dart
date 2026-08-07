@@ -57,7 +57,11 @@ class _DashboardLayoutState extends State<DashboardLayout> {
 
                   if (_selectedMenuIndex == 6) ...[
                     // Tournament Clock
-                    const TournamentClockScreen(),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: const TournamentClockScreen(),
+                      ),
+                    ),
                   ] else if (_selectedMenuIndex == 0) ...[
                     // Dashboard content - keep original UI
                     Row(
