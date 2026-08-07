@@ -69,18 +69,29 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     try {
       final user = await _repository.checkSession();
       if (user != null) {
-        // Сессия активна — возвращаемся на dashboard
-        state = const AuthState(message: 'Session verified');
+        // Сессия активна — определяем роль из сохраненных данных
+        String? role;
+        final userData = await _repository.getCurrentUser();
+        if (userData != null) {
+          role = userData.role;
+        }
+        state = AuthState(
+          status: AuthStatus.authenticated,
+          message: 'Session verified',
+          userRole: role ?? 'admin',
+        );
         return;
       }
 
       // Пробуем auto-login
       final authResponse = await _repository.autoLogin();
       if (authResponse != null) {
+        final userData = await _repository.getCurrentUser();
         state = AuthState(
           status: AuthStatus.authenticated,
           accessToken: authResponse.accessToken,
           refreshToken: authResponse.refreshToken,
+          userRole: userData?.role ?? 'admin',
         );
       }
       // Если auto-login не удался — остаемся на initial
@@ -108,6 +119,7 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
         status: AuthStatus.authenticated,
         accessToken: response.accessToken,
         refreshToken: response.refreshToken,
+        userRole: response.user.role,
       );
 
       return true;

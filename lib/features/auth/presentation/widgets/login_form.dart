@@ -96,9 +96,16 @@ class _LoginFormState extends ConsumerState<LoginForm> {
           rememberMe: _rememberMe,
         );
 
-    // Если успешно — переходим на dashboard
+    // Если успешно — переходим на нужную страницу по роли
     if (success && mounted) {
-      context.go("/dashboard");
+      final authState = ref.read(authStateProvider);
+      final role = authState.userRole ?? "admin";
+
+      if (role == "player") {
+        context.go("/cabinet");
+      } else {
+        context.go("/dashboard");
+      }
     }
     // Ошибка уже отображена через authStateProvider
   }

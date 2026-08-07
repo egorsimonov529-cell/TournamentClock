@@ -9,13 +9,15 @@ class OverviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        StatsOverview(),
-        QuickActions(),
-        SizedBox(height: 16),
-        UpcomingTournaments(),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          StatsOverview(),
+          QuickActions(),
+          SizedBox(height: 16),
+          UpcomingTournaments(),
+        ],
+      ),
     );
   }
 }

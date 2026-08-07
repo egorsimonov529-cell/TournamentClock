@@ -32,24 +32,32 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     // Демо-режим: любой логин/пароль работают
     if (isDemoMode) {
+      // Определяем роль по логину
+      final role = login.contains('admin') ? 'admin' : 'player';
+
       final authResponse = AuthResponse(
         accessToken: 'demo_access_token_${DateTime.now().millisecondsSinceEpoch}',
         refreshToken: 'demo_refresh_token_${DateTime.now().millisecondsSinceEpoch}',
         user: User(
-          id: 'demo-user-001',
+          id: role == 'admin' ? 'admin-001' : 'player-001',
           login: login,
           email: '$login@pokerclub.demo',
-          role: 'admin',
-          firstName: 'Демо',
+          role: role,
+          firstName: role == 'admin' ? 'Админ' : 'Игрок',
           lastName: 'Пользователь',
           isActive: true,
         ),
       );
 
-      // Сохраняем токены и данные пользователя
-      await _secureStorage.write(key: 'access_token', value: authResponse.accessToken);
-      await _secureStorage.write(key: 'refresh_token', value: authResponse.refreshToken);
-      await _secureStorage.write(key: 'user_data', value: jsonEncode(authResponse.user.toJson()));
+      // Сохраняем токены и данные пользователя (с обработкой ошибок)
+      try {
+        await _secureStorage.write(key: 'access_token', value: authResponse.accessToken);
+        await _secureStorage.write(key: 'refresh_token', value: authResponse.refreshToken);
+        await _secureStorage.write(key: 'user_data', value: jsonEncode(authResponse.user.toJson()));
+        await _secureStorage.write(key: 'user_role', value: role);
+      } catch (e) {
+        // SecureStorage может не работать на Windows в debug режиме
+      }
 
       // Если "Запомнить меня" — сохраняем логин
       if (rememberMe) {
@@ -147,12 +155,9 @@ class AuthRepositoryImpl implements AuthRepository {
         return null;
       }
 
-      // В демо-режиме возвращаем пользователя, если он сохранен
+      // В демо-режиме checkSession всегда возвращает null
+      // Роль определяется строго при login, чтобы не было конфликтов
       if (isDemoMode) {
-        final userData = await _secureStorage.read('user_data');
-        if (userData != null) {
-          return User.fromJson(jsonDecode(userData) as Map<String, dynamic>);
-        }
         return null;
       }
 
