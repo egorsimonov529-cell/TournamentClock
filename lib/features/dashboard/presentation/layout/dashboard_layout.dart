@@ -4,6 +4,7 @@ import '../../../../core/layout/app_window.dart';
 import '../widgets/sidebar/sidebar.dart';
 import '../widgets/stat_card/stat_card.dart';
 import '../widgets/topbar/top_bar.dart';
+import '../../../tournament_clock/presentation/screens/tournament_clock_screen.dart';
 
 class DashboardLayout extends StatefulWidget {
   const DashboardLayout({super.key});
@@ -54,7 +55,10 @@ class _DashboardLayoutState extends State<DashboardLayout> {
 
                   const SizedBox(height: 30),
 
-                  if (_selectedMenuIndex == 0) ...[
+                  if (_selectedMenuIndex == 6) ...[
+                    // Tournament Clock
+                    const TournamentClockScreen(),
+                  ] else if (_selectedMenuIndex == 0) ...[
                     // Dashboard content - keep original UI
                     Row(
                       children: [
