@@ -14,14 +14,12 @@ class LoginMobileLayout extends StatelessWidget {
       child: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
-          child: AppCard(
+          child: SizedBox(
             width: 420,
-            child: const Column(
-              children: [
-                LoginHeader(),
-                SizedBox(height: 32),
-                LoginForm(),
-              ],
+            child: AppCard(
+              child: const Column(
+                children: [LoginHeader(), SizedBox(height: 32), LoginForm()],
+              ),
             ),
           ),
         ),

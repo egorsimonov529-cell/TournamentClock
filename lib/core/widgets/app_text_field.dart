@@ -9,6 +9,8 @@ class AppTextField extends StatelessWidget {
   final bool obscure;
   final Widget? suffixIcon;
   final TextInputType keyboardType;
+  final String? hintText;
+  final int? maxLines;
 
   const AppTextField({
     super.key,
@@ -17,46 +19,47 @@ class AppTextField extends StatelessWidget {
     this.obscure = false,
     this.suffixIcon,
     this.keyboardType = TextInputType.text,
+    this.hintText,
+    this.maxLines = 1,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 58,
-      child: TextField(
-        controller: controller,
-        obscureText: obscure,
-        keyboardType: keyboardType,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 15,
-          fontWeight: FontWeight.w500,
+    return TextField(
+      controller: controller,
+      obscureText: obscure,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+      style: const TextStyle(
+        color: AppColors.white,
+        fontSize: 15,
+        fontWeight: FontWeight.w500,
+      ),
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hintText,
+        labelStyle: const TextStyle(
+          color: AppColors.textSecondary,
+          fontSize: 14,
         ),
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: const TextStyle(
-            color: Colors.white54,
-          ),
-          suffixIcon: suffixIcon,
-          filled: true,
-          fillColor: AppColors.input,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 18,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppRadius.md),
-            borderSide: const BorderSide(
-              color: AppColors.border,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppRadius.md),
-            borderSide: const BorderSide(
-              color: AppColors.primary,
-              width: 1.5,
-            ),
-          ),
+        hintStyle: const TextStyle(
+          color: AppColors.textMuted,
+          fontSize: 14,
+        ),
+        suffixIcon: suffixIcon,
+        filled: true,
+        fillColor: AppColors.input,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          borderSide: const BorderSide(color: AppColors.border, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
         ),
       ),
     );

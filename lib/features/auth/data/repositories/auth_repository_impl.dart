@@ -20,9 +20,9 @@ class AuthRepositoryImpl implements AuthRepository {
     required SecureStorageService secureStorage,
     required SharedPrefsService sharedPrefs,
     this.isDemoMode = true, // Демо-режим включен по умолчанию
-  })  : _apiService = apiService,
-        _secureStorage = secureStorage,
-        _sharedPrefs = sharedPrefs;
+  }) : _apiService = apiService,
+       _secureStorage = secureStorage,
+       _sharedPrefs = sharedPrefs;
 
   @override
   Future<AuthResponse> login({
@@ -36,8 +36,10 @@ class AuthRepositoryImpl implements AuthRepository {
       final role = login.contains('admin') ? 'admin' : 'player';
 
       final authResponse = AuthResponse(
-        accessToken: 'demo_access_token_${DateTime.now().millisecondsSinceEpoch}',
-        refreshToken: 'demo_refresh_token_${DateTime.now().millisecondsSinceEpoch}',
+        accessToken:
+            'demo_access_token_${DateTime.now().millisecondsSinceEpoch}',
+        refreshToken:
+            'demo_refresh_token_${DateTime.now().millisecondsSinceEpoch}',
         user: User(
           id: role == 'admin' ? 'admin-001' : 'player-001',
           login: login,
@@ -51,9 +53,18 @@ class AuthRepositoryImpl implements AuthRepository {
 
       // Сохраняем токены и данные пользователя (с обработкой ошибок)
       try {
-        await _secureStorage.write(key: 'access_token', value: authResponse.accessToken);
-        await _secureStorage.write(key: 'refresh_token', value: authResponse.refreshToken);
-        await _secureStorage.write(key: 'user_data', value: jsonEncode(authResponse.user.toJson()));
+        await _secureStorage.write(
+          key: 'access_token',
+          value: authResponse.accessToken,
+        );
+        await _secureStorage.write(
+          key: 'refresh_token',
+          value: authResponse.refreshToken,
+        );
+        await _secureStorage.write(
+          key: 'user_data',
+          value: jsonEncode(authResponse.user.toJson()),
+        );
         await _secureStorage.write(key: 'user_role', value: role);
       } catch (e) {
         // SecureStorage может не работать на Windows в debug режиме
@@ -70,11 +81,10 @@ class AuthRepositoryImpl implements AuthRepository {
     }
 
     try {
-      final response = await _apiService.post('/auth/login', data: {
-        'login': login,
-        'password': password,
-        'remember_me': rememberMe,
-      });
+      final response = await _apiService.post(
+        '/auth/login',
+        data: {'login': login, 'password': password, 'remember_me': rememberMe},
+      );
 
       final authResponse = AuthResponse.fromJson(response.data);
 
@@ -104,13 +114,79 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<AuthResponse> refreshToken({
-    required String refreshToken,
+  Future<AuthResponse> register({
+    required String name,
+    required String email,
+    required String password,
+    required bool acceptedTerms,
   }) async {
+    if (!acceptedTerms) {
+      throw const ValidationException(
+        message: '╨Э╨╡╨╛╨▒╤Е╨╛╨┤╨╕╨╝╨╛ ╤Б╨╛╨│╨╗╨░╤Б╨╕╨╡ ╤Б ╨┐╤А╨░╨▓╨╕╨╗╨░╨╝╨╕',
+        fieldErrors: {'acceptedTerms': '╨Э╨╡╨╛╨▒╤Е╨╛╨┤╨╕╨╝╨╛ ╤Б╨╛╨│╨╗╨░╤Б╨╕╨╡'},
+      );
+    }
+
+    if (!isDemoMode) {
+      try {
+        final response = await _apiService.post(
+          '/auth/register',
+          data: {'name': name, 'email': email, 'password': password},
+        );
+        return AuthResponse.fromJson(response.data);
+      } on AuthException {
+        rethrow;
+      } catch (_) {
+        throw const NetworkException();
+      }
+    }
+
+    final parts = name.trim().split(RegExp(r'\s+'));
+    final response = AuthResponse(
+      accessToken: 'demo_access_token_${DateTime.now().millisecondsSinceEpoch}',
+      refreshToken:
+          'demo_refresh_token_${DateTime.now().millisecondsSinceEpoch}',
+      user: User(
+        id: 'player-${DateTime.now().millisecondsSinceEpoch}',
+        login: email,
+        email: email,
+        role: 'player',
+        firstName: parts.isEmpty ? name : parts.first,
+        lastName: parts.length > 1 ? parts.skip(1).join(' ') : null,
+      ),
+    );
     try {
-      final response = await _apiService.post('/auth/refresh', data: {
-        'refresh_token': refreshToken,
-      });
+      await _secureStorage.write(
+        key: 'access_token',
+        value: response.accessToken,
+      );
+      await _secureStorage.write(
+        key: 'refresh_token',
+        value: response.refreshToken,
+      );
+      await _secureStorage.write(
+        key: 'user_data',
+        value: jsonEncode(response.user.toJson()),
+      );
+      await _secureStorage.write(key: 'user_role', value: 'player');
+    } catch (_) {
+      // SecureStorage ╨╝╨╛╨╢╨╡╤В ╨▒╤Л╤В╤М ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╡╨╜ ╨╜╨░ desktop ╨▓ debug-╤А╨╡╨╢╨╕╨╝╨╡.
+    }
+    return response;
+  }
+
+  @override
+  Future<AuthResponse> signInWithGoogle() {
+    throw const OAuthUnavailableException();
+  }
+
+  @override
+  Future<AuthResponse> refreshToken({required String refreshToken}) async {
+    try {
+      final response = await _apiService.post(
+        '/auth/refresh',
+        data: {'refresh_token': refreshToken},
+      );
 
       final authResponse = AuthResponse.fromJson(response.data);
 

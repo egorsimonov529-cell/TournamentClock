@@ -26,12 +26,12 @@ class BlindsCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: isCurrent
-            ? AppColors.primary.withValues(alpha: 0.1)
+            ? AppColors.primary.withOpacity(0.1)
             : const Color(0xff1D232C),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isCurrent
-              ? AppColors.primary.withValues(alpha: 0.5)
+              ? AppColors.primary.withOpacity(0.5)
               : const Color(0xff2A2D35),
           width: isCurrent ? 2 : 1,
         ),
@@ -46,7 +46,7 @@ class BlindsCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isCurrent
                       ? AppColors.primary
-                      : AppColors.primary.withValues(alpha: 0.2),
+                      : AppColors.primary.withOpacity(0.2),
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -68,7 +68,7 @@ class BlindsCard extends StatelessWidget {
                 style: TextStyle(
                   color: isCurrent
                       ? AppColors.primary
-                      : Colors.white.withValues(alpha: 0.6),
+                      : Colors.white.withOpacity(0.6),
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
@@ -97,7 +97,7 @@ class BlindsCard extends StatelessWidget {
               Text(
                 '${duration.inMinutes} мин',
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.5),
+                  color: Colors.white.withOpacity(0.5),
                   fontSize: 12,
                 ),
               ),
@@ -109,7 +109,7 @@ class BlindsCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 8),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.2),
+                color: AppColors.primary.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -134,7 +134,7 @@ class BlindsCard extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.5),
+            color: Colors.white.withOpacity(0.5),
             fontSize: 11,
           ),
         ),

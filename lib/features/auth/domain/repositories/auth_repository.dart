@@ -12,10 +12,19 @@ abstract class AuthRepository {
     bool rememberMe = false,
   });
 
-  /// Обновить токен доступа
-  Future<AuthResponse> refreshToken({
-    required String refreshToken,
+  /// Зарегистрировать локального demo-пользователя.
+  Future<AuthResponse> register({
+    required String name,
+    required String email,
+    required String password,
+    required bool acceptedTerms,
   });
+
+  /// Войти через Google OAuth.
+  Future<AuthResponse> signInWithGoogle();
+
+  /// Обновить токен доступа
+  Future<AuthResponse> refreshToken({required String refreshToken});
 
   /// Выйти из системы
   Future<void> logout();

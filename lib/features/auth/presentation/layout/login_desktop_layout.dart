@@ -14,26 +14,25 @@ class LoginDesktopLayout extends StatelessWidget {
     return AppWindow(
       child: Row(
         children: [
-          const Expanded(
-            flex: 6,
-            child: LoginLeftPanel(),
-          ),
+          const Expanded(flex: 6, child: LoginLeftPanel()),
           Expanded(
             flex: 4,
             child: Center(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
-  horizontal: 80,
-  vertical: 40,
-),
-                child: AppCard(
+                  horizontal: 80,
+                  vertical: 40,
+                ),
+                child: SizedBox(
                   width: 540,
-                  child: const Column(
-                    children: [
-                      LoginHeader(),
-                      SizedBox(height: 40),
-                      LoginForm(),
-                    ],
+                  child: AppCard(
+                    child: const Column(
+                      children: [
+                        LoginHeader(),
+                        SizedBox(height: 40),
+                        LoginForm(),
+                      ],
+                    ),
                   ),
                 ),
               ),

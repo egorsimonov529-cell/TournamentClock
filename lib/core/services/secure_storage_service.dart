@@ -2,11 +2,18 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Сервис для безопасного хранения敏感 данных (токены)
 class SecureStorageService {
-  static final SecureStorageService _instance = SecureStorageService._internal();
+  static final SecureStorageService _instance =
+      SecureStorageService._internal();
   factory SecureStorageService() => _instance;
   SecureStorageService._internal();
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
+  /// Инициализация (опционально, для консистентности с SharedPrefsService)
+  Future<void> init() async {
+    // На Windows и других платформах дополнительная инициализация не требуется
+    // Метод добавлен для консистентности API с SharedPrefsService
+  }
 
   /// Записать значение
   Future<void> write({required String key, required String value}) async {

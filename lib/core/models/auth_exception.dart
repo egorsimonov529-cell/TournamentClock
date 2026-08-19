@@ -56,3 +56,11 @@ class AccountLockedException extends AuthException {
     super.code = 'ACCOUNT_LOCKED',
   });
 }
+
+/// Google OAuth ещё не настроен для production-окружения.
+class OAuthUnavailableException extends AuthException {
+  const OAuthUnavailableException({
+    super.message = 'Google-вход требует настройки OAuth',
+    super.code = 'OAUTH_UNAVAILABLE',
+  });
+}

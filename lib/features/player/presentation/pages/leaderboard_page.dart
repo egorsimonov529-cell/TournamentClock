@@ -24,7 +24,7 @@ class LeaderboardPage extends StatelessWidget {
           Text(
             "Общий рейтинг спортсменов",
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.6),
+              color: Colors.white.withOpacity(0.6),
               fontSize: 14,
             ),
           ),
@@ -104,20 +104,17 @@ class LeaderboardPage extends StatelessWidget {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.2),
+              color: color.withOpacity(0.2),
               shape: BoxShape.circle,
-              border: Border.all(
-                color: color,
-                width: 3,
-              ),
+              border: Border.all(color: color, width: 3),
             ),
             child: Center(
               child: Icon(
                 rank == 1
                     ? Icons.emoji_events_rounded
                     : rank == 2
-                        ? Icons.emoji_events_rounded
-                        : Icons.emoji_events_rounded,
+                    ? Icons.emoji_events_rounded
+                    : Icons.emoji_events_rounded,
                 color: color,
                 size: 36,
               ),
@@ -145,7 +142,7 @@ class LeaderboardPage extends StatelessWidget {
           Text(
             "$wins побед",
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.5),
+              color: Colors.white.withOpacity(0.5),
               fontSize: 12,
             ),
           ),
@@ -154,16 +151,11 @@ class LeaderboardPage extends StatelessWidget {
             height: height,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.15),
+              color: color.withOpacity(0.15),
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(16),
               ),
-              border: Border(
-                top: BorderSide(
-                  color: color,
-                  width: 2,
-                ),
-              ),
+              border: Border(top: BorderSide(color: color, width: 2)),
             ),
           ),
         ],
@@ -181,8 +173,21 @@ class LeaderboardPage extends StatelessWidget {
       {"rank": 6, "name": "Sergei M.", "points": 2480, "wins": 9, "games": 34},
       {"rank": 7, "name": "Andrei L.", "points": 2390, "wins": 8, "games": 33},
       {"rank": 8, "name": "Nikolay B.", "points": 2310, "wins": 7, "games": 30},
-      {"rank": 9, "name": "Vladimir T.", "points": 2250, "wins": 7, "games": 32},
-      {"rank": 10, "name": "PokerStar123", "points": 2180, "wins": 6, "games": 28, "isCurrentUser": true},
+      {
+        "rank": 9,
+        "name": "Vladimir T.",
+        "points": 2250,
+        "wins": 7,
+        "games": 32,
+      },
+      {
+        "rank": 10,
+        "name": "PokerStar123",
+        "points": 2180,
+        "wins": 6,
+        "games": 28,
+        "isCurrentUser": true,
+      },
     ];
 
     return Column(
@@ -193,12 +198,12 @@ class LeaderboardPage extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: isCurrentUser
-                ? AppColors.primary.withValues(alpha: 0.1)
+                ? AppColors.primary.withOpacity(0.1)
                 : const Color(0xff1D232C),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isCurrentUser
-                  ? AppColors.primary.withValues(alpha: 0.3)
+                  ? AppColors.primary.withOpacity(0.3)
                   : const Color(0xff2A2D35),
               width: 1,
             ),
@@ -210,7 +215,7 @@ class LeaderboardPage extends StatelessWidget {
                 height: 40,
                 decoration: BoxDecoration(
                   color: player['rank'] <= 3
-                      ? AppColors.primary.withValues(alpha: 0.2)
+                      ? AppColors.primary.withOpacity(0.2)
                       : const Color(0xff2A2D35),
                   shape: BoxShape.circle,
                 ),
@@ -220,7 +225,7 @@ class LeaderboardPage extends StatelessWidget {
                     style: TextStyle(
                       color: player['rank'] <= 3
                           ? AppColors.primary
-                          : Colors.white.withValues(alpha: 0.7),
+                          : Colors.white.withOpacity(0.7),
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
@@ -250,7 +255,7 @@ class LeaderboardPage extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.2),
+                              color: AppColors.primary.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: const Text(
@@ -269,7 +274,7 @@ class LeaderboardPage extends StatelessWidget {
                     Text(
                       "${player['wins']} побед / ${player['games']} игр",
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.5),
+                        color: Colors.white.withOpacity(0.5),
                         fontSize: 12,
                       ),
                     ),
@@ -282,7 +287,7 @@ class LeaderboardPage extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.15),
+                  color: AppColors.primary.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(

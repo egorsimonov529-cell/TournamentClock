@@ -59,6 +59,13 @@ dependencies:
 
   json_annotation: ^4.9.0
 
+  window_manager: ^0.4.3
+
+  window_manager_plus: ^1.0.5
+
+  flutter_localizations:
+    sdk: flutter
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -73,18 +73,15 @@ class BalancePage extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.primary.withValues(alpha: 0.3),
-            AppColors.primary.withValues(alpha: 0.1),
+            AppColors.primary.withOpacity(0.3),
+            AppColors.primary.withOpacity(0.1),
             Colors.transparent,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.3),
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 1),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -95,7 +92,7 @@ class BalancePage extends StatelessWidget {
               Text(
                 "Текущий баланс",
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.7),
+                  color: Colors.white.withOpacity(0.7),
                   fontSize: 14,
                 ),
               ),
@@ -112,7 +109,7 @@ class BalancePage extends StatelessWidget {
               Text(
                 "≈ \$145 USD",
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.5),
+                  color: Colors.white.withOpacity(0.5),
                   fontSize: 14,
                 ),
               ),
@@ -135,10 +132,7 @@ class BalancePage extends StatelessWidget {
                   ),
                   child: const Text(
                     "Пополнить",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -150,19 +144,14 @@ class BalancePage extends StatelessWidget {
                   onPressed: () {},
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.primary,
-                    side: BorderSide(
-                      color: AppColors.primary.withValues(alpha: 0.5),
-                    ),
+                    side: BorderSide(color: AppColors.primary.withOpacity(0.5)),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: const Text(
                     "Вывести",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -181,10 +170,7 @@ class BalancePage extends StatelessWidget {
   }) {
     final isPositive = amount.startsWith('+');
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 14,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         color: const Color(0xff1D232C),
         borderRadius: BorderRadius.circular(12),
@@ -195,12 +181,14 @@ class BalancePage extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: isPositive
-                  ? AppColors.success.withValues(alpha: 0.15)
-                  : AppColors.error.withValues(alpha: 0.15),
+                  ? AppColors.success.withOpacity(0.15)
+                  : AppColors.error.withOpacity(0.15),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
-              isPositive ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
+              isPositive
+                  ? Icons.arrow_downward_rounded
+                  : Icons.arrow_upward_rounded,
               color: isPositive ? AppColors.success : AppColors.error,
               size: 20,
             ),
@@ -222,7 +210,7 @@ class BalancePage extends StatelessWidget {
                 Text(
                   date,
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.4),
+                    color: Colors.white.withOpacity(0.4),
                     fontSize: 12,
                   ),
                 ),

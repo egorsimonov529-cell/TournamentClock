@@ -24,7 +24,7 @@ class MembershipPage extends StatelessWidget {
           Text(
             "Управление подпиской и история платежей",
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.6),
+              color: Colors.white.withOpacity(0.6),
               fontSize: 14,
             ),
           ),
@@ -90,25 +90,22 @@ class MembershipPage extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.primary.withValues(alpha: 0.3),
-            AppColors.primary.withValues(alpha: 0.1),
+            AppColors.primary.withOpacity(0.3),
+            AppColors.primary.withOpacity(0.1),
             Colors.transparent,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.3),
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 1),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.2),
+              color: AppColors.primary.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
@@ -125,7 +122,7 @@ class MembershipPage extends StatelessWidget {
                 Text(
                   "Ваш текущий статус",
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.7),
+                    color: Colors.white.withOpacity(0.7),
                     fontSize: 14,
                   ),
                 ),
@@ -142,7 +139,7 @@ class MembershipPage extends StatelessWidget {
                 Text(
                   "Действует до 5 сен 2026",
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.6),
+                    color: Colors.white.withOpacity(0.6),
                     fontSize: 13,
                   ),
                 ),
@@ -161,10 +158,7 @@ class MembershipPage extends StatelessWidget {
             ),
             child: const Text(
               "Продлить",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -178,10 +172,7 @@ class MembershipPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xff1D232C),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xff2A2D35),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xff2A2D35), width: 1),
       ),
       child: Column(
         children: [
@@ -193,7 +184,7 @@ class MembershipPage extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.warning.withValues(alpha: 0.2),
+                      color: AppColors.warning.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(
@@ -242,10 +233,7 @@ class MembershipPage extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.5),
-            fontSize: 12,
-          ),
+          style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
         ),
         const SizedBox(height: 4),
         Text(
@@ -278,7 +266,7 @@ class MembershipPage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.15),
+              color: AppColors.primary.withOpacity(0.15),
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Icon(
@@ -304,7 +292,7 @@ class MembershipPage extends StatelessWidget {
                 Text(
                   date,
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.4),
+                    color: Colors.white.withOpacity(0.4),
                     fontSize: 12,
                   ),
                 ),

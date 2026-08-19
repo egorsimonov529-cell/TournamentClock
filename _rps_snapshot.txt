@@ -1,0 +1,1100 @@
+
+===== lib/features/player/domain/models/player_model.dart =====
+class PlayerProfile {
+  final String userId;
+  final String login;
+  final String email;
+  final String? firstName;
+  final String? lastName;
+  final String? avatarUrl;
+  final String role;
+  final int level;
+  final int xp;
+  final int xpToNextLevel;
+  final int rank;
+  final int rankPoints;
+  final double winRate;
+  final int totalTournaments;
+  final int totalWins;
+  final int totalPodiums;
+  final double totalProfit;
+  final double averageScore;
+  final double balance;
+  final DateTime createdAt;
+  final DateTime lastLoginAt;
+
+  const PlayerProfile({
+    required this.userId,
+    required this.login,
+    required this.email,
+    this.firstName,
+    this.lastName,
+    this.avatarUrl,
+    required this.role,
+    required this.level,
+    required this.xp,
+    required this.xpToNextLevel,
+    required this.rank,
+    required this.rankPoints,
+    required this.winRate,
+    required this.totalTournaments,
+    required this.totalWins,
+    required this.totalPodiums,
+    required this.totalProfit,
+    required this.averageScore,
+    required this.balance,
+    required this.createdAt,
+    required this.lastLoginAt,
+  });
+
+  factory PlayerProfile.fromJson(Map<String, dynamic> json) {
+    return PlayerProfile(
+      userId: json['id'] as String? ?? '',
+      login: json['login'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+      firstName: json['first_name'] as String?,
+      lastName: json['last_name'] as String?,
+      avatarUrl: json['avatar_url'] as String?,
+      role: json['role'] as String? ?? 'player',
+      level: json['level'] as int? ?? 1,
+      xp: json['xp'] as int? ?? 0,
+      xpToNextLevel: json['xp_to_next_level'] as int? ?? 100,
+      rank: json['rank'] as int? ?? 0,
+      rankPoints: json['rank_points'] as int? ?? 0,
+      winRate: (json['win_rate'] as num?)?.toDouble() ?? 0.0,
+      totalTournaments: json['total_tournaments'] as int? ?? 0,
+      totalWins: json['total_wins'] as int? ?? 0,
+      totalPodiums: json['total_podiums'] as int? ?? 0,
+      totalProfit: (json['total_profit'] as num?)?.toDouble() ?? 0.0,
+      averageScore: (json['average_score'] as num?)?.toDouble() ?? 0.0,
+      balance: (json['balance'] as num?)?.toDouble() ?? 0.0,
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : DateTime.now(),
+      lastLoginAt: json['last_login_at'] != null
+          ? DateTime.parse(json['last_login_at'] as String)
+          : DateTime.now(),
+    );
+  }
+}
+
+enum TournamentStatus {
+  upcoming,
+  inProgress,
+  completed,
+  cancelled,
+}
+
+class Tournament {
+  final String id;
+  final String name;
+  final String description;
+  final DateTime startDate;
+  final DateTime endDate;
+  final int registrationDeadline;
+  final int maxPlayers;
+  final int currentPlayers;
+  final double buyIn;
+  final double prizePool;
+  final String format;
+  final TournamentStatus status;
+  final String imageUrl;
+
+  const Tournament({
+    required this.id,
+    required this.name,
+    this.description = '',
+    required this.startDate,
+    required this.endDate,
+    required this.registrationDeadline,
+    required this.maxPlayers,
+    required this.currentPlayers,
+    required this.buyIn,
+    required this.prizePool,
+    required this.format,
+    required this.status,
+    this.imageUrl = '',
+  });
+
+  factory Tournament.fromJson(Map<String, dynamic> json) {
+    return Tournament(
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      startDate: json['start_date'] != null
+          ? DateTime.parse(json['start_date'] as String)
+          : DateTime.now(),
+      endDate: json['end_date'] != null
+          ? DateTime.parse(json['end_date'] as String)
+          : DateTime.now(),
+      registrationDeadline: json['registration_deadline'] as int? ?? 0,
+      maxPlayers: json['max_players'] as int? ?? 100,
+      currentPlayers: json['current_players'] as int? ?? 0,
+      buyIn: (json['buy_in'] as num?)?.toDouble() ?? 0.0,
+      prizePool: (json['prize_pool'] as num?)?.toDouble() ?? 0.0,
+      format: json['format'] as String? ?? 'TT',
+      status: TournamentStatus.values.firstWhere(
+        (e) => e.name == json['status'],
+        orElse: () => TournamentStatus.upcoming,
+      ),
+      imageUrl: json['image_url'] as String? ?? '',
+    );
+  }
+}
+
+class TournamentEntry {
+  final String id;
+  final String tournamentId;
+  final String tournamentName;
+  final DateTime registrationDate;
+  final double buyIn;
+  final int? finalPosition;
+  final double? winnings;
+  final TournamentStatus status;
+
+  const TournamentEntry({
+    required this.id,
+    required this.tournamentId,
+    required this.tournamentName,
+    required this.registrationDate,
+    required this.buyIn,
+    this.finalPosition,
+    this.winnings,
+    required this.status,
+  });
+
+  factory TournamentEntry.fromJson(Map<String, dynamic> json) {
+    return TournamentEntry(
+      id: json['id'] as String? ?? '',
+      tournamentId: json['tournament_id'] as String? ?? '',
+      tournamentName: json['tournament_name'] as String? ?? '',
+      registrationDate: json['registration_date'] != null
+          ? DateTime.parse(json['registration_date'] as String)
+          : DateTime.now(),
+      buyIn: (json['buy_in'] as num?)?.toDouble() ?? 0.0,
+      finalPosition: json['final_position'] as int?,
+      winnings: (json['winnings'] as num?)?.toDouble(),
+      status: TournamentStatus.values.firstWhere(
+        (e) => e.name == json['status'],
+        orElse: () => TournamentStatus.upcoming,
+      ),
+    );
+  }
+}
+
+
+===== lib/features/player/domain/providers/player_provider.dart =====
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../domain/models/player_model.dart';
+
+// ============================================================================
+// Player Profile Provider
+// ============================================================================
+
+/// Провайдер состояния профиля игрока
+final playerProfileProvider =
+    FutureProvider<PlayerProfile>((ref) async {
+  // TODO: Реализовать вызов API для получения профиля игрока
+  // Пока используем mock данные
+  
+  await Future.delayed(const Duration(milliseconds: 500));
+  
+  return PlayerProfile(
+    userId: "player_001",
+    login: "PokerStar123",
+    email: "player@example.com",
+    firstName: "Александр",
+    lastName: "Иванов",
+    avatarUrl: null,
+    role: "player",
+    level: 12,
+    xp: 4500,
+    xpToNextLevel: 5000,
+    rank: 142,
+    rankPoints: 2850,
+    winRate: 12.5,
+    totalTournaments: 24,
+    totalWins: 3,
+    totalPodiums: 8,
+    totalProfit: 45200.0,
+    averageScore: 18.5,
+    balance: 12500.0,
+    createdAt: DateTime(2025, 3, 15),
+    lastLoginAt: DateTime.now(),
+  );
+});
+
+
+===== lib/features/auth/presentation/pages/registration_page.dart =====
+import 'package:flutter/material.dart';
+
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/app_checkbox.dart';
+import '../../../../core/utils/form_validators.dart';
+import '../../domain/providers/auth_state_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+class RegistrationPage extends ConsumerStatefulWidget {
+  const RegistrationPage({super.key});
+
+  @override
+  ConsumerState<RegistrationPage> createState() => _RegistrationPageState();
+}
+
+class _RegistrationPageState extends ConsumerState<RegistrationPage> {
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _passwordConfirmController = TextEditingController();
+  
+  bool _agreeTerms = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirm = true;
+  
+  String? _nameError;
+  String? _emailError;
+  String? _phoneError;
+  String? _passwordError;
+  String? _confirmError;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    _passwordConfirmController.dispose();
+    super.dispose();
+  }
+
+  String? _validateName(String? value) {
+    if (value == null || value.isEmpty) return 'Введите имя';
+    if (value.length < 2) return 'Минимум 2 символа';
+    return null;
+  }
+
+  String? _validateEmail(String? value) {
+    return FormValidators.email(value);
+  }
+
+  String? _validatePhone(String? value) {
+    if (value == null || value.isEmpty) return 'Введите телефон';
+    final clean = value.replaceAll(RegExp(r'[\s\-\(\)]'), '');
+    if (clean.length < 10) return 'Некорректный номер';
+    return null;
+  }
+
+  String? _validatePassword(String? value) {
+    return FormValidators.password(value);
+  }
+
+  String? _validateConfirm(String? value) {
+    if (value == null || value.isEmpty) return 'Подтвердите пароль';
+    if (value != _passwordController.text) return 'Пароли не совпадают';
+    return null;
+  }
+
+  bool _validateForm() {
+    setState(() {
+      _nameError = _validateName(_nameController.text);
+      _emailError = _validateEmail(_emailController.text);
+      _phoneError = _validatePhone(_phoneController.text);
+      _passwordError = _validatePassword(_passwordController.text);
+      _confirmError = _validateConfirm(_passwordConfirmController.text);
+    });
+    return _nameError == null && _emailError == null && 
+           _phoneError == null && _passwordError == null && 
+           _confirmError == null && _agreeTerms;
+  }
+
+  void _handleRegister() {
+    if (!_validateForm()) return;
+    
+    // TODO: Реализовать регистрацию через API
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Регистрация успешна!')),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_rounded, color: AppColors.textSecondary),
+          onPressed: () => context.pop(),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.pageHorizontal),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Создание аккаунта",
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.w700,
+                color: AppColors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              "Зарегистрируйтесь в нашем покерном клубе",
+              style: TextStyle(
+                fontSize: 15,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 32),
+            
+            // Форма
+            AppTextField(
+              label: "Имя и фамилия",
+              controller: _nameController,
+              hintText: "Иван Петров",
+            ),
+            if (_nameError != null) _buildError(_nameError!),
+            
+            const SizedBox(height: 16),
+            
+            AppTextField(
+              label: "Email",
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+              hintText: "ivan@example.com",
+            ),
+            if (_emailError != null) _buildError(_emailError!),
+            
+            const SizedBox(height: 16),
+            
+            AppTextField(
+              label: "Телефон",
+              controller: _phoneController,
+              keyboardType: TextInputType.phone,
+              hintText: "+7 (999) 123-45-67",
+            ),
+            if (_phoneError != null) _buildError(_phoneError!),
+            
+            const SizedBox(height: 16),
+            
+            AppTextField(
+              label: "Пароль",
+              controller: _passwordController,
+              obscure: _obscurePassword,
+              hintText: "Минимум 6 символов",
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                  color: AppColors.textSecondary,
+                ),
+                onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+              ),
+            ),
+            if (_passwordError != null) _buildError(_passwordError!),
+            
+            const SizedBox(height: 16),
+            
+            AppTextField(
+              label: "Повторите пароль",
+              controller: _passwordConfirmController,
+              obscure: _obscureConfirm,
+              hintText: "Повторите пароль",
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscureConfirm ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                  color: AppColors.textSecondary,
+                ),
+                onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+              ),
+            ),
+            if (_confirmError != null) _buildError(_confirmError!),
+            
+            const SizedBox(height: 24),
+            
+            // Согласие с правилами
+            AppCheckbox(
+              value: _agreeTerms,
+              text: "Я согласен с правилами клуба и политикой конфиденциальности",
+              onChanged: (v) => setState(() => _agreeTerms = v ?? false),
+            ),
+            if (!_agreeTerms)
+              const Padding(
+                padding: EdgeInsets.only(left: 48, top: 4),
+                child: Text(
+                  'Необходимо согласие',
+                  style: TextStyle(fontSize: 12, color: AppColors.error),
+                ),
+              ),
+            
+            const SizedBox(height: 32),
+            
+            PrimaryButton(
+              label: "Зарегистрироваться",
+              onPressed: _handleRegister,
+              disabled: !_agreeTerms,
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Ссылка на вход
+            Center(
+              child: GestureDetector(
+                onTap: () => context.pop(),
+                child: const Text(
+                  "Уже есть аккаунт? Войти",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.accent,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+            
+            const SizedBox(height: 32),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildError(String error) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 6, left: 4),
+      child: Text(
+        error,
+        style: const TextStyle(fontSize: 12, color: AppColors.error),
+      ),
+    );
+  }
+}
+
+
+===== lib/features/tables/domain/models/seating_models.dart =====
+class Player {
+  final String id;
+  final String name;
+
+  const Player({required this.id, required this.name});
+}
+
+class TableSeat {
+  final int number;
+  final Player? player;
+
+  const TableSeat({required this.number, this.player});
+
+  bool get isOccupied => player != null;
+
+  TableSeat copyWith({Player? player, bool clearPlayer = false}) {
+    return TableSeat(
+      number: number,
+      player: clearPlayer ? null : player ?? this.player,
+    );
+  }
+}
+
+class PokerTable {
+  final String id;
+  final String name;
+  final List<TableSeat> seats;
+
+  const PokerTable({required this.id, required this.name, required this.seats});
+
+  int get occupiedCount => seats.where((seat) => seat.isOccupied).length;
+  int get capacity => seats.length;
+
+  PokerTable copyWith({String? name, List<TableSeat>? seats}) =>
+      PokerTable(id: id, name: name ?? this.name, seats: seats ?? this.seats);
+}
+
+class SeatingState {
+  final List<PokerTable> tables;
+  final List<Player> unseatedPlayers;
+  final String selectedTableId;
+
+  const SeatingState({
+    required this.tables,
+    required this.unseatedPlayers,
+    required this.selectedTableId,
+  });
+
+  PokerTable? get selectedTable {
+    for (final table in tables) {
+      if (table.id == selectedTableId) return table;
+    }
+    return null;
+  }
+
+  SeatingState copyWith({
+    List<PokerTable>? tables,
+    List<Player>? unseatedPlayers,
+    String? selectedTableId,
+  }) => SeatingState(
+    tables: tables ?? this.tables,
+    unseatedPlayers: unseatedPlayers ?? this.unseatedPlayers,
+    selectedTableId: selectedTableId ?? this.selectedTableId,
+  );
+}
+
+
+===== lib/features/tables/domain/providers/seating_provider.dart =====
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../models/seating_models.dart';
+
+final seatingProvider = StateNotifierProvider<SeatingNotifier, SeatingState>((
+  ref,
+) {
+  return SeatingNotifier();
+});
+
+class SeatingNotifier extends StateNotifier<SeatingState> {
+  SeatingNotifier() : super(_initialState());
+
+  static SeatingState _initialState() {
+    const players = [
+      Player(id: 'p1', name: 'Алексей Морозов'),
+      Player(id: 'p2', name: 'Мария Вяземская'),
+      Player(id: 'p3', name: 'Дмитрий Каменский'),
+      Player(id: 'p4', name: 'Екатерина Орлова'),
+      Player(id: 'p5', name: 'Михаил Серафим'),
+      Player(id: 'p6', name: 'Павел Мельник'),
+      Player(id: 'p7', name: 'Анна Волкова'),
+      Player(id: 'p8', name: 'Сергей Виноградов'),
+      Player(id: 'p9', name: 'Олег Семёнов'),
+      Player(id: 'p10', name: 'Ирина Павлова'),
+      Player(id: 'p11', name: 'Максим Белов'),
+      Player(id: 'p12', name: 'Наталья Соколова'),
+    ];
+    List<TableSeat> seats() =>
+        List.generate(8, (index) => TableSeat(number: index + 1));
+    final first = seats()
+      ..[0] = TableSeat(number: 1, player: players[0])
+      ..[2] = TableSeat(number: 3, player: players[1])
+      ..[5] = TableSeat(number: 6, player: players[2]);
+    final second = seats()
+      ..[1] = TableSeat(number: 2, player: players[3])
+      ..[4] = TableSeat(number: 5, player: players[4]);
+    return SeatingState(
+      tables: [
+        PokerTable(id: 't1', name: 'Стол 1', seats: first),
+        PokerTable(id: 't2', name: 'Стол 2', seats: second),
+      ],
+      unseatedPlayers: players.sublist(5),
+      selectedTableId: 't1',
+    );
+  }
+
+  void selectTable(String tableId) {
+    if (state.tables.any((table) => table.id == tableId)) {
+      state = state.copyWith(selectedTableId: tableId);
+    }
+  }
+
+  bool assignPlayer(String playerId, int seatNumber) {
+    final candidates = state.unseatedPlayers.where((p) => p.id == playerId);
+    if (candidates.isEmpty ||
+        state.tables.any(
+          (table) => table.seats.any((seat) => seat.player?.id == playerId),
+        )) {
+      return false;
+    }
+    final table = state.selectedTable;
+    if (table == null) return false;
+    final seatIndex = table.seats.indexWhere(
+      (seat) => seat.number == seatNumber && !seat.isOccupied,
+    );
+    if (seatIndex < 0) return false;
+
+    final seats = [...table.seats];
+    seats[seatIndex] = seats[seatIndex].copyWith(player: candidates.first);
+    _updateTable(table.copyWith(seats: seats));
+    state = state.copyWith(
+      unseatedPlayers: state.unseatedPlayers
+          .where((p) => p.id != playerId)
+          .toList(),
+    );
+    return true;
+  }
+
+  void releaseSeat(int seatNumber) {
+    final table = state.selectedTable;
+    if (table == null) return;
+    final seatIndex = table.seats.indexWhere(
+      (seat) => seat.number == seatNumber,
+    );
+    if (seatIndex < 0) return;
+    final player = table.seats[seatIndex].player;
+    if (player == null) return;
+
+    final seats = [...table.seats];
+    seats[seatIndex] = seats[seatIndex].copyWith(clearPlayer: true);
+    _updateTable(table.copyWith(seats: seats));
+    if (!state.unseatedPlayers.any((item) => item.id == player.id)) {
+      state = state.copyWith(
+        unseatedPlayers: [...state.unseatedPlayers, player],
+      );
+    }
+  }
+
+  void autoSeat() {
+    while (state.unseatedPlayers.isNotEmpty) {
+      PokerTable? target;
+      for (final table in state.tables) {
+        if (table.seats.any((seat) => !seat.isOccupied) &&
+            (target == null || table.occupiedCount < target.occupiedCount)) {
+          target = table;
+        }
+      }
+      if (target == null) return;
+      selectTable(target.id);
+      final freeSeat = target.seats.firstWhere((seat) => !seat.isOccupied);
+      assignPlayer(state.unseatedPlayers.first.id, freeSeat.number);
+    }
+  }
+
+  void addTable() {
+    var suffix = state.tables.length + 1;
+    var id = 't$suffix';
+    while (state.tables.any((table) => table.id == id)) {
+      suffix++;
+      id = 't$suffix';
+    }
+    final table = PokerTable(
+      id: id,
+      name: 'Стол $suffix',
+      seats: List.generate(8, (index) => TableSeat(number: index + 1)),
+    );
+    state = state.copyWith(
+      tables: [...state.tables, table],
+      selectedTableId: id,
+    );
+  }
+
+  void _updateTable(PokerTable updated) {
+    state = state.copyWith(
+      tables: state.tables
+          .map((table) => table.id == updated.id ? updated : table)
+          .toList(),
+    );
+  }
+}
+
+
+===== lib/features/tables/presentation/screens/seating_screen.dart =====
+import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:responsive_framework/responsive_framework.dart';
+
+import '../../../../core/theme/app_colors.dart';
+import '../../domain/models/seating_models.dart';
+import '../../domain/providers/seating_provider.dart';
+
+class SeatingScreen extends ConsumerWidget {
+  final String tournamentId;
+
+  const SeatingScreen({super.key, required this.tournamentId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(seatingProvider);
+    final table = state.selectedTable;
+    final isMobile = ResponsiveBreakpoints.of(context).isMobile;
+    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        leading: IconButton(
+          tooltip: 'Назад',
+          onPressed: () =>
+              context.canPop() ? context.pop() : context.go('/dashboard'),
+          icon: const Icon(Icons.arrow_back),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Рассадка игроков'),
+            Text(
+              'Турнир $tournamentId',
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(isMobile ? 12 : 24),
+          child: Column(
+            children: [
+              _TableSelector(state: state),
+              const SizedBox(height: 16),
+              Expanded(
+                child: isDesktop
+                    ? Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(flex: 3, child: _TablePanel(table: table)),
+                          const SizedBox(width: 16),
+                          SizedBox(width: 330, child: _SidePanel(state: state)),
+                        ],
+                      )
+                    : ListView(
+                        children: [
+                          SizedBox(
+                            height: isMobile ? 420 : 500,
+                            child: _TablePanel(table: table),
+                          ),
+                          const SizedBox(height: 16),
+                          _SidePanel(state: state),
+                        ],
+                      ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TableSelector extends ConsumerWidget {
+  final SeatingState state;
+
+  const _TableSelector({required this.state});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SizedBox(
+      height: 48,
+      child: Row(
+        children: [
+          Expanded(
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: state.tables.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final table = state.tables[index];
+                return ChoiceChip(
+                  selected: table.id == state.selectedTableId,
+                  onSelected: (_) =>
+                      ref.read(seatingProvider.notifier).selectTable(table.id),
+                  label: Text(
+                    '${table.name}  ${table.occupiedCount}/${table.capacity}',
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(width: 8),
+          IconButton.filledTonal(
+            tooltip: 'Добавить стол',
+            onPressed: ref.read(seatingProvider.notifier).addTable,
+            icon: const Icon(Icons.add),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TablePanel extends StatelessWidget {
+  final PokerTable? table;
+
+  const _TablePanel({required this.table});
+
+  @override
+  Widget build(BuildContext context) {
+    if (table == null) return const Center(child: Text('Стол не выбран'));
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth;
+          final height = constraints.maxHeight;
+          final seatWidth = math.min(118.0, width * .23);
+          final seatHeight = 64.0;
+          final center = Offset(width / 2, height / 2);
+          final radiusX = math.max(90.0, (width - seatWidth) * .39);
+          final radiusY = math.max(105.0, (height - seatHeight) * .38);
+          return Stack(
+            children: [
+              Positioned(
+                left: width * .17,
+                right: width * .17,
+                top: height * .26,
+                bottom: height * .26,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xff12613B),
+                    borderRadius: BorderRadius.circular(200),
+                    border: Border.all(color: AppColors.gold, width: 3),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black54, blurRadius: 24),
+                    ],
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.casino,
+                          color: AppColors.gold,
+                          size: 30,
+                        ),
+                        Text(
+                          table!.name,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '${table!.occupiedCount} из ${table!.capacity} мест занято',
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              for (var i = 0; i < table!.seats.length; i++)
+                _positionedSeat(
+                  context,
+                  table!.seats[i],
+                  i,
+                  table!.seats.length,
+                  center,
+                  radiusX,
+                  radiusY,
+                  seatWidth,
+                  seatHeight,
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _positionedSeat(
+    BuildContext context,
+    TableSeat seat,
+    int index,
+    int count,
+    Offset center,
+    double radiusX,
+    double radiusY,
+    double width,
+    double height,
+  ) {
+    final angle = -math.pi / 2 + (2 * math.pi * index / count);
+    final left = center.dx + math.cos(angle) * radiusX - width / 2;
+    final top = center.dy + math.sin(angle) * radiusY - height / 2;
+    return Positioned(
+      left: left,
+      top: top,
+      width: width,
+      height: height,
+      child: _SeatCard(seat: seat),
+    );
+  }
+}
+
+class _SeatCard extends ConsumerWidget {
+  final TableSeat seat;
+
+  const _SeatCard({required this.seat});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Material(
+      color: seat.isOccupied ? AppColors.cardPrimary : AppColors.cardSecondary,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => seat.isOccupied
+            ? _confirmRelease(context, ref)
+            : _pickPlayer(context, ref),
+        child: Container(
+          padding: const EdgeInsets.all(7),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: seat.isOccupied ? AppColors.accent : AppColors.border,
+            ),
+          ),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 16,
+                backgroundColor: seat.isOccupied
+                    ? AppColors.primary
+                    : AppColors.input,
+                child: Text('${seat.number}'),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  seat.player?.name ?? 'Свободно',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: seat.isOccupied
+                        ? AppColors.white
+                        : AppColors.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickPlayer(BuildContext context, WidgetRef ref) async {
+    final players = ref.read(seatingProvider).unseatedPlayers;
+    if (players.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Нет нерассаженных игроков')),
+      );
+      return;
+    }
+    final selected = await showModalBottomSheet<Player>(
+      context: context,
+      backgroundColor: AppColors.surface,
+      builder: (context) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            const ListTile(
+              title: Text('Выберите игрока'),
+              subtitle: Text('Игрок займёт выбранное свободное место'),
+            ),
+            for (final player in players)
+              ListTile(
+                leading: const CircleAvatar(child: Icon(Icons.person)),
+                title: Text(player.name),
+                onTap: () => Navigator.pop(context, player),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (selected != null) {
+      ref.read(seatingProvider.notifier).assignPlayer(selected.id, seat.number);
+    }
+  }
+
+  Future<void> _confirmRelease(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Освободить место?'),
+        content: Text('${seat.player!.name} вернётся в список нерассаженных.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Отмена'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Освободить'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      ref.read(seatingProvider.notifier).releaseSeat(seat.number);
+    }
+  }
+}
+
+class _SidePanel extends ConsumerWidget {
+  final SeatingState state;
+
+  const _SidePanel({required this.state});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text(
+            'Панель действий',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 12),
+          FilledButton.icon(
+            onPressed: state.unseatedPlayers.isEmpty
+                ? null
+                : ref.read(seatingProvider.notifier).autoSeat,
+            icon: const Icon(Icons.auto_awesome),
+            label: const Text('Авторассадка'),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Нерассаженные (${state.unseatedPlayers.length})',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          if (state.unseatedPlayers.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 24),
+              child: Center(child: Text('Все игроки рассажены')),
+            )
+          else
+            ...state.unseatedPlayers.map(
+              (player) => Card(
+                color: AppColors.cardSecondary,
+                child: ListTile(
+                  dense: true,
+                  leading: const CircleAvatar(
+                    radius: 16,
+                    child: Icon(Icons.person, size: 18),
+                  ),
+                  title: Text(player.name),
+                  subtitle: const Text('Нажмите свободное место'),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}

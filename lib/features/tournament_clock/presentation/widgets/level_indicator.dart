@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../domain/models/tournament_clock_model.dart';
 
 class LevelIndicator extends StatelessWidget {
   final int currentLevel;
   final int totalLevels;
-  final List<BlindLevelData> levels;
+  final List<BlindLevel> levels;
 
   const LevelIndicator({
     super.key,
@@ -68,7 +69,7 @@ class LevelIndicator extends StatelessWidget {
     int index,
     bool isCurrent,
     bool isPast,
-    BlindLevelData level,
+    BlindLevel level,
   ) {
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -79,14 +80,14 @@ class LevelIndicator extends StatelessWidget {
         color: isCurrent
             ? AppColors.primary
             : isPast
-                ? AppColors.primary.withValues(alpha: 0.2)
-                : Colors.black.withValues(alpha: 0.3),
+                ? AppColors.primary.withOpacity(0.2)
+                : Colors.black.withOpacity(0.3),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isCurrent
               ? AppColors.primary
               : isPast
-                  ? AppColors.primary.withValues(alpha: 0.5)
+                  ? AppColors.primary.withOpacity(0.5)
                   : const Color(0xff2A2D35),
           width: 1,
         ),
@@ -94,25 +95,11 @@ class LevelIndicator extends StatelessWidget {
       child: Text(
         'L${index + 1}: ${level.smallBlind}/${level.bigBlind}',
         style: TextStyle(
-          color: isCurrent ? Colors.white : Colors.white.withValues(alpha: 0.6),
+          color: isCurrent ? Colors.white : Colors.white.withOpacity(0.6),
           fontSize: 11,
           fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
         ),
       ),
     );
   }
-}
-
-class BlindLevelData {
-  final int smallBlind;
-  final int bigBlind;
-  final int ante;
-  final int duration;
-
-  const BlindLevelData({
-    required this.smallBlind,
-    required this.bigBlind,
-    required this.ante,
-    required this.duration,
-  });
 }

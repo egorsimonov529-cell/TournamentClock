@@ -72,7 +72,7 @@ class TournamentInfo extends StatelessWidget {
               Text(
                 'Игроки: $players/$maxPlayers',
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.7),
+                  color: Colors.white.withOpacity(0.7),
                   fontSize: 14,
                 ),
               ),
@@ -98,7 +98,7 @@ class TournamentInfo extends StatelessWidget {
         vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.15),
+        color: AppColors.primary.withOpacity(0.15),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -120,8 +120,8 @@ class TournamentInfo extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: status == 'В игре'
-            ? AppColors.success.withValues(alpha: 0.2)
-            : AppColors.warning.withValues(alpha: 0.2),
+            ? AppColors.success.withOpacity(0.2)
+            : AppColors.warning.withOpacity(0.2),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(

@@ -22,9 +22,9 @@ class QuickActions extends StatelessWidget {
           const SizedBox(width: 16),
           Expanded(
             child: _buildActionCard(
-              icon: Icons.add_circle_outline_rounded,
-              title: "Пополнить",
-              description: "Быстрое пополнение баланса",
+              icon: Icons.insights_rounded,
+              title: "Мой рейтинг",
+              description: "Следите за прогрессом в RPS",
               onTap: () {},
             ),
           ),
@@ -47,23 +47,19 @@ class QuickActions extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              AppColors.primary.withValues(alpha: 0.15),
-              AppColors.primary.withValues(alpha: 0.05),
+              AppColors.primary.withOpacity(0.15),
+              AppColors.primary.withOpacity(0.05),
             ],
           ),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: AppColors.primary.withValues(alpha: 0.3),
+            color: AppColors.primary.withOpacity(0.3),
             width: 1,
           ),
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: AppColors.primary,
-              size: 32,
-            ),
+            Icon(icon, color: AppColors.primary, size: 32),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -81,7 +77,7 @@ class QuickActions extends StatelessWidget {
                   Text(
                     description,
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.6),
+                      color: Colors.white.withOpacity(0.6),
                       fontSize: 12,
                     ),
                   ),

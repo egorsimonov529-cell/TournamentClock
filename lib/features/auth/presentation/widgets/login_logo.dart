@@ -6,19 +6,20 @@ class LoginLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 86,
-      height: 86,
+      width: 80,
+      height: 80,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        color: const Color(0xff00C875).withValues(alpha: .12),
+        borderRadius: BorderRadius.circular(20),
+        color: const Color(0xff39B86A).withOpacity(.12),
         border: Border.all(
-          color: const Color(0xff00C875).withValues(alpha: .25),
+          color: const Color(0xff39B86A).withOpacity(.25),
+          width: 1.5,
         ),
       ),
       child: const Icon(
         Icons.casino_rounded,
-        color: Color(0xff00C875),
-        size: 46,
+        color: Color(0xff39B86A),
+        size: 42,
       ),
     );
   }

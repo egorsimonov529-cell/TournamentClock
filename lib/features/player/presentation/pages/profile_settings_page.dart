@@ -25,7 +25,7 @@ class ProfileSettingsPage extends StatelessWidget {
           Text(
             "Управляйте своими данными и настройками",
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.6),
+              color: Colors.white.withOpacity(0.6),
               fontSize: 14,
             ),
           ),
@@ -44,10 +44,7 @@ class ProfileSettingsPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xff1D232C),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xff2A2D35),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xff2A2D35), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,10 +61,7 @@ class ProfileSettingsPage extends StatelessWidget {
           const Row(
             children: [
               Expanded(
-                child: ProfileTextField(
-                  label: "Имя",
-                  hintText: "Введите имя",
-                ),
+                child: ProfileTextField(label: "Имя", hintText: "Введите имя"),
               ),
               SizedBox(width: 16),
               Expanded(
@@ -79,10 +73,7 @@ class ProfileSettingsPage extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          const ProfileTextField(
-            label: "Email",
-            hintText: "your@email.com",
-          ),
+          const ProfileTextField(label: "Email", hintText: "your@email.com"),
           const SizedBox(height: 16),
           const ProfileTextField(
             label: "Логин",
@@ -106,10 +97,7 @@ class ProfileSettingsPage extends StatelessWidget {
                   ),
                   child: const Text(
                     "Сохранить",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -126,10 +114,7 @@ class ProfileSettingsPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xff1D232C),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xff2A2D35),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xff2A2D35), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,15 +128,9 @@ class ProfileSettingsPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          const ProfileTextField(
-            label: "Текущий пароль",
-            obscureText: true,
-          ),
+          const ProfileTextField(label: "Текущий пароль", obscureText: true),
           const SizedBox(height: 16),
-          const ProfileTextField(
-            label: "Новый пароль",
-            obscureText: true,
-          ),
+          const ProfileTextField(label: "Новый пароль", obscureText: true),
           const SizedBox(height: 16),
           const ProfileTextField(
             label: "Подтвердите пароль",
@@ -172,10 +151,7 @@ class ProfileSettingsPage extends StatelessWidget {
               ),
               child: const Text(
                 "Изменить пароль",
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
               ),
             ),
           ),

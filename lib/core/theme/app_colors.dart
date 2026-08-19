@@ -3,33 +3,39 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  static const background = Color(0xff0F1117);
+  // Фон — почти чёрный графит
+  static const background = Color(0xff0B100E);
+  static const surface = Color(0xff131816);
+  static const card = Color(0xff151B18);
+  static const input = Color(0xff1A2019);
 
-  static const surface = Color(0xff181C24);
+  // Границы и разделители
+  static const border = Color(0xff252C28);
+  static const divider = Color(0xff1E2320);
 
-  static const card = Color(0xff202632);
+  // Основные фирменные цвета
+  static const primary = Color(0xff176B3A);
+  static const primaryLight = Color(0xff1F8A4C);
+  static const accent = Color(0xff39B86A);
 
-  static const input = Color(0xff171C24);
+  // Premium-акцент — приглушённое золото
+  static const gold = Color(0xffC9A84E);
+  static const goldLight = Color(0xffD4B968);
 
-  static const border = Color(0xff2D3442);
-
-  static const primary = Color(0xff00C875);
-
-  static const primaryHover = Color(0xff0DD784);
-
+  // Статусы
   static const success = Color(0xff22C55E);
-
   static const warning = Color(0xffF59E0B);
-
   static const error = Color(0xffEF4444);
-
   static const info = Color(0xff3B82F6);
 
-  static const white = Colors.white;
+  // Текст
+  static const white = Color(0xffF2F5F3);
+  static const textSecondary = Color(0xff8B9690);
+  static const textMuted = Color(0xff5A635E);
 
-  static const text = Colors.white;
-
-  static const textSecondary = Color(0xff9CA3AF);
-
-  static const divider = Color(0xff303643);
+  // Доп. цвета для карточек
+  static const cardPrimary = Color(0xff1A2B22);
+  static const cardSecondary = Color(0xff1E2320);
+  static const cardGold = Color(0xff2A2318);
+  static const cardGoldBorder = Color(0xff3D3220);
 }

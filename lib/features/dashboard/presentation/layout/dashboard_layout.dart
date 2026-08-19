@@ -5,6 +5,7 @@ import '../widgets/sidebar/sidebar.dart';
 import '../widgets/stat_card/stat_card.dart';
 import '../widgets/topbar/top_bar.dart';
 import '../../../tournament_clock/presentation/screens/tournament_clock_screen.dart';
+import '../../../tournament/presentation/screens/tournament_list_screen.dart';
 
 class DashboardLayout extends StatefulWidget {
   const DashboardLayout({super.key});
@@ -25,6 +26,9 @@ class _DashboardLayoutState extends State<DashboardLayout> {
     "Настройки",
     "Tournament Clock",
   ];
+
+  // Кэш для TournamentListScreen чтобы он не пересоздавался
+  final GlobalKey _tournamentListKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +63,21 @@ class _DashboardLayoutState extends State<DashboardLayout> {
                     // Tournament Clock
                     Expanded(
                       child: SingleChildScrollView(
-                        child: const TournamentClockScreen(),
+                        child: TournamentClockScreen(
+                          key: const Key('clock_screen'),
+                        ),
                       ),
+                    ),
+                  ] else if (_selectedMenuIndex == 2) ...[
+                    // Турниры
+                    StatefulBuilder(
+                      builder: (context, setState) {
+                        return Expanded(
+                          child: TournamentListScreen(
+                            key: _tournamentListKey,
+                          ),
+                        );
+                      },
                     ),
                   ] else if (_selectedMenuIndex == 0) ...[
                     // Dashboard content - keep original UI

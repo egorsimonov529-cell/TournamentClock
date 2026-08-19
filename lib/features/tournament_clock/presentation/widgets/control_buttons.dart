@@ -31,7 +31,7 @@ class ControlButtons extends StatelessWidget {
         _buildIconButton(
           icon: Icons.skip_previous_rounded,
           onPressed: isRunning && !isPaused ? onPrev : null,
-          color: Colors.white.withValues(alpha: 0.6),
+          color: Colors.white.withOpacity(0.6),
         ),
 
         // Start/Pause/Stop
@@ -82,7 +82,7 @@ class ControlButtons extends StatelessWidget {
         _buildIconButton(
           icon: Icons.skip_next_rounded,
           onPressed: isRunning && !isPaused ? onNext : null,
-          color: Colors.white.withValues(alpha: 0.6),
+          color: Colors.white.withOpacity(0.6),
         ),
 
         // Stop
@@ -100,7 +100,7 @@ class ControlButtons extends StatelessWidget {
   }) {
     return IconButton.filled(
       onPressed: onPressed,
-      icon: Icon(icon, color: onPressed != null ? Colors.white : color.withValues(alpha: 0.3)),
+      icon: Icon(icon, color: onPressed != null ? Colors.white : color.withOpacity(0.3)),
       style: IconButton.styleFrom(
         backgroundColor: onPressed != null ? AppColors.card : const Color(0xff1D232C),
         padding: const EdgeInsets.all(16),
@@ -118,7 +118,7 @@ class ControlButtons extends StatelessWidget {
       style: IconButton.styleFrom(
         backgroundColor: onPressed != null
             ? AppColors.error
-            : AppColors.error.withValues(alpha: 0.3),
+            : AppColors.error.withOpacity(0.3),
         padding: const EdgeInsets.all(16),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),

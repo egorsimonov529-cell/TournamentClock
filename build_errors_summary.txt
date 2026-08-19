@@ -1,0 +1,14 @@
+996:Member not found: 'm'.
+1004:Member not found: 'm'.
+1012:Member not found: 'm'.
+1020:Member not found: 'l'.
+1026:Member not found: 'm'.
+1032:Member not found: 'm'.
+1040:Member not found: 'm'.
+1063:Not a constant expression.
+1081:error G75B77105: Member not found: 'table_chair_rounded'.
+1158:GE5CFE876: The method 'AppCard' isn't defined for the type 'LoyaltyPage'.       
+1170:G4127D1E8: The getter 'AppRadius' isn't defined for the type 'LoyaltyPage'.     
+1239:Not a constant expression.
+1245:Not a constant expression.
+1251:Not a constant expression.

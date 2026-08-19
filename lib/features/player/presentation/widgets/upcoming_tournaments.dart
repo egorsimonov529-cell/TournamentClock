@@ -27,10 +27,7 @@ class UpcomingTournaments extends StatelessWidget {
                 onPressed: () {},
                 child: Text(
                   "Все турниры",
-                  style: TextStyle(
-                    color: AppColors.primary,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: AppColors.primary, fontSize: 14),
                 ),
               ),
             ],
@@ -77,10 +74,7 @@ class UpcomingTournaments extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xff1D232C),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xff2A2D35),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xff2A2D35), width: 1),
       ),
       child: Row(
         children: [
@@ -108,7 +102,7 @@ class UpcomingTournaments extends StatelessWidget {
                     Text(
                       date,
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.5),
+                        color: Colors.white.withOpacity(0.5),
                         fontSize: 12,
                       ),
                     ),
@@ -129,20 +123,14 @@ class UpcomingTournaments extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 10,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
             child: const Text(
               "Join",
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -156,10 +144,7 @@ class UpcomingTournaments extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.4),
-            fontSize: 10,
-          ),
+          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 10),
         ),
         Text(
           value,

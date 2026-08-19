@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../domain/models/player_model.dart';
 import '../widgets/player_header.dart';
 import '../pages/overview_page.dart';
 import '../pages/tournaments_page.dart';
@@ -9,14 +10,9 @@ import '../pages/leaderboard_page.dart';
 import '../pages/profile_settings_page.dart';
 
 class PlayerCabinetLayout extends StatefulWidget {
-  final String playerName;
-  final String playerLevel;
+  final PlayerProfile player;
 
-  const PlayerCabinetLayout({
-    super.key,
-    this.playerName = "Player",
-    this.playerLevel = "1",
-  });
+  const PlayerCabinetLayout({super.key, required this.player});
 
   @override
   State<PlayerCabinetLayout> createState() => _PlayerCabinetLayoutState();
@@ -25,11 +21,11 @@ class PlayerCabinetLayout extends StatefulWidget {
 class _PlayerCabinetLayoutState extends State<PlayerCabinetLayout> {
   int _selectedIndex = 0;
 
-  final List<_MenuItem> _menuItems = [
+  List<_MenuItem> get _menuItems => [
     _MenuItem(
       icon: Icons.dashboard_rounded,
       title: "Обзор",
-      page: () => const OverviewPage(),
+      page: () => OverviewPage(player: widget.player),
     ),
     _MenuItem(
       icon: Icons.emoji_events_rounded,
@@ -61,19 +57,12 @@ class _PlayerCabinetLayoutState extends State<PlayerCabinetLayout> {
       backgroundColor: const Color(0xff0F1117),
       body: Row(
         children: [
-          _buildSidebar(context),
+          if (MediaQuery.sizeOf(context).width >= 900) _buildSidebar(context),
           Expanded(
             child: Column(
               children: [
-                PlayerHeader(
-                  playerName: widget.playerName,
-                  playerLevel: widget.playerLevel,
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: selectedPage(),
-                  ),
-                ),
+                PlayerHeader(player: widget.player),
+                Expanded(child: SingleChildScrollView(child: selectedPage())),
               ],
             ),
           ),
@@ -88,10 +77,7 @@ class _PlayerCabinetLayoutState extends State<PlayerCabinetLayout> {
       decoration: BoxDecoration(
         color: const Color(0xff151921),
         border: Border(
-          right: BorderSide(
-            color: const Color(0xff2A2D35),
-            width: 1,
-          ),
+          right: BorderSide(color: const Color(0xff2A2D35), width: 1),
         ),
       ),
       child: Padding(
@@ -101,11 +87,7 @@ class _PlayerCabinetLayoutState extends State<PlayerCabinetLayout> {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.casino_rounded,
-                  color: AppColors.primary,
-                  size: 28,
-                ),
+                Icon(Icons.casino_rounded, color: AppColors.primary, size: 28),
                 const SizedBox(width: 12),
                 const Text(
                   "Poker Club",
@@ -177,7 +159,7 @@ class SidebarItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
             color: selected
-                ? AppColors.primary.withValues(alpha: 0.15)
+                ? AppColors.primary.withOpacity(0.15)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
           ),
@@ -187,7 +169,7 @@ class SidebarItem extends StatelessWidget {
                 icon,
                 color: selected
                     ? AppColors.primary
-                    : Colors.white.withValues(alpha: 0.6),
+                    : Colors.white.withOpacity(0.6),
                 size: 22,
               ),
               const SizedBox(width: 14),
@@ -196,7 +178,7 @@ class SidebarItem extends StatelessWidget {
                 style: TextStyle(
                   color: selected
                       ? Colors.white
-                      : Colors.white.withValues(alpha: 0.7),
+                      : Colors.white.withOpacity(0.7),
                   fontSize: 15,
                   fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
                 ),

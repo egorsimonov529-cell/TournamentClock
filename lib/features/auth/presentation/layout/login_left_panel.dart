@@ -13,16 +13,11 @@ class LoginLeftPanel extends StatelessWidget {
           children: [
             // Покерный зеленый фон
             Positioned.fill(
-              child: CustomPaint(
-                painter: _PokerBackgroundPainter(),
-              ),
+              child: CustomPaint(painter: _PokerBackgroundPainter()),
             ),
             // Контент
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 60,
-                vertical: 40,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 40),
               child: LayoutBuilder(
                 builder: (context, innerConstraints) {
                   return SingleChildScrollView(
@@ -40,16 +35,17 @@ class LoginLeftPanel extends StatelessWidget {
                               children: [
                                 Icon(
                                   Icons.casino_rounded,
-                                  color: const Color(0xff00C875),
-                                  size: 48,
+                                  color: const Color(0xff39B86A),
+                                  size: 44,
                                 ),
                                 const Gap(16),
-                                Text(
+                                const Text(
                                   "Poker Club\nERM",
-                                  style: const TextStyle(
-                                    fontSize: 42,
+                                  style: TextStyle(
+                                    fontSize: 38,
                                     fontWeight: FontWeight.bold,
                                     height: 1.1,
+                                    color: Color(0xffF2F5F3),
                                   ),
                                 ),
                               ],
@@ -64,15 +60,14 @@ class LoginLeftPanel extends StatelessWidget {
                                 "Современная система управления спортивным покерным клубом.\n\n"
                                 "• Турниры\n"
                                 "• Игроки\n"
-                                "• CRM\n"
                                 "• Финансы\n"
                                 "• Аналитика\n"
-                                "• Рейтинг\n"
+                                "• Лояльность\n"
                                 "• Касса\n"
-                                "• Администраторы",
+                                "• Сотрудники",
                                 style: const TextStyle(
                                   fontSize: 16,
-                                  color: Colors.white70,
+                                  color: Color(0xff8B9690),
                                   height: 1.7,
                                 ),
                               ),
@@ -81,10 +76,10 @@ class LoginLeftPanel extends StatelessWidget {
                             const Spacer(),
 
                             // Версия
-                            Text(
-                              "Version 0.1 MVP",
+                            const Text(
+                              "Version 1.0",
                               style: TextStyle(
-                                color: Colors.white38,
+                                color: Color(0xff5A635E),
                                 fontSize: 13,
                               ),
                             ),
@@ -109,14 +104,10 @@ class LoginLeftPanel extends StatelessWidget {
 class _PokerBackgroundPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    // Основной зеленый фон (покерный стол)
+    // Основной темный фон
     final bgPaint = Paint()
-      ..shader = LinearGradient(
-        colors: [
-          const Color(0xff1A472A),
-          const Color(0xff143D24),
-          const Color(0xff0F3319),
-        ],
+      ..shader = const LinearGradient(
+        colors: [Color(0xff176B3A), Color(0xff0F3D24), Color(0xff0B100E)],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
@@ -127,7 +118,7 @@ class _PokerBackgroundPainter extends CustomPainter {
       ..shader = LinearGradient(
         colors: [
           Colors.transparent,
-          Colors.black.withValues(alpha: 0.15),
+          Colors.black.withOpacity(0.1),
           Colors.transparent,
         ],
         stops: const [0.0, 0.5, 1.0],
@@ -139,17 +130,17 @@ class _PokerBackgroundPainter extends CustomPainter {
     final rand = Random(42);
     final paint = Paint();
 
-    for (int i = 0; i < 25; i++) {
+    for (int i = 0; i < 20; i++) {
       final x = rand.nextDouble() * size.width;
       final y = rand.nextDouble() * size.height;
-      final suitSize = 20.0 + rand.nextDouble() * 40;
+      final suitSize = 18.0 + rand.nextDouble() * 35;
       final rotation = (rand.nextDouble() - 0.5) * 0.8;
-      final opacity = 0.03 + rand.nextDouble() * 0.06;
+      final opacity = 0.03 + rand.nextDouble() * 0.05;
 
       paint.style = PaintingStyle.fill;
       paint.color = rand.nextDouble() > 0.5
-          ? Colors.white.withValues(alpha: opacity)
-          : const Color(0xff00C875).withValues(alpha: opacity);
+          ? const Color(0xffF2F5F3).withValues(alpha: opacity)
+          : const Color(0xff39B86A).withValues(alpha: opacity);
 
       canvas.save();
       canvas.translate(x, y);
@@ -158,10 +149,7 @@ class _PokerBackgroundPainter extends CustomPainter {
       final textPainter = TextPainter(
         text: TextSpan(
           text: suits[rand.nextInt(suits.length)],
-          style: TextStyle(
-            fontSize: suitSize,
-            color: paint.color,
-          ),
+          style: TextStyle(fontSize: suitSize, color: paint.color),
         ),
         textDirection: TextDirection.ltr,
       );
@@ -175,16 +163,16 @@ class _PokerBackgroundPainter extends CustomPainter {
     final chipColors = [
       const Color(0xffEF4444),
       const Color(0xff3B82F6),
-      const Color(0xffF59E0B),
-      const Color(0xff10B981),
+      const Color(0xffC9A84E),
+      const Color(0xff39B86A),
       const Color(0xff8B5CF6),
     ];
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 6; i++) {
       final x = rand.nextDouble() * size.width;
       final y = rand.nextDouble() * size.height;
-      final chipRadius = 25.0 + rand.nextDouble() * 35;
-      final opacity = 0.06 + rand.nextDouble() * 0.08;
+      final chipRadius = 22.0 + rand.nextDouble() * 30;
+      final opacity = 0.04 + rand.nextDouble() * 0.06;
 
       final chipPaint = Paint()
         ..style = PaintingStyle.stroke
@@ -194,7 +182,9 @@ class _PokerBackgroundPainter extends CustomPainter {
       final innerPaint = Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.5
-        ..color = chipColors[(i + 1) % chipColors.length].withValues(alpha: opacity * 0.7);
+        ..color = chipColors[(i + 1) % chipColors.length].withValues(
+          alpha: opacity * 0.7,
+        );
 
       canvas.save();
       canvas.translate(x, y);
@@ -203,32 +193,8 @@ class _PokerBackgroundPainter extends CustomPainter {
       canvas.drawCircle(Offset.zero, chipRadius, chipPaint);
       canvas.drawCircle(Offset.zero, chipRadius * 0.65, innerPaint);
 
-      // Бороздки на фишке
-      for (int j = 0; j < 8; j++) {
-        final angle = j * pi / 4;
-        canvas.drawLine(
-          Offset(cos(angle) * chipRadius * 0.8, sin(angle) * chipRadius * 0.8),
-          Offset(cos(angle) * chipRadius, sin(angle) * chipRadius),
-          innerPaint,
-        );
-      }
-
       canvas.restore();
     }
-
-    // Параллельная линия в стиле покерного сукна
-    final linePaint = Paint()
-      ..shader = LinearGradient(
-        colors: [
-          Colors.transparent,
-          const Color(0xff00C875).withValues(alpha: 0.04),
-          Colors.transparent,
-        ],
-      ).createShader(Rect.fromLTWH(0, size.height * 0.3, size.width, 1.5));
-    canvas.drawRect(
-      Rect.fromLTWH(0, size.height * 0.3, size.width, 1.5),
-      linePaint,
-    );
   }
 
   @override

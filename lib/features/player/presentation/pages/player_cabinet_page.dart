@@ -13,14 +13,9 @@ class PlayerCabinetPage extends ConsumerWidget {
 
     return playerAsync.when(
       data: (player) {
-        return PlayerCabinetLayout(
-          playerName: player.login,
-          playerLevel: player.level.toString(),
-        );
+        return PlayerCabinetLayout(player: player);
       },
-      loading: () => const Center(
-        child: CircularProgressIndicator(),
-      ),
+      loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -33,18 +28,12 @@ class PlayerCabinetPage extends ConsumerWidget {
             const SizedBox(height: 16),
             Text(
               "Ошибка загрузки профиля",
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-              ),
+              style: const TextStyle(color: Colors.white, fontSize: 18),
             ),
             const SizedBox(height: 8),
             Text(
               error.toString(),
-              style: const TextStyle(
-                color: Colors.white54,
-                fontSize: 14,
-              ),
+              style: const TextStyle(color: Colors.white54, fontSize: 14),
             ),
           ],
         ),

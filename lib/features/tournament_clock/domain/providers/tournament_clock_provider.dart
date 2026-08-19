@@ -19,13 +19,15 @@ class TournamentClockNotifier extends StateNotifier<TournamentClockState> {
   void start(List<BlindLevel> levels, int initialLevel) {
     if (state.isRunning) return;
 
-    final level = levels[initialLevel];
+    // Защита от выхода за границы массива
+    final safeLevel = initialLevel.clamp(0, levels.length - 1);
+    final level = levels[safeLevel];
     final timeInMinutes = level.durationMinutes;
 
     state = state.copyWith(
       isRunning: true,
       isPaused: false,
-      currentLevel: initialLevel,
+      currentLevel: safeLevel,
       timeRemaining: timeInMinutes * 60,
       startedAt: DateTime.now(),
     );
@@ -52,9 +54,11 @@ class TournamentClockNotifier extends StateNotifier<TournamentClockState> {
 
   void nextLevel(List<BlindLevel> levels) {
     if (!state.isRunning || state.isPaused) return;
-    if (state.currentLevel >= levels.length - 1) return;
+    // Защита от выхода за границы массива
+    final safeCurrent = state.currentLevel.clamp(0, levels.length - 1);
+    if (safeCurrent >= levels.length - 1) return;
 
-    final nextIndex = state.currentLevel + 1;
+    final nextIndex = safeCurrent + 1;
     final nextLevel = levels[nextIndex];
 
     state = state.copyWith(
@@ -65,9 +69,11 @@ class TournamentClockNotifier extends StateNotifier<TournamentClockState> {
 
   void prevLevel(List<BlindLevel> levels) {
     if (!state.isRunning || state.isPaused) return;
-    if (state.currentLevel <= 0) return;
+    // Защита от выхода за границы массива
+    final safeCurrent = state.currentLevel.clamp(0, levels.length - 1);
+    if (safeCurrent <= 0) return;
 
-    final prevIndex = state.currentLevel - 1;
+    final prevIndex = safeCurrent - 1;
     final prevLevel = levels[prevIndex];
 
     state = state.copyWith(
@@ -79,15 +85,17 @@ class TournamentClockNotifier extends StateNotifier<TournamentClockState> {
   void _startTimer() {
     _stopTimer();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (state.timeRemaining <= 0) {
+      // Читаем актуальное состояние из провайдера
+      final currentState = state;
+      if (currentState.timeRemaining <= 0) {
         // Время вышло — можно автоматически перейти на следующий уровень
-        state = state.copyWith(isRunning: false);
+        state = currentState.copyWith(isRunning: false);
         _stopTimer();
         return;
       }
 
-      state = state.copyWith(
-        timeRemaining: state.timeRemaining - 1,
+      state = currentState.copyWith(
+        timeRemaining: currentState.timeRemaining - 1,
       );
     });
   }

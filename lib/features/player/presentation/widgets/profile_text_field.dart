@@ -24,7 +24,7 @@ class ProfileTextField extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.6),
+            color: Colors.white.withOpacity(0.6),
             fontSize: 13,
             fontWeight: FontWeight.w500,
           ),
@@ -33,14 +33,11 @@ class ProfileTextField extends StatelessWidget {
         TextField(
           readOnly: readOnly,
           obscureText: obscureText,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 15,
-          ),
+          style: const TextStyle(color: Colors.white, fontSize: 15),
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: TextStyle(
-              color: Colors.white.withValues(alpha: 0.3),
+              color: Colors.white.withOpacity(0.3),
               fontSize: 15,
             ),
             filled: true,
@@ -51,9 +48,7 @@ class ProfileTextField extends StatelessWidget {
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: AppColors.border,
-              ),
+              borderSide: const BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -64,16 +59,11 @@ class ProfileTextField extends StatelessWidget {
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: AppColors.error,
-              ),
+              borderSide: const BorderSide(color: AppColors.error),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: AppColors.error,
-                width: 1.5,
-              ),
+              borderSide: const BorderSide(color: AppColors.error, width: 1.5),
             ),
           ),
         ),

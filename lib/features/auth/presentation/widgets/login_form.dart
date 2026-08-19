@@ -31,13 +31,15 @@ class _LoginFormState extends ConsumerState<LoginForm> {
   void initState() {
     super.initState();
     // Автозаполнение логина если "Запомнить меня" было включено
-    _loadSavedLogin();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadSavedLogin();
+    });
   }
 
   Future<void> _loadSavedLogin() async {
     final prefs = ref.read(sharedPrefsServiceProvider);
     final savedLogin = prefs.getString('saved_login');
-    if (savedLogin != null && savedLogin.isNotEmpty) {
+    if (savedLogin != null && savedLogin.isNotEmpty && mounted) {
       setState(() {
         _loginController.text = savedLogin;
         _rememberMe = true;
@@ -90,7 +92,9 @@ class _LoginFormState extends ConsumerState<LoginForm> {
     }
 
     // Вызываем login через provider
-    final success = await ref.read(authStateProvider.notifier).login(
+    final success = await ref
+        .read(authStateProvider.notifier)
+        .login(
           login: _loginController.text,
           password: _passwordController.text,
           rememberMe: _rememberMe,
@@ -110,6 +114,25 @@ class _LoginFormState extends ConsumerState<LoginForm> {
     // Ошибка уже отображена через authStateProvider
   }
 
+  Future<void> _handleGoogleLogin() async {
+    if (ref.read(authStateProvider).status == AuthStatus.authenticating) return;
+    final success = await ref
+        .read(authStateProvider.notifier)
+        .signInWithGoogle();
+    if (!mounted) return;
+    if (!success) {
+      final message =
+          ref.read(authStateProvider).message ??
+          'Google-╨▓╤Е╨╛╨┤ ╤В╤А╨╡╨▒╤Г╨╡╤В ╨╜╨░╤Б╤В╤А╨╛╨╣╨║╨╕ OAuth';
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+      return;
+    }
+    final role = ref.read(authStateProvider).userRole ?? 'player';
+    context.go(role == 'admin' ? '/dashboard' : '/cabinet');
+  }
+
   @override
   Widget build(BuildContext context) {
     // Следим за состоянием авторизации
@@ -118,7 +141,6 @@ class _LoginFormState extends ConsumerState<LoginForm> {
     final isLoading = authState.status == AuthStatus.authenticating;
 
     final errorMessage = authState.message;
-
 
     // Если есть ошибка от сервера — отображаем
     if (errorMessage != null && errorMessage.isNotEmpty) {
@@ -222,11 +244,22 @@ class _LoginFormState extends ConsumerState<LoginForm> {
 
         const Gap(28),
 
-        AppButton(
-          title: "Войти",
-          icon: Icons.arrow_forward_rounded,
+        PrimaryButton(
+          label: "Войти",
           onPressed: isLoading ? null : _handleLogin,
           loading: isLoading,
+        ),
+        const Gap(12),
+        GhostButton(
+          label: 'Войти через Google',
+          onPressed: isLoading ? null : _handleGoogleLogin,
+        ),
+        const Gap(18),
+        TextButton(
+          onPressed: isLoading ? null : () => context.push('/register'),
+          child: const Text(
+            'Нет аккаунта? Зарегистрироваться',
+          ),
         ),
       ],
     );

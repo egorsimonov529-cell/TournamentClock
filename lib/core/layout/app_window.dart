@@ -42,7 +42,7 @@ class _Background extends StatelessWidget {
             height: 500,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xff00C875).withValues(alpha: .08),
+              color: const Color(0xff00C875).withOpacity(.08),
             ),
           ),
         ),
@@ -55,7 +55,7 @@ class _Background extends StatelessWidget {
             height: 700,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xff00C875).withValues(alpha: .05),
+              color: const Color(0xff00C875).withOpacity(.05),
             ),
           ),
         ),
@@ -74,7 +74,7 @@ class _GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: .03)
+      ..color = Colors.white.withOpacity(.03)
       ..strokeWidth = 1;
 
     const step = 40.0;

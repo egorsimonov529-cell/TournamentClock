@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/models/auth_exception.dart';
+import '../../core/services/secure_storage_service.dart';
 
 /// HTTP-сервис для работы с API
 class ApiService {
@@ -18,7 +19,49 @@ class ApiService {
               'Accept': 'application/json',
             },
           ),
-        );
+        ) {
+    // Добавляем интерцептор для автоматического добавления токена
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final token = await _getAccessToken();
+          if (token != null && token.isNotEmpty) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+          return handler.next(options);
+        },
+        onError: (error, handler) async {
+          // Если 401 — очищаем сессию
+          if (error.response?.statusCode == 401) {
+            await _clearAllTokens();
+          }
+          return handler.next(error);
+        },
+      ),
+    );
+  }
+
+  /// Получить access token из secure storage
+  Future<String?> _getAccessToken() async {
+    try {
+      final storage = SecureStorageService();
+      return await storage.read('access_token');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Очистить все токены
+  Future<void> _clearAllTokens() async {
+    try {
+      final storage = SecureStorageService();
+      await storage.delete('access_token');
+      await storage.delete('refresh_token');
+      await storage.delete('user_data');
+    } catch (e) {
+      // Ignored
+    }
+  }
 
   /// POST запрос
   Future<Response> post(String path, {Map<String, dynamic>? data}) async {

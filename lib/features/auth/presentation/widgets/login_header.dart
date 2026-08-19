@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 
 import 'login_logo.dart';
 
@@ -10,32 +9,22 @@ class LoginHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Column(
       children: [
-
         LoginLogo(),
-
-        Gap(28),
-
+        SizedBox(height: 24),
         Text(
-          "Poker Club ERM",
+          "Вход в аккаунт",
           style: TextStyle(
-            fontSize: 30,
+            fontSize: 26,
             fontWeight: FontWeight.w700,
-            letterSpacing: -.5,
+            color: Color(0xffF2F5F3),
           ),
         ),
-
-        Gap(12),
-
+        SizedBox(height: 8),
         Text(
-          "Войдите в систему управления клубом",
+          "Добро пожаловать обратно!",
           textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white60,
-            height: 1.5,
-            fontSize: 15,
-          ),
+          style: TextStyle(color: Color(0xff8B9690), fontSize: 15),
         ),
-
       ],
     );
   }

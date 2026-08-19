@@ -29,7 +29,7 @@ class SidebarItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 18),
           decoration: BoxDecoration(
             color: selected
-                ? AppColors.primary.withValues(alpha: .12)
+                ? AppColors.primary.withOpacity(.12)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(14),
           ),
