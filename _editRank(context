@@ -1,8 +1,0 @@
-строка:1 знак:1048
-+ ... ow 'target not found'}; $s=$s.Replace($old,$new); $insert=@'`r`n`r`n  ...
-+                                                                 ~
-Этот знак не допускается между заголовком here-строки и концом строки кода.
-    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordEx 
-   ception
-    + FullyQualifiedErrorId : UnexpectedCharactersAfterHereStringHeader
- 
