@@ -5,10 +5,7 @@ import '../theme/app_colors.dart';
 class AppWindow extends StatelessWidget {
   final Widget child;
 
-  const AppWindow({
-    super.key,
-    required this.child,
-  });
+  const AppWindow({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +15,7 @@ class AppWindow extends StatelessWidget {
         children: [
           const _Background(),
 
-          SafeArea(
-            child: child,
-          ),
+          SafeArea(child: child),
         ],
       ),
     );
@@ -42,7 +37,7 @@ class _Background extends StatelessWidget {
             height: 500,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xff00C875).withOpacity(.08),
+              color: const Color(0xff00C875).withValues(alpha: .08),
             ),
           ),
         ),
@@ -55,16 +50,12 @@ class _Background extends StatelessWidget {
             height: 700,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xff00C875).withOpacity(.05),
+              color: const Color(0xff00C875).withValues(alpha: .05),
             ),
           ),
         ),
 
-        Positioned.fill(
-          child: CustomPaint(
-            painter: _GridPainter(),
-          ),
-        ),
+        Positioned.fill(child: CustomPaint(painter: _GridPainter())),
       ],
     );
   }
@@ -74,25 +65,17 @@ class _GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(.03)
+      ..color = Colors.white.withValues(alpha: .03)
       ..strokeWidth = 1;
 
     const step = 40.0;
 
     for (double x = 0; x < size.width; x += step) {
-      canvas.drawLine(
-        Offset(x, 0),
-        Offset(x, size.height),
-        paint,
-      );
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
     }
 
     for (double y = 0; y < size.height; y += step) {
-      canvas.drawLine(
-        Offset(0, y),
-        Offset(size.width, y),
-        paint,
-      );
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
   }
 

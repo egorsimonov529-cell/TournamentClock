@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tournament_clock/core/models/rps_rank.dart';
 import 'package:tournament_clock/features/player/domain/models/player_model.dart';
@@ -35,7 +36,6 @@ void main() {
         400,
         600,
         800,
-        1000,
       ]);
     });
 
@@ -66,6 +66,7 @@ void main() {
         xpToNextLevel: 100,
         rank: 0,
         rankPoints: 0,
+        rpsPoints: 0,
         winRate: 0,
         totalTournaments: 0,
         totalWins: 0,
@@ -84,17 +85,17 @@ void main() {
     });
 
     test('JSON round trip preserves RPS and fields', () {
-      final profile = PlayerProfile.fromJson(profileJson(RpsRank.pro));
+      final profile = PlayerProfile.fromJson(profileJson(RpsRank.gold));
       final restored = PlayerProfile.fromJson(profile.toJson());
-      expect(restored.rpsRank, RpsRank.pro);
+      expect(restored.rpsRank, RpsRank.gold);
       expect(restored.userId, profile.userId);
       expect(restored.createdAt, profile.createdAt);
     });
 
     test('copyWith updates RPS and preserves other fields', () {
       final profile = PlayerProfile.fromJson(profileJson());
-      final updated = profile.copyWith(rpsRank: RpsRank.shark);
-      expect(updated.rpsRank, RpsRank.shark);
+      final updated = profile.copyWith(rpsRank: RpsRank.platinum);
+      expect(updated.rpsRank, RpsRank.platinum);
       expect(updated.login, profile.login);
     });
   });
@@ -107,10 +108,10 @@ void main() {
     });
 
     test('JSON round trip preserves rank and score', () {
-      final player = Player(id: 'p1', name: 'A', rpsRank: RpsRank.grinder);
+      final player = Player(id: 'p1', name: 'A', rpsRank: RpsRank.silver);
       final restored = Player.fromJson(player.toJson());
-      expect(restored.rpsRank, RpsRank.grinder);
-      expect(restored.skillScore, 600);
+      expect(restored.rpsRank, RpsRank.silver);
+      expect(restored.skillScore, 400);
     });
   });
 
@@ -149,78 +150,100 @@ void main() {
       );
       final notifier = SeatingNotifier(
         initialState: initial.copyWith(tables: [table]),
+        ref: null,
+        tournamentId: 't1',
       );
-      notifier.updatePlayerRank('a', RpsRank.pro);
-      notifier.updatePlayerRank('b', RpsRank.shark);
+      notifier.updatePlayerRank('a', RpsRank.gold);
+      notifier.updatePlayerRank('b', RpsRank.platinum);
       expect(
         notifier.state.tables.single.seats.single.player!.rpsRank,
-        RpsRank.pro,
+        RpsRank.gold,
       );
-      expect(notifier.state.unseatedPlayers.single.rpsRank, RpsRank.shark);
+      expect(notifier.state.unseatedPlayers.single.rpsRank, RpsRank.platinum);
     });
 
-    test('autoSeat handles empty tables and players', () {
-      final notifier = SeatingNotifier(initialState: state([], []));
-      notifier.autoSeat();
+    test('autoSeat handles empty tables and players', () async {
+      final notifier = SeatingNotifier(
+        initialState: state([], []),
+        ref: null,
+        tournamentId: 't1',
+      );
+      await notifier.autoSeat();
       expect(notifier.state.tables, isEmpty);
       expect(notifier.state.unseatedPlayers, isEmpty);
     });
 
-    test('autoSeat creates descending contiguous strong groups', () {
+    test('autoSeat creates descending contiguous strong groups', () async {
       final players = [
         player('f', RpsRank.fish),
-        player('s', RpsRank.shark),
-        player('p', RpsRank.pro),
-        player('g', RpsRank.grinder),
+        player('s', RpsRank.platinum),
+        player('p', RpsRank.gold),
+        player('g', RpsRank.silver),
       ];
-      final notifier = SeatingNotifier(initialState: state(players, [2, 2]));
-      notifier.autoSeat();
+      final notifier = SeatingNotifier(
+        initialState: state(players, [2, 2]),
+        ref: null,
+        tournamentId: 't1',
+      );
+      await notifier.autoSeat();
       expect(seatedIds(notifier.state), ['s', 'p', 'g', 'f']);
     });
 
-    test('autoSeat breaks equal-rank ties deterministically by ID', () {
+    test('autoSeat breaks equal-rank ties deterministically by ID', () async {
       final players = [
-        player('c', RpsRank.regular),
-        player('a', RpsRank.regular),
-        player('b', RpsRank.regular),
+        player('c', RpsRank.bronze),
+        player('a', RpsRank.bronze),
+        player('b', RpsRank.bronze),
       ];
-      final notifier = SeatingNotifier(initialState: state(players, [3]));
-      notifier.autoSeat();
+      final notifier = SeatingNotifier(
+        initialState: state(players, [3]),
+        ref: null,
+        tournamentId: 't1',
+      );
+      await notifier.autoSeat();
       expect(seatedIds(notifier.state), ['a', 'b', 'c']);
     });
 
-    test('autoSeat fills a partial table and clears remaining seats', () {
+    test('autoSeat fills a partial table and clears remaining seats', () async {
       final notifier = SeatingNotifier(
-        initialState: state([player('a', RpsRank.pro)], [3]),
+        initialState: state([player('a', RpsRank.gold)], [3]),
+        ref: null,
+        tournamentId: 't1',
       );
-      notifier.autoSeat();
+      await notifier.autoSeat();
       expect(seatedIds(notifier.state), ['a']);
       expect(notifier.state.tables.single.occupiedCount, 1);
     });
 
     test(
       'autoSeat leaves overflow players unseated when capacity is insufficient',
-      () {
+      () async {
         final players = [
-          player('a', RpsRank.shark),
-          player('b', RpsRank.pro),
+          player('a', RpsRank.platinum),
+          player('b', RpsRank.gold),
           player('c', RpsRank.fish),
         ];
-        final notifier = SeatingNotifier(initialState: state(players, [2]));
-        notifier.autoSeat();
+        final notifier = SeatingNotifier(
+          initialState: state(players, [2]),
+          ref: null,
+          tournamentId: 't1',
+        );
+        await notifier.autoSeat();
         expect(seatedIds(notifier.state), ['a', 'b']);
         expect(notifier.state.unseatedPlayers.map((p) => p.id), ['c']);
       },
     );
 
-    test('autoSeat works with one table', () {
+    test('autoSeat works with one table', () async {
       final notifier = SeatingNotifier(
         initialState: state(
-          [player('b', RpsRank.fish), player('a', RpsRank.shark)],
+          [player('b', RpsRank.fish), player('a', RpsRank.platinum)],
           [2],
         ),
+        ref: null,
+        tournamentId: 't1',
       );
-      notifier.autoSeat();
+      await notifier.autoSeat();
       expect(seatedIds(notifier.state), ['a', 'b']);
       expect(notifier.state.unseatedPlayers, isEmpty);
     });

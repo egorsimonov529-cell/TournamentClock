@@ -1,0 +1,8 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="256" height="256" rx="36" fill="#121916"/>
+  <circle cx="128" cy="90" r="62" fill="#C9A84E" fill-opacity="0.12"/>
+  <path d="M72 172L94 90H162L184 172H72Z" fill="#C9A84E"/>
+  <path d="M95 90L118 58H138L161 90H95Z" fill="#D4B968"/>
+  <rect x="52" y="168" width="152" height="22" rx="11" fill="#C9A84E" fill-opacity="0.7"/>
+  <text x="128" y="182" text-anchor="middle" font-family="Segoe UI, Arial" font-size="18" font-weight="700" fill="#121916">WIN</text>
+</svg>

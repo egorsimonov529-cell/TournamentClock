@@ -117,9 +117,9 @@ class ScreenTitle extends StatelessWidget {
         horizontal: AppSpacing.pageHorizontal,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xff151921),
+        color: AppColors.background,
         border: Border(
-          bottom: BorderSide(color: const Color(0xff252C28), width: 1),
+          bottom: BorderSide(color: AppColors.border.withValues(alpha: 0.3), width: 1),
         ),
       ),
       child: Row(
@@ -145,7 +145,7 @@ class ScreenTitle extends StatelessWidget {
               ),
             ),
           ),
-          if (actions != null) ...actions!,
+          ...?actions,
         ],
       ),
     );

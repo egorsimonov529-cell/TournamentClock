@@ -38,10 +38,13 @@ class LoyaltyLevelCard extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [color.withOpacity(0.15), color.withOpacity(0.03)],
+          colors: [
+            color.withValues(alpha: 0.15),
+            color.withValues(alpha: 0.03),
+          ],
         ),
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: color.withOpacity(0.3), width: 1.5),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
       ),
       child: Column(
         children: [
@@ -50,9 +53,12 @@ class LoyaltyLevelCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.15),
+                  color: color.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
-                  border: Border.all(color: color.withOpacity(0.4), width: 1.5),
+                  border: Border.all(
+                    color: color.withValues(alpha: 0.4),
+                    width: 1.5,
+                  ),
                 ),
                 child: Icon(_levelIcon(), color: color, size: 28),
               ),
@@ -95,8 +101,10 @@ class LoyaltyLevelCard extends StatelessWidget {
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 8,
-              backgroundColor: color.withOpacity(0.1),
-              valueColor: AlwaysStoppedAnimation<Color>(color.withOpacity(0.7)),
+              backgroundColor: color.withValues(alpha: 0.1),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                color.withValues(alpha: 0.7),
+              ),
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -128,7 +136,7 @@ class LoyaltyLevelCard extends StatelessWidget {
                     Icon(
                       Icons.check_circle_rounded,
                       size: 16,
-                      color: color.withOpacity(0.7),
+                      color: color.withValues(alpha: 0.7),
                     ),
                     const SizedBox(width: 6),
                     Text(

@@ -2,8 +2,79 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 
-class BalancePage extends StatelessWidget {
+class BalancePage extends StatefulWidget {
   const BalancePage({super.key});
+
+  @override
+  State<BalancePage> createState() => _BalancePageState();
+}
+
+class _BalancePageState extends State<BalancePage> {
+  double _balance = 12500;
+
+  Future<void> _showOperationDialog({required bool deposit}) async {
+    final controller = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    final amount = await showDialog<double>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(deposit ? 'Пополнение баланса' : 'Заявка на вывод'),
+        content: Form(
+          key: formKey,
+          child: TextFormField(
+            controller: controller,
+            autofocus: true,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: const InputDecoration(
+              labelText: 'Сумма, ₽',
+              hintText: '1000',
+            ),
+            validator: (value) {
+              final parsed = double.tryParse(
+                (value ?? '').replaceAll(',', '.'),
+              );
+              if (parsed == null || parsed <= 0) {
+                return 'Введите положительную сумму';
+              }
+              if (!deposit && parsed > _balance) {
+                return 'Недостаточно средств';
+              }
+              return null;
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Отмена'),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                Navigator.pop(
+                  dialogContext,
+                  double.parse(controller.text.replaceAll(',', '.')),
+                );
+              }
+            },
+            child: const Text('Подтвердить'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (amount == null || !mounted) return;
+    setState(() => _balance += deposit ? amount : -amount);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          deposit
+              ? 'Баланс пополнен на ${amount.toStringAsFixed(0)} ₽'
+              : 'Заявка на вывод ${amount.toStringAsFixed(0)} ₽ создана',
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,15 +144,18 @@ class BalancePage extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.primary.withOpacity(0.3),
-            AppColors.primary.withOpacity(0.1),
+            AppColors.primary.withValues(alpha: 0.3),
+            AppColors.primary.withValues(alpha: 0.1),
             Colors.transparent,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 1),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.3),
+          width: 1,
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -92,14 +166,14 @@ class BalancePage extends StatelessWidget {
               Text(
                 "Текущий баланс",
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 14,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                "₽ 12,500",
-                style: TextStyle(
+              Text(
+                "₽ ${_balance.toStringAsFixed(0)}",
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
@@ -109,7 +183,7 @@ class BalancePage extends StatelessWidget {
               Text(
                 "≈ \$145 USD",
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.5),
+                  color: Colors.white.withValues(alpha: 0.5),
                   fontSize: 14,
                 ),
               ),
@@ -122,7 +196,7 @@ class BalancePage extends StatelessWidget {
                 width: 160,
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () => _showOperationDialog(deposit: true),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
@@ -141,10 +215,12 @@ class BalancePage extends StatelessWidget {
                 width: 160,
                 height: 48,
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () => _showOperationDialog(deposit: false),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.primary,
-                    side: BorderSide(color: AppColors.primary.withOpacity(0.5)),
+                    side: BorderSide(
+                      color: AppColors.primary.withValues(alpha: 0.5),
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -181,8 +257,8 @@ class BalancePage extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: isPositive
-                  ? AppColors.success.withOpacity(0.15)
-                  : AppColors.error.withOpacity(0.15),
+                  ? AppColors.success.withValues(alpha: 0.15)
+                  : AppColors.error.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
@@ -210,7 +286,7 @@ class BalancePage extends StatelessWidget {
                 Text(
                   date,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.4),
+                    color: Colors.white.withValues(alpha: 0.4),
                     fontSize: 12,
                   ),
                 ),

@@ -15,10 +15,7 @@ import '../../../../core/services/window_manager_service.dart';
 class ClockWindowWidget extends ConsumerWidget {
   final WindowManagerPlus windowManager;
 
-  const ClockWindowWidget({
-    super.key,
-    required this.windowManager,
-  });
+  const ClockWindowWidget({super.key, required this.windowManager});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,14 +24,62 @@ class ClockWindowWidget extends ConsumerWidget {
 
     // Моковые данные blind-уровней
     final blindLevels = const [
-      BlindLevel(level: 1, durationMinutes: 15, smallBlind: 25, bigBlind: 50, ante: 0),
-      BlindLevel(level: 2, durationMinutes: 15, smallBlind: 50, bigBlind: 100, ante: 10),
-      BlindLevel(level: 3, durationMinutes: 15, smallBlind: 100, bigBlind: 200, ante: 20),
-      BlindLevel(level: 4, durationMinutes: 15, smallBlind: 150, bigBlind: 300, ante: 25),
-      BlindLevel(level: 5, durationMinutes: 15, smallBlind: 200, bigBlind: 400, ante: 40),
-      BlindLevel(level: 6, durationMinutes: 15, smallBlind: 300, bigBlind: 600, ante: 50),
-      BlindLevel(level: 7, durationMinutes: 15, smallBlind: 400, bigBlind: 800, ante: 80),
-      BlindLevel(level: 8, durationMinutes: 15, smallBlind: 500, bigBlind: 1000, ante: 100),
+      BlindLevel(
+        level: 1,
+        durationMinutes: 15,
+        smallBlind: 25,
+        bigBlind: 50,
+        ante: 0,
+      ),
+      BlindLevel(
+        level: 2,
+        durationMinutes: 15,
+        smallBlind: 50,
+        bigBlind: 100,
+        ante: 10,
+      ),
+      BlindLevel(
+        level: 3,
+        durationMinutes: 15,
+        smallBlind: 100,
+        bigBlind: 200,
+        ante: 20,
+      ),
+      BlindLevel(
+        level: 4,
+        durationMinutes: 15,
+        smallBlind: 150,
+        bigBlind: 300,
+        ante: 25,
+      ),
+      BlindLevel(
+        level: 5,
+        durationMinutes: 15,
+        smallBlind: 200,
+        bigBlind: 400,
+        ante: 40,
+      ),
+      BlindLevel(
+        level: 6,
+        durationMinutes: 15,
+        smallBlind: 300,
+        bigBlind: 600,
+        ante: 50,
+      ),
+      BlindLevel(
+        level: 7,
+        durationMinutes: 15,
+        smallBlind: 400,
+        bigBlind: 800,
+        ante: 80,
+      ),
+      BlindLevel(
+        level: 8,
+        durationMinutes: 15,
+        smallBlind: 500,
+        bigBlind: 1000,
+        ante: 100,
+      ),
     ];
 
     final currentLevel = blindLevels.elementAtOrNull(clockState.currentLevel);
@@ -42,7 +87,11 @@ class ClockWindowWidget extends ConsumerWidget {
 
     // Масштаб в зависимости от ширины окна
     final screenWidth = MediaQuery.of(context).size.width;
-    final scale = screenWidth > 1920 ? 1.3 : screenWidth > 1366 ? 1.15 : 1.0;
+    final scale = screenWidth > 1920
+        ? 1.3
+        : screenWidth > 1366
+        ? 1.15
+        : 1.0;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -60,10 +109,7 @@ class ClockWindowWidget extends ConsumerWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFF0A0E14),
-                Color(0xFF1A1D24),
-              ],
+              colors: [Color(0xFF0A0E14), Color(0xFF1A1D24)],
             ),
           ),
           child: Center(
@@ -104,7 +150,9 @@ class ClockWindowWidget extends ConsumerWidget {
                                   smallBlind: currentLevel.smallBlind,
                                   bigBlind: currentLevel.bigBlind,
                                   ante: currentLevel.ante,
-                                  duration: Duration(minutes: currentLevel.durationMinutes),
+                                  duration: Duration(
+                                    minutes: currentLevel.durationMinutes,
+                                  ),
                                   isCurrent: true,
                                 )
                               : BlindsCard(
@@ -140,7 +188,9 @@ class ClockWindowWidget extends ConsumerWidget {
                                     child: Text(
                                       'Последний уровень',
                                       style: TextStyle(
-                                        color: Colors.white.withOpacity(0.4),
+                                        color: Colors.white.withValues(
+                                          alpha: 0.4,
+                                        ),
                                         fontSize: 14,
                                       ),
                                     ),

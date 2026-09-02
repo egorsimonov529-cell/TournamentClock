@@ -37,8 +37,8 @@ class BonusCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(
           color: isActive
-              ? (accentColor ?? AppColors.gold).withOpacity(0.3)
-              : color.withOpacity(0.25),
+              ? (accentColor ?? AppColors.gold).withValues(alpha: 0.3)
+              : color.withValues(alpha: 0.25),
           width: 1,
         ),
       ),
@@ -50,7 +50,7 @@ class BonusCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
+                  color: color.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Icon(Icons.local_offer_rounded, color: color, size: 22),

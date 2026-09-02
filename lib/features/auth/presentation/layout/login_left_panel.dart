@@ -1,19 +1,23 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 
-class LoginLeftPanel extends StatelessWidget {
+import '../../../../core/providers/theme_provider.dart';
+
+class LoginLeftPanel extends ConsumerWidget {
   const LoginLeftPanel({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeType = ref.watch(themeProvider);
     return LayoutBuilder(
       builder: (context, constraints) {
         return Stack(
           children: [
             // Покерный зеленый фон
             Positioned.fill(
-              child: CustomPaint(painter: _PokerBackgroundPainter()),
+              child: CustomPaint(painter: _PokerBackgroundPainter(themeType)),
             ),
             // Контент
             Container(
@@ -35,7 +39,7 @@ class LoginLeftPanel extends StatelessWidget {
                               children: [
                                 Icon(
                                   Icons.casino_rounded,
-                                  color: const Color(0xff39B86A),
+                                  color: themeType.accent,
                                   size: 44,
                                 ),
                                 const Gap(16),
@@ -102,12 +106,16 @@ class LoginLeftPanel extends StatelessWidget {
 // Покерный фон с мастями и картами
 // ========================================
 class _PokerBackgroundPainter extends CustomPainter {
+  final AppThemeType themeType;
+
+  const _PokerBackgroundPainter(this.themeType);
+
   @override
   void paint(Canvas canvas, Size size) {
     // Основной темный фон
     final bgPaint = Paint()
-      ..shader = const LinearGradient(
-        colors: [Color(0xff176B3A), Color(0xff0F3D24), Color(0xff0B100E)],
+      ..shader = LinearGradient(
+        colors: [themeType.primaryColor, themeType.gold, const Color(0xff0C0C0E)],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
@@ -118,7 +126,7 @@ class _PokerBackgroundPainter extends CustomPainter {
       ..shader = LinearGradient(
         colors: [
           Colors.transparent,
-          Colors.black.withOpacity(0.1),
+          Colors.black.withValues(alpha: 0.1),
           Colors.transparent,
         ],
         stops: const [0.0, 0.5, 1.0],
@@ -139,8 +147,8 @@ class _PokerBackgroundPainter extends CustomPainter {
 
       paint.style = PaintingStyle.fill;
       paint.color = rand.nextDouble() > 0.5
-          ? const Color(0xffF2F5F3).withValues(alpha: opacity)
-          : const Color(0xff39B86A).withValues(alpha: opacity);
+          ? const Color(0xffF5F0E8).withValues(alpha: opacity)
+          : themeType.accent.withValues(alpha: opacity);
 
       canvas.save();
       canvas.translate(x, y);
@@ -163,8 +171,8 @@ class _PokerBackgroundPainter extends CustomPainter {
     final chipColors = [
       const Color(0xffEF4444),
       const Color(0xff3B82F6),
-      const Color(0xffC9A84E),
-      const Color(0xff39B86A),
+      themeType.accent,
+      themeType.borderColor,
       const Color(0xff8B5CF6),
     ];
 

@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../../core/models/rps_rank.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -11,68 +12,77 @@ class StatsOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isPhone = MediaQuery.sizeOf(context).width < 700;
+    final isIOS = defaultTargetPlatform == TargetPlatform.iOS;
+
     return Padding(
-      padding: const EdgeInsets.all(32),
+      padding: EdgeInsets.symmetric(horizontal: isPhone ? 14 : 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Text(
-                "Ваша статистика",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              children: [
+                Text(
+                  'Ваша статистика',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ).merge(const TextStyle(color: AppColors.white)),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
           LayoutBuilder(
             builder: (context, constraints) {
               final width = constraints.maxWidth < 700
-                  ? constraints.maxWidth
+                  ? (constraints.maxWidth - 12) / 2
                   : (constraints.maxWidth - 48) / 4;
               return Wrap(
-                spacing: 16,
-                runSpacing: 16,
+                spacing: 12,
+                runSpacing: 12,
                 children: [
-                  _buildStatCard(
-                    icon: Icons.emoji_events_rounded,
+                    _buildStatCard(
+                      icon: CupertinoIcons.flag,
                     title: 'Турниров',
                     value: '${player.totalTournaments}',
                     color: AppColors.primary,
                     width: width,
+                    isIOS: isIOS,
                   ),
-                  _buildStatCard(
-                    icon: Icons.verified_rounded,
+                    _buildStatCard(
+                      icon: CupertinoIcons.check_mark_circled_solid,
                     title: 'Побед',
                     value: '${player.totalWins}',
                     color: AppColors.warning,
                     width: width,
+                    isIOS: isIOS,
                   ),
-                  _buildStatCard(
-                    icon: Icons.workspace_premium_rounded,
-                    title: 'RPS',
-                    value: player.rpsRank.label,
-                    color: AppColors.info,
-                    width: width,
-                  ),
-                  _buildStatCard(
-                    icon: Icons.insights_rounded,
-                    title: 'Rating',
-                    value: '${player.rankPoints}',
+                    _buildStatCard(
+                      icon: CupertinoIcons.chart_bar,
+                    title: 'Рейтинг',
+                    value: '${player.rankPoints > 0 ? player.rankPoints.toString() : '—'}',
                     color: AppColors.success,
                     width: width,
+                    isIOS: isIOS,
+                  ),
+                    _buildStatCard(
+                      icon: CupertinoIcons.arrow_up_right,
+                    title: 'RPS',
+                    value: '${player.rpsPoints}',
+                    color: AppColors.info,
+                    width: width,
+                    isIOS: isIOS,
                   ),
                 ],
               );
             },
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 18),
           _buildRankProgress(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
         ],
       ),
     );
@@ -87,12 +97,18 @@ class StatsOverview extends StatelessWidget {
     final target = next?.baseScore ?? start;
     final progress = next == null
         ? 1.0
-        : ((player.rankPoints - start) / (target - start)).clamp(0.0, 1.0);
-    return Container(
-      padding: const EdgeInsets.all(20),
+        : ((player.rpsPoints - start) / (target - start)).clamp(0.0, 1.0);
+    final remaining = next == null ? 0 : (target - player.rpsPoints).clamp(0, 999999);
+
+        return Container(
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: const Color(0xff1D232C),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.22),
+          width: 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,24 +116,33 @@ class StatsOverview extends StatelessWidget {
           Text(
             next == null
                 ? 'Максимальный ранг достигнут'
-                : 'До ранга ${next.label}: ${target - player.rankPoints} очков',
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
+                : 'До ранга ${next.label}: $remaining RPS',
+            style: const TextStyle(fontWeight: FontWeight.w600).merge(const TextStyle(color: AppColors.white)),
           ),
           const SizedBox(height: 12),
-          LinearProgressIndicator(
-            value: progress,
-            minHeight: 10,
-            borderRadius: BorderRadius.circular(8),
-            backgroundColor: Colors.white12,
-            color: AppColors.primary,
+          Container(
+            height: 10,
+            decoration: BoxDecoration(
+              color: const Color(0x1AFFFFFF),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: FractionallySizedBox(
+                widthFactor: progress,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+            ),
           ),
           const SizedBox(height: 10),
           Text(
             'Победы: ${player.totalWins} • Подиумы: ${player.totalPodiums} • Win rate: ${player.winRate.toStringAsFixed(1)}%',
-            style: TextStyle(color: Colors.white.withOpacity(.65)),
+            style: TextStyle(color: AppColors.white.withValues(alpha: .65)),
           ),
         ],
       ),
@@ -130,36 +155,30 @@ class StatsOverview extends StatelessWidget {
     required String value,
     required Color color,
     required double width,
+    required bool isIOS,
   }) {
     return SizedBox(
       width: width,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: const Color(0xff1D232C),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withOpacity(0.2), width: 1),
+          borderRadius: BorderRadius.circular(isIOS ? 18 : 14),
+          border: Border.all(color: color.withValues(alpha: 0.24), width: 1),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: color, size: 28),
+            Icon(icon, color: color, size: 24),
             const SizedBox(height: 12),
             Text(
               value,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700).merge(const TextStyle(color: AppColors.white)),
             ),
             const SizedBox(height: 4),
             Text(
               title,
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
-                fontSize: 13,
-              ),
+              style: TextStyle(color: AppColors.white.withValues(alpha: 0.6), fontSize: 12.5),
             ),
           ],
         ),

@@ -1,0 +1,5 @@
+Building Windows application...                                 
+CUSTOMBUILD : error : Unable to read file: C:\Users\Lenovo\Desktop\������\MVP_Poker\tournament_clock\.dart_tool\flutter_build\b53ba44b34ba236ceaf285efb0c1a0d7\app.dill [C:\Users\Lenovo\Desktop\ࠡ��\MVP_Poker\tournament_clock\build\windows\x64\flutter\flutter_assemble.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(254,5): error MSB8066: ���짮��⥫�᪠� ᡮઠ ��� "C:\Users\Lenovo\Desktop\ࠡ��\MVP_Poker\tournament_clock\build\windows\x64\CMakeFiles\ee93eebe8a6bba86084148fe63a9da54\flutter_windows.dll.rule;C:\Users\Lenovo\Desktop\ࠡ��\MVP_Poker\tournament_clock\build\windows\x64\CMakeFiles\4ec268dd6bfccfe1939ab1da34a28b4a\flutter_assemble.rule" �����訫� ࠡ��� � ����� 1. [C:\Users\Lenovo\Desktop\ࠡ��\MVP_Poker\tournament_clock\build\windows\x64\flutter\flutter_assemble.vcxproj]
+Building Windows application...                                    11,1s
+Build process failed.

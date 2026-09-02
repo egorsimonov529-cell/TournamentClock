@@ -33,7 +33,7 @@ class PromoBanner extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(AppRadius.lg),
         border: Border.all(
-          color: AppColors.primaryLight.withOpacity(0.3),
+          color: AppColors.primaryLight.withValues(alpha: 0.3),
           width: 1,
         ),
       ),

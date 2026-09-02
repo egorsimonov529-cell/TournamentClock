@@ -70,14 +70,62 @@ class _TournamentClockFullscreenScreenState
 
     // Моковые данные blind-уровней
     final blindLevels = const [
-      BlindLevel(level: 1, durationMinutes: 15, smallBlind: 25, bigBlind: 50, ante: 0),
-      BlindLevel(level: 2, durationMinutes: 15, smallBlind: 50, bigBlind: 100, ante: 10),
-      BlindLevel(level: 3, durationMinutes: 15, smallBlind: 100, bigBlind: 200, ante: 20),
-      BlindLevel(level: 4, durationMinutes: 15, smallBlind: 150, bigBlind: 300, ante: 25),
-      BlindLevel(level: 5, durationMinutes: 15, smallBlind: 200, bigBlind: 400, ante: 40),
-      BlindLevel(level: 6, durationMinutes: 15, smallBlind: 300, bigBlind: 600, ante: 50),
-      BlindLevel(level: 7, durationMinutes: 15, smallBlind: 400, bigBlind: 800, ante: 80),
-      BlindLevel(level: 8, durationMinutes: 15, smallBlind: 500, bigBlind: 1000, ante: 100),
+      BlindLevel(
+        level: 1,
+        durationMinutes: 15,
+        smallBlind: 25,
+        bigBlind: 50,
+        ante: 0,
+      ),
+      BlindLevel(
+        level: 2,
+        durationMinutes: 15,
+        smallBlind: 50,
+        bigBlind: 100,
+        ante: 10,
+      ),
+      BlindLevel(
+        level: 3,
+        durationMinutes: 15,
+        smallBlind: 100,
+        bigBlind: 200,
+        ante: 20,
+      ),
+      BlindLevel(
+        level: 4,
+        durationMinutes: 15,
+        smallBlind: 150,
+        bigBlind: 300,
+        ante: 25,
+      ),
+      BlindLevel(
+        level: 5,
+        durationMinutes: 15,
+        smallBlind: 200,
+        bigBlind: 400,
+        ante: 40,
+      ),
+      BlindLevel(
+        level: 6,
+        durationMinutes: 15,
+        smallBlind: 300,
+        bigBlind: 600,
+        ante: 50,
+      ),
+      BlindLevel(
+        level: 7,
+        durationMinutes: 15,
+        smallBlind: 400,
+        bigBlind: 800,
+        ante: 80,
+      ),
+      BlindLevel(
+        level: 8,
+        durationMinutes: 15,
+        smallBlind: 500,
+        bigBlind: 1000,
+        ante: 100,
+      ),
     ];
 
     final currentLevel = blindLevels.elementAtOrNull(clockState.currentLevel);
@@ -85,7 +133,11 @@ class _TournamentClockFullscreenScreenState
 
     // Определяем масштаб в зависимости от размера экрана
     final screenWidth = MediaQuery.of(context).size.width;
-    final scale = screenWidth > 1920 ? 1.3 : screenWidth > 1366 ? 1.15 : 1.0;
+    final scale = screenWidth > 1920
+        ? 1.3
+        : screenWidth > 1366
+        ? 1.15
+        : 1.0;
 
     return PopScope(
       canPop: true,
@@ -102,10 +154,7 @@ class _TournamentClockFullscreenScreenState
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF0A0E14),
-              Color(0xFF1A1D24),
-            ],
+            colors: [Color(0xFF0A0E14), Color(0xFF1A1D24)],
           ),
         ),
         child: SafeArea(
@@ -116,10 +165,7 @@ class _TournamentClockFullscreenScreenState
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF0A0E14),
-                      Color(0xFF1A1D24),
-                    ],
+                    colors: [Color(0xFF0A0E14), Color(0xFF1A1D24)],
                   ),
                 ),
                 child: Stack(
@@ -140,7 +186,9 @@ class _TournamentClockFullscreenScreenState
                                 maxPlayers: 100,
                                 buyIn: 1000,
                                 prizePool: 500000,
-                                status: clockState.isRunning ? 'В игре' : 'Ожидание',
+                                status: clockState.isRunning
+                                    ? 'В игре'
+                                    : 'Ожидание',
                               ),
                               const SizedBox(height: 24),
 
@@ -163,7 +211,10 @@ class _TournamentClockFullscreenScreenState
                                             smallBlind: currentLevel.smallBlind,
                                             bigBlind: currentLevel.bigBlind,
                                             ante: currentLevel.ante,
-                                            duration: Duration(minutes: currentLevel.durationMinutes),
+                                            duration: Duration(
+                                              minutes:
+                                                  currentLevel.durationMinutes,
+                                            ),
                                             isCurrent: true,
                                           )
                                         : BlindsCard(
@@ -171,7 +222,9 @@ class _TournamentClockFullscreenScreenState
                                             smallBlind: 25,
                                             bigBlind: 50,
                                             ante: 0,
-                                            duration: const Duration(minutes: 15),
+                                            duration: const Duration(
+                                              minutes: 15,
+                                            ),
                                             isCurrent: false,
                                           ),
                                   ),
@@ -189,7 +242,8 @@ class _TournamentClockFullscreenScreenState
                                             padding: const EdgeInsets.all(20),
                                             decoration: BoxDecoration(
                                               color: const Color(0xff1D232C),
-                                              borderRadius: BorderRadius.circular(16),
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
                                               border: Border.all(
                                                 color: const Color(0xff2A2D35),
                                                 width: 1,
@@ -199,7 +253,8 @@ class _TournamentClockFullscreenScreenState
                                               child: Text(
                                                 'Последний уровень',
                                                 style: TextStyle(
-                                                  color: Colors.white.withOpacity(0.4),
+                                                  color: Colors.white
+                                                      .withValues(alpha: 0.4),
                                                   fontSize: 14,
                                                 ),
                                               ),
@@ -230,7 +285,9 @@ class _TournamentClockFullscreenScreenState
                         color: Colors.transparent,
                         child: InkWell(
                           onTap: () {
-                            SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+                            SystemChrome.setEnabledSystemUIMode(
+                              SystemUiMode.edgeToEdge,
+                            );
                             if (context.mounted) {
                               Navigator.of(context).pop();
                             }
@@ -239,7 +296,7 @@ class _TournamentClockFullscreenScreenState
                           child: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.5),
+                              color: Colors.black.withValues(alpha: 0.5),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Icon(

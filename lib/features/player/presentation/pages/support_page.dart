@@ -15,11 +15,9 @@ class SupportPage extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: CustomScrollView(
         slivers: [
+          const SliverToBoxAdapter(child: ScreenTitle(title: 'Поддержка')),
           const SliverToBoxAdapter(
-            child: ScreenTitle(title: '╨Я╨╛╨┤╨┤╨╡╤А╨╢╨║╨░'),
-          ),
-          const SliverToBoxAdapter(
-            child: SectionHeader(title: '╨б╨▓╤П╨╖╨░╤В╤М╤Б╤П ╤Б ╨╜╨░╨╝╨╕'),
+            child: SectionHeader(title: 'Связаться с нами'),
           ),
           SliverPadding(
             padding: const EdgeInsets.symmetric(
@@ -29,27 +27,26 @@ class SupportPage extends StatelessWidget {
               delegate: SliverChildListDelegate([
                 SupportChannelCard(
                   icon: Icons.chat_bubble_outline_rounded,
-                  title: '╨з╨░╤В ╨┐╨╛╨┤╨┤╨╡╤А╨╢╨║╨╕',
-                  subtitle:
-                      '╨Ю╨▒╤Л╤З╨╜╨╛ ╨╛╤В╨▓╨╡╤З╨░╨╡╨╝ ╨▓ ╤В╨╡╤З╨╡╨╜╨╕╨╡ 5 ╨╝╨╕╨╜╤Г╤В',
+                  title: 'Чат поддержки',
+                  subtitle: 'Обычно отвечаем в течение 5 минут',
                 ),
                 SizedBox(height: AppSpacing.sm),
                 SupportChannelCard(
                   icon: Icons.email_outlined,
-                  title: '╨н╨╗╨╡╨║╤В╤А╨╛╨╜╨╜╨░╤П ╨┐╨╛╤З╤В╨░',
+                  title: 'Электронная почта',
                   subtitle: 'support@pokerclub.ru',
                 ),
                 SizedBox(height: AppSpacing.sm),
                 SupportChannelCard(
                   icon: Icons.phone_outlined,
-                  title: '╨в╨╡╨╗╨╡╤Д╨╛╨╜',
-                  subtitle: '╨Х╨╢╨╡╨┤╨╜╨╡╨▓╨╜╨╛ ╤Б 10:00 ╨┤╨╛ 23:00',
+                  title: 'Телефон',
+                  subtitle: 'Ежедневно с 10:00 до 23:00',
                 ),
               ]),
             ),
           ),
           const SliverToBoxAdapter(
-            child: SectionHeader(title: '╨з╨░╤Б╤В╤Л╨╡ ╨▓╨╛╨┐╤А╨╛╤Б╤Л'),
+            child: SectionHeader(title: 'Частые вопросы'),
           ),
           SliverPadding(
             padding: const EdgeInsets.symmetric(
@@ -58,20 +55,18 @@ class SupportPage extends StatelessWidget {
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 FAQItem(
-                  question:
-                      '╨Ъ╨░╨║ ╨╖╨░╤А╨╡╨│╨╕╤Б╤В╤А╨╕╤А╨╛╨▓╨░╤В╤М╤Б╤П ╨╜╨░ ╤В╤Г╤А╨╜╨╕╤А?',
-                  answer:
-                      '╨Ю╤В╨║╤А╨╛╨╣╤В╨╡ ╤В╤Г╤А╨╜╨╕╤А ╨╕ ╨╜╨░╨╢╨╝╨╕╤В╨╡ ╨║╨╜╨╛╨┐╨║╤Г ╤А╨╡╨│╨╕╤Б╤В╤А╨░╤Ж╨╕╨╕.',
+                  question: 'Как зарегистрироваться на турнир?',
+                  answer: 'Откройте турнир и нажмите кнопку регистрации.',
                 ),
                 FAQItem(
-                  question: '╨Ъ╨░╨║ ╨┐╨╛╨┐╨╛╨╗╨╜╨╕╤В╤М ╨▒╨░╨╗╨░╨╜╤Б?',
+                  question: 'Как пополнить баланс?',
                   answer:
-                      '╨Я╨╡╤А╨╡╨╣╨┤╨╕╤В╨╡ ╨▓ ╤А╨░╨╖╨┤╨╡╨╗ ╨▒╨░╨╗╨░╨╜╤Б╨░ ╨╕ ╨▓╤Л╨▒╨╡╤А╨╕╤В╨╡ ╤Г╨┤╨╛╨▒╨╜╤Л╨╣ ╤Б╨┐╨╛╤Б╨╛╨▒.',
+                      'Перейдите в раздел баланса и выберите удобный способ.',
                 ),
                 FAQItem(
-                  question: '╨Ъ╨░╨║ ╨▓╨╛╤Б╤Б╤В╨░╨╜╨╛╨▓╨╕╤В╤М ╨┤╨╛╤Б╤В╤Г╨┐?',
+                  question: 'Как восстановить доступ?',
                   answer:
-                      '╨Ш╤Б╨┐╨╛╨╗╤М╨╖╤Г╨╣╤В╨╡ ╨▓╨╛╤Б╤Б╤В╨░╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╡ ╨┐╨░╤А╨╛╨╗╤П ╨╜╨░ ╤Б╤В╤А╨░╨╜╨╕╤Ж╨╡ ╨▓╤Е╨╛╨┤╨░.',
+                      'Используйте восстановление пароля на странице входа.',
                 ),
               ]),
             ),

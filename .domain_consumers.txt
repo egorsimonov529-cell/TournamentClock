@@ -1,0 +1,275 @@
+﻿C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\app\router.dart:41:location.startsWith('/tournament/');
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\app\router.dart:76:path: "/tournament/:id/seating",
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\app\router.dart:83:path: "/tournament/:id",
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\app\router.dart:118:// Tournament Clock
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\layout\dashboard_layout.dart:8:import '../../../tournament/presentation/screens/tournament_list_screen.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\layout\dashboard_layout.dart:27:"Tournament Clock",
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\layout\dashboard_layout.dart:63:// Tournament Clock
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\widgets\sidebar\sidebar.dart:47:// Кнопка для Tournament Clock
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\widgets\sidebar\sidebar.dart:48:if (selectedIndex == 6 && item.title == "Tournament Clock")
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\widgets\sidebar\sidebar.dart:129:_MenuItem(icon: Icons.timer_rounded, title: "Tournament Clock"),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\models\player_model.dart:3:class PlayerProfile {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\models\player_model.dart:27:const PlayerProfile({
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\models\player_model.dart:52:factory PlayerProfile.fromJson(Map<String, dynamic> json) {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\models\player_model.dart:53:return PlayerProfile(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\models\player_model.dart:108:PlayerProfile copyWith({
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\models\player_model.dart:131:}) => PlayerProfile(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\models\player_model.dart:157:enum TournamentStatus { upcoming, inProgress, completed, cancelled }
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\models\player_model.dart:159:class Tournament {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\models\player_model.dart:171:final TournamentStatus status;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\models\player_model.dart:174:const Tournament({
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\models\player_model.dart:190:factory Tournament.fromJson(Map<String, dynamic> json) {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\models\player_model.dart:191:return Tournament(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\models\player_model.dart:207:status: TournamentStatus.values.firstWhere(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\models\player_model.dart:209:orElse: () => TournamentStatus.upcoming,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\models\player_model.dart:224:final TournamentStatus status;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\models\player_model.dart:248:status: TournamentStatus.values.firstWhere(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\models\player_model.dart:250:orElse: () => TournamentStatus.upcoming,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\providers\player_provider.dart:5:import '../models/player_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\providers\player_provider.dart:8:final playerProfileProvider = FutureProvider<PlayerProfile>((ref) async {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\domain\providers\player_provider.dart:14:return PlayerProfile(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\layout\player_cabinet_layout.dart:4:import '../../domain/models/player_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\layout\player_cabinet_layout.dart:13:final PlayerProfile player;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\balance_page.dart:43:description: "Buy-in: Sunday Mega Tournament",
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\bonuses_page.dart:78:title: "Tournament Bonus",
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\membership_page.dart:62:type: "tournament",
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\membership_page.dart:63:description: "Взнос: Sunday Mega Tournament",
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\my_tournaments_page.dart:6:import '../../../tournament/domain/models/tournament_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\my_tournaments_page.dart:7:import '../../../tournament/domain/providers/tournament_provider.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\my_tournaments_page.dart:23:? const <Tournament>[]
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\my_tournaments_page.dart:26:(tournament) =>
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\my_tournaments_page.dart:27:tournament.registeredPlayerIds.contains(user.id),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\my_tournaments_page.dart:58:final tournament = registered[index];
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\my_tournaments_page.dart:64:title: Text(tournament.name),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\my_tournaments_page.dart:66:'${tournament.format} • '
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\my_tournaments_page.dart:67:'${tournament.registeredPlayerIds.length}/'
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\my_tournaments_page.dart:68:'${tournament.maxPlayers}',
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\my_tournaments_page.dart:75:tournament.id,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\overview_page.dart:3:import '../../domain/models/player_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\overview_page.dart:9:final PlayerProfile player;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\player_cabinet_page.dart:12:final playerAsync = ref.watch(playerProfileProvider);
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_list_page.dart:68:// Tournament list
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_page.dart:4:import '../../../tournament/domain/providers/tournament_provider.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\player_header.dart:5:import '../../domain/models/player_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\player_header.dart:8:final PlayerProfile player;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\stats_overview.dart:5:import '../../domain/models/player_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\stats_overview.dart:8:final PlayerProfile player;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\upcoming_tournaments.dart:37:name: "Sunday Mega Tournament",
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\models\seating_models.dart:41:class TableSeat {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\models\seating_models.dart:45:const TableSeat({required this.number, this.player});
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\models\seating_models.dart:49:TableSeat copyWith({Player? player, bool clearPlayer = false}) {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\models\seating_models.dart:50:return TableSeat(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\models\seating_models.dart:57:class PokerTable {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\models\seating_models.dart:60:final List<TableSeat> seats;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\models\seating_models.dart:62:const PokerTable({required this.id, required this.name, required this.seats});
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\models\seating_models.dart:67:PokerTable copyWith({String? name, List<TableSeat>? seats}) =>
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\models\seating_models.dart:68:PokerTable(id: id, name: name ?? this.name, seats: seats ?? this.seats);
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\models\seating_models.dart:72:final List<PokerTable> tables;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\models\seating_models.dart:82:PokerTable? get selectedTable {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\models\seating_models.dart:90:List<PokerTable>? tables,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:5:import '../models/seating_models.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:32:List<TableSeat> seats() =>
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:33:List.generate(8, (index) => TableSeat(number: index + 1));
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:35:..[0] = TableSeat(number: 1, player: players[0])
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:36:..[2] = TableSeat(number: 3, player: players[1])
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:37:..[5] = TableSeat(number: 6, player: players[2]);
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:39:..[1] = TableSeat(number: 2, player: players[3])
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:40:..[4] = TableSeat(number: 5, player: players[4]);
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:43:PokerTable(id: 't1', name: 'Стол 1', seats: first),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:44:PokerTable(id: 't2', name: 'Стол 2', seats: second),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:125:final seatedTables = <PokerTable>[];
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:127:final seats = <TableSeat>[];
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:130:TableSeat(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:157:: TableSeat(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:177:final table = PokerTable(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:180:seats: List.generate(8, (index) => TableSeat(number: index + 1)),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:188:void _updateTable(PokerTable updated) {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:9:import '../../domain/models/seating_models.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:125:final PokerTable? table;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:212:TableSeat seat,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:235:final TableSeat seat;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\models\tournament_model.dart:1:class Tournament {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\models\tournament_model.dart:13:const Tournament({
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\models\tournament_model.dart:26:factory Tournament.fromJson(Map<String, dynamic> json) {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\models\tournament_model.dart:27:return Tournament(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:3:import '../models/tournament_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:35:class TournamentNotifier extends StateNotifier<List<Tournament>> {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:38:Tournament(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:40:name: 'Sunday Mega Tournament',
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:50:Tournament(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:62:Tournament(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:74:Tournament(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:88:void addTournament(Tournament tournament) {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:89:state = [tournament, ...state];
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:92:void updateTournament(Tournament updated) {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:96:void deleteTournament(String id) {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:107:final tournament = state[index];
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:108:if (tournament.registeredPlayerIds.contains(playerId)) {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:111:if (tournament.status != 'upcoming') {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:114:if (tournament.isFull) return TournamentRegistrationResult.full;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:119:_copyTournament(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:137:_copyTournament(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:149:Tournament _copyTournament(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:150:Tournament tournament, {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:153:return Tournament(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:154:id: tournament.id,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:155:name: tournament.name,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:156:description: tournament.description,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:157:startDate: tournament.startDate,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:158:endDate: tournament.endDate,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:159:maxPlayers: tournament.maxPlayers,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:160:buyIn: tournament.buyIn,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:161:format: tournament.format,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:162:status: tournament.status,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:164:registeredPlayerIds ?? tournament.registeredPlayerIds,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:172:return Tournament(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:201:StateNotifierProvider<TournamentNotifier, List<Tournament>>(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:9:import '../../domain/models/tournament_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:114:List<Tournament> tournaments,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:231:Widget _buildTournamentsList(List<Tournament> tournaments) {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:270:children: filtered.map((tournament) {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:274:tournament: tournament,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:276:context.push('/tournament/${tournament.id}/seating'),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:280:builder: (context) => PlayersListDialog(tournament: tournament),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:287:RegisterPlayersDialog(tournament: tournament),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:294:CreateTournamentDialog(tournament: tournament),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:304:'Вы уверены, что хотите удалить турнир "${tournament.name}"?',
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:316:.deleteTournament(tournament.id);
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:4:import '../../domain/models/tournament_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:8:final Tournament? tournament;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:10:const CreateTournamentDialog({super.key, this.tournament});
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:31:_nameController = TextEditingController(text: widget.tournament?.name ?? '');
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:33:TextEditingController(text: widget.tournament?.description ?? '');
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:35:TextEditingController(text: widget.tournament?.maxPlayers.toString() ?? '100');
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:37:TextEditingController(text: widget.tournament?.buyIn.toString() ?? '0');
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:39:TextEditingController(text: widget.tournament?.format ?? 'TT No-Limit');
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:40:_status = widget.tournament?.status ?? 'upcoming';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:96:final tournament = Tournament(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:97:id: widget.tournament?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:106:registeredPlayerIds: widget.tournament?.registeredPlayerIds ?? [],
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:109:if (widget.tournament != null) {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:110:ref.read(tournamentProvider.notifier).updateTournament(tournament);
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:112:ref.read(tournamentProvider.notifier).addTournament(tournament);
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:120:content: Text(widget.tournament != null
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:140:widget.tournament != null ? 'Редактировать турнир' : 'Создать турнир',
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:304:widget.tournament != null ? 'Сохранить' : 'Создать',
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:4:import '../../domain/models/tournament_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:9:final Tournament tournament;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:13:required this.tournament,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:40:return widget.tournament.registeredPlayerIds.contains(p.id);
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:75:widget.tournament.id,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:102:final isFull = widget.tournament.isFull;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:143:widget.tournament.name,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:178:'Записано: ${widget.tournament.currentPlayers}/${widget.tournament.maxPlayers} '
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:179:'${isFull ? '(Мест нет)' : "(${widget.tournament.maxPlayers - widget.tournament.currentPlayers} мест свободно)"}',
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:254:final indexInTournament = widget.tournament
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:288:if (indexInTournament >= 0)
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:299:'#${indexInTournament + 1}',
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\register_players_dialog.dart:4:import '../../domain/models/tournament_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\register_players_dialog.dart:8:final Tournament tournament;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\register_players_dialog.dart:10:const RegisterPlayersDialog({super.key, required this.tournament});
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\register_players_dialog.dart:43:List<String> get _registeredIds => widget.tournament.registeredPlayerIds;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\register_players_dialog.dart:52:widget.tournament.id,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\register_players_dialog.dart:56:if (widget.tournament.currentPlayers < widget.tournament.maxPlayers) {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\register_players_dialog.dart:58:widget.tournament.id,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\register_players_dialog.dart:105:widget.tournament.name,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\register_players_dialog.dart:207:'Записано: ${widget.tournament.currentPlayers}/${widget.tournament.maxPlayers}',
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:3:import '../../domain/models/tournament_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:6:final Tournament tournament;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:15:required this.tournament,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:57:tournament.name,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:75:tournament.statusColor.replaceAll(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:86:tournament.statusDisplay,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:90:tournament.statusColor.replaceAll(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:105:'${tournament.startDate.day.toString().padLeft(2, '0')}.${tournament.startDate.month.toString().padLeft(2, '0')}.${tournament.startDate.year} - ${tournament.endDate.day.toString().padLeft(2, '0')}.${tournament.endDate.month.toString().padLeft(2, '0')}.${tournament.endDate.year}',
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:123:tournament.description,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:137:'${tournament.currentPlayers}/${tournament.maxPlayers}',
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:143:value: '₽${tournament.buyIn.toInt()}',
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:149:value: tournament.format,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:160:value: tournament.maxPlayers > 0
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:161:? tournament.currentPlayers / tournament.maxPlayers
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:172:tournament.isFull
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:174:: '${tournament.maxPlayers - tournament.currentPlayers} мест свободно',
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:176:color: tournament.isFull
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:203:if (tournament.currentPlayers > 0)
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:207:label: Text('Игроки (${tournament.currentPlayers})'),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:212:if (tournament.currentPlayers > 0 &&
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:213:tournament.status == 'upcoming')
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:215:if (tournament.status == 'upcoming')
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:224:if (tournament.status != 'completed')
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\domain\models\tournament_clock_model.dart:1:class BlindLevel {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\domain\models\tournament_clock_model.dart:8:const BlindLevel({
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\domain\providers\tournament_clock_provider.dart:5:import '../models/tournament_clock_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\domain\providers\tournament_clock_provider.dart:19:void start(List<BlindLevel> levels, int initialLevel) {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\domain\providers\tournament_clock_provider.dart:55:void nextLevel(List<BlindLevel> levels) {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\domain\providers\tournament_clock_provider.dart:70:void prevLevel(List<BlindLevel> levels) {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:6:import '../../domain/models/tournament_clock_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:72:final blindLevels = const [
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:73:BlindLevel(level: 1, durationMinutes: 15, smallBlind: 25, bigBlind: 50, ante: 0),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:74:BlindLevel(level: 2, durationMinutes: 15, smallBlind: 50, bigBlind: 100, ante: 10),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:75:BlindLevel(level: 3, durationMinutes: 15, smallBlind: 100, bigBlind: 200, ante: 20),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:76:BlindLevel(level: 4, durationMinutes: 15, smallBlind: 150, bigBlind: 300, ante: 25),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:77:BlindLevel(level: 5, durationMinutes: 15, smallBlind: 200, bigBlind: 400, ante: 40),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:78:BlindLevel(level: 6, durationMinutes: 15, smallBlind: 300, bigBlind: 600, ante: 50),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:79:BlindLevel(level: 7, durationMinutes: 15, smallBlind: 400, bigBlind: 800, ante: 80),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:80:BlindLevel(level: 8, durationMinutes: 15, smallBlind: 500, bigBlind: 1000, ante: 100),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:83:final currentLevel = blindLevels.elementAtOrNull(clockState.currentLevel);
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:84:final nextLevel = blindLevels.elementAtOrNull(clockState.currentLevel + 1);
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:135:// Tournament Info
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:137:name: 'Sunday Mega Tournament',
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:216:totalLevels: blindLevels.length,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:217:levels: blindLevels,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:5:import '../../domain/models/tournament_clock_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:11:static const blindLevels = [
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:12:BlindLevel(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:19:BlindLevel(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:26:BlindLevel(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:33:BlindLevel(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:40:BlindLevel(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:47:BlindLevel(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:54:BlindLevel(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:61:BlindLevel(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:74:final index = state.currentLevel.clamp(0, blindLevels.length - 1);
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:75:final current = blindLevels[index];
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:76:final next = index + 1 < blindLevels.length ? blindLevels[index + 1] : null;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:162:: () => notifier.start(blindLevels, index),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:163:onPrevious: () => notifier.prevLevel(blindLevels),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:164:onNext: () => notifier.nextLevel(blindLevels),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:171:totalLevels: blindLevels.length,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:243:'No-Limit Hold’em • Tournament clock',
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:306:final BlindLevel current;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:412:final BlindLevel current;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:413:final BlindLevel? next;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:6:import '../../domain/models/tournament_clock_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:29:final blindLevels = const [
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:30:BlindLevel(level: 1, durationMinutes: 15, smallBlind: 25, bigBlind: 50, ante: 0),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:31:BlindLevel(level: 2, durationMinutes: 15, smallBlind: 50, bigBlind: 100, ante: 10),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:32:BlindLevel(level: 3, durationMinutes: 15, smallBlind: 100, bigBlind: 200, ante: 20),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:33:BlindLevel(level: 4, durationMinutes: 15, smallBlind: 150, bigBlind: 300, ante: 25),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:34:BlindLevel(level: 5, durationMinutes: 15, smallBlind: 200, bigBlind: 400, ante: 40),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:35:BlindLevel(level: 6, durationMinutes: 15, smallBlind: 300, bigBlind: 600, ante: 50),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:36:BlindLevel(level: 7, durationMinutes: 15, smallBlind: 400, bigBlind: 800, ante: 80),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:37:BlindLevel(level: 8, durationMinutes: 15, smallBlind: 500, bigBlind: 1000, ante: 100),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:40:final currentLevel = blindLevels.elementAtOrNull(clockState.currentLevel);
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:41:final nextLevel = blindLevels.elementAtOrNull(clockState.currentLevel + 1);
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:76:// Tournament Info
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:78:name: 'Sunday Mega Tournament',
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:157:totalLevels: blindLevels.length,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:158:levels: blindLevels,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\widgets\level_indicator.dart:4:import '../../domain/models/tournament_clock_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\widgets\level_indicator.dart:9:final List<BlindLevel> levels;
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\widgets\level_indicator.dart:72:BlindLevel level,
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\test\features\player\player_header_test.dart:4:import 'package:tournament_clock/features/player/domain/models/player_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\test\features\player\player_header_test.dart:12:final player = PlayerProfile(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\test\features\rps\rps_models_test.dart:3:import 'package:tournament_clock/features/player/domain/models/player_model.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\test\features\rps\rps_models_test.dart:4:import 'package:tournament_clock/features/tables/domain/models/seating_models.dart';
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\test\features\rps\rps_models_test.dart:56:group('PlayerProfile', () {
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\test\features\rps\rps_models_test.dart:58:final profile = PlayerProfile(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\test\features\rps\rps_models_test.dart:82:expect(PlayerProfile.fromJson(profileJson()).rpsRank, RpsRank.fish);
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\test\features\rps\rps_models_test.dart:86:final profile = PlayerProfile.fromJson(profileJson(RpsRank.pro));
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\test\features\rps\rps_models_test.dart:87:final restored = PlayerProfile.fromJson(profile.toJson());
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\test\features\rps\rps_models_test.dart:94:final profile = PlayerProfile.fromJson(profileJson());
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\test\features\rps\rps_models_test.dart:121:PokerTable(
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\test\features\rps\rps_models_test.dart:126:TableSeat(number: seat),
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\test\features\rps\rps_models_test.dart:147:seats: [TableSeat(number: 1, player: seated)],
+C:\Users\Lenovo\Desktop\работа\MVP_Poker\tournament_clock\test\features\tournament_clock\tournament_clock_screen_test.dart:5:import 'package:tournament_clock/features/tournament_clock/domain/models/tournament_clock_model.dart';

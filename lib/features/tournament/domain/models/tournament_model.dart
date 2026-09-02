@@ -38,8 +38,9 @@ class Tournament {
       buyIn: (json['buy_in'] as num?)?.toDouble() ?? 0.0,
       format: json['format'] as String? ?? 'TT No-Limit',
       status: json['status'] as String? ?? 'upcoming',
-      registeredPlayerIds: (json['registered_players'] as List?)
-              ?.map((e) => e as String)
+      registeredPlayerIds:
+          (json['registered_players'] as List?)
+              ?.map((e) => e.toString())
               .toList() ??
           [],
     );

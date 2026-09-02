@@ -21,18 +21,12 @@ class StatCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xff191D24),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: Colors.white.withOpacity(.05),
-          ),
+          border: Border.all(color: Colors.white.withValues(alpha: .05)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
-            Icon(
-              icon,
-              color: const Color(0xff00C875),
-            ),
+            Icon(icon, color: const Color(0xff00C875)),
 
             const Spacer(),
 
@@ -47,12 +41,7 @@ class StatCard extends StatelessWidget {
 
             const SizedBox(height: 8),
 
-            Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white54,
-              ),
-            ),
+            Text(title, style: const TextStyle(color: Colors.white54)),
           ],
         ),
       ),

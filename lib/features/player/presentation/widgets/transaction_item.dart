@@ -43,7 +43,7 @@ class TransactionItem extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: (isPositive ? AppColors.accent : AppColors.textSecondary)
-                  .withOpacity(0.12),
+                  .withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             child: Icon(
@@ -76,7 +76,7 @@ class TransactionItem extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: _statusColor().withOpacity(0.12),
+                        color: _statusColor().withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(AppRadius.xs),
                       ),
                       child: Text(

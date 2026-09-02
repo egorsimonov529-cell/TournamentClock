@@ -3,33 +3,49 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class QuickActions extends StatelessWidget {
-  const QuickActions({super.key});
+  final VoidCallback onOpenTournaments;
+  final VoidCallback onOpenLeaderboard;
+
+  const QuickActions({
+    super.key,
+    required this.onOpenTournaments,
+    required this.onOpenLeaderboard,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
-      child: Row(
-        children: [
-          Expanded(
-            child: _buildActionCard(
-              icon: Icons.emoji_events_rounded,
-              title: "Найти турнир",
-              description: "Регистрация на upcoming турниры",
-              onTap: () {},
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: _buildActionCard(
-              icon: Icons.insights_rounded,
-              title: "Мой рейтинг",
-              description: "Следите за прогрессом в RPS",
-              onTap: () {},
-            ),
-          ),
-        ],
+    final compact = MediaQuery.sizeOf(context).width < 650;
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    final cards = [
+      _buildActionCard(
+        icon: Icons.emoji_events_rounded,
+        title: 'Найти турнир',
+        description: 'Посмотрите доступные турниры и зарегистрируйтесь',
+        onTap: onOpenTournaments,
+        isIOS: isIOS,
       ),
+      _buildActionCard(
+        icon: Icons.insights_rounded,
+        title: 'Мой рейтинг',
+        description: 'Следите за прогрессом в RPS',
+        onTap: onOpenLeaderboard,
+        isIOS: isIOS,
+      ),
+    ];
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: compact ? 14 : 32),
+      child: compact
+          ? Column(
+              children: [cards.first, const SizedBox(height: 12), cards.last],
+            )
+          : Row(
+              children: [
+                Expanded(child: cards.first),
+                const SizedBox(width: 16),
+                Expanded(child: cards.last),
+              ],
+            ),
     );
   }
 
@@ -38,29 +54,40 @@ class QuickActions extends StatelessWidget {
     required String title,
     required String description,
     required VoidCallback onTap,
+    required bool isIOS,
   }) {
     return InkWell(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(isIOS ? 20 : 16),
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
             colors: [
-              AppColors.primary.withOpacity(0.15),
-              AppColors.primary.withOpacity(0.05),
+              AppColors.primary.withValues(alpha: 0.2),
+              AppColors.primary.withValues(alpha: 0.08),
             ],
           ),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(isIOS ? 20 : 16),
           border: Border.all(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.32),
             width: 1,
           ),
         ),
         child: Row(
           children: [
-            Icon(icon, color: AppColors.primary, size: 32),
-            const SizedBox(width: 16),
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: AppColors.primary, size: 24),
+            ),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,16 +96,16 @@ class QuickActions extends StatelessWidget {
                     title,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     description,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.6),
-                      fontSize: 12,
+                      color: Colors.white.withValues(alpha: 0.62),
+                      fontSize: 12.2,
                     ),
                   ),
                 ],
@@ -87,7 +114,7 @@ class QuickActions extends StatelessWidget {
             const Icon(
               Icons.arrow_forward_ios_rounded,
               color: AppColors.primary,
-              size: 16,
+              size: 15,
             ),
           ],
         ),

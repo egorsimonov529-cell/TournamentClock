@@ -7,6 +7,8 @@ class ProfileTextField extends StatelessWidget {
   final String hintText;
   final bool readOnly;
   final bool obscureText;
+  final TextEditingController? controller;
+  final String? Function(String?)? validator;
 
   const ProfileTextField({
     super.key,
@@ -14,6 +16,8 @@ class ProfileTextField extends StatelessWidget {
     this.hintText = "",
     this.readOnly = false,
     this.obscureText = false,
+    this.controller,
+    this.validator,
   });
 
   @override
@@ -24,20 +28,22 @@ class ProfileTextField extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.6),
+            color: Colors.white.withValues(alpha: 0.6),
             fontSize: 13,
             fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 8),
-        TextField(
+        TextFormField(
+          controller: controller,
+          validator: validator,
           readOnly: readOnly,
           obscureText: obscureText,
           style: const TextStyle(color: Colors.white, fontSize: 15),
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: TextStyle(
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
               fontSize: 15,
             ),
             filled: true,

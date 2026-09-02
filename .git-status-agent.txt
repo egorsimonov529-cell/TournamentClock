@@ -1,0 +1,158 @@
+ D "'\342\225\250\320\260\342\225\250\342\225\241\342\225\250\342\224\202\342\225\250\342\225\225\342\225\244\320\221\342\225\244\320\222\342\225\244\320\220\342\225\250\342\226\221\342\225\244\320\226\342\225\250\342\225\225\342\225\244\320\237"
+ M lib/app/app.dart
+ M lib/app/router.dart
+ M lib/core/constants/app_constants.dart
+ M lib/core/layout/app_window.dart
+ M lib/core/models/rps_rank.dart
+ M lib/core/models/user.dart
+ M lib/core/services/api_service.dart
+ M lib/core/services/window_manager_service.dart
+ M lib/core/theme/app_assets.dart
+ M lib/core/theme/app_shadows.dart
+ M lib/core/widgets/app_button.dart
+ M lib/core/widgets/app_checkbox.dart
+ M lib/core/widgets/app_text_field.dart
+ M lib/features/auth/data/repositories/auth_repository_impl.dart
+ M lib/features/auth/domain/models/auth_state.dart
+ M lib/features/auth/domain/providers/auth_state_provider.dart
+ M lib/features/auth/domain/repositories/auth_repository.dart
+ M lib/features/auth/presentation/layout/login_left_panel.dart
+ M lib/features/auth/presentation/pages/recovery_page.dart
+ M lib/features/auth/presentation/pages/registration_page.dart
+ M lib/features/auth/presentation/widgets/login_form.dart
+ M lib/features/auth/presentation/widgets/login_logo.dart
+ M lib/features/dashboard/presentation/layout/dashboard_layout.dart
+ M lib/features/dashboard/presentation/pages/dashboard_page.dart
+ M lib/features/dashboard/presentation/widgets/sidebar/sidebar.dart
+ M lib/features/dashboard/presentation/widgets/sidebar/sidebar_item.dart
+ M lib/features/dashboard/presentation/widgets/stat_card/stat_card.dart
+ M lib/features/dashboard/presentation/widgets/topbar/top_bar.dart
+ M lib/features/player/domain/providers/player_provider.dart
+ M lib/features/player/presentation/layout/player_cabinet_layout.dart
+ M lib/features/player/presentation/pages/about_club_page.dart
+ M lib/features/player/presentation/pages/achievements_page.dart
+ M lib/features/player/presentation/pages/balance_page.dart
+ M lib/features/player/presentation/pages/bonuses_page.dart
+ M lib/features/player/presentation/pages/leaderboard_page.dart
+ M lib/features/player/presentation/pages/loyalty_page.dart
+ M lib/features/player/presentation/pages/membership_page.dart
+ M lib/features/player/presentation/pages/my_tournaments_page.dart
+ M lib/features/player/presentation/pages/notifications_page.dart
+ M lib/features/player/presentation/pages/overview_page.dart
+ M lib/features/player/presentation/pages/player_dashboard_page.dart
+ M lib/features/player/presentation/pages/profile_page.dart
+ M lib/features/player/presentation/pages/profile_settings_page.dart
+ M lib/features/player/presentation/pages/support_page.dart
+ M lib/features/player/presentation/pages/tournament_detail_page.dart
+ M lib/features/player/presentation/pages/tournaments_list_page.dart
+ M lib/features/player/presentation/pages/tournaments_page.dart
+ M lib/features/player/presentation/pages/transactions_page.dart
+ M lib/features/player/presentation/widgets/achievement_card.dart
+ M lib/features/player/presentation/widgets/balance_card.dart
+ M lib/features/player/presentation/widgets/bonus_card.dart
+ M lib/features/player/presentation/widgets/loyalty_card.dart
+ M lib/features/player/presentation/widgets/notification_card.dart
+ M lib/features/player/presentation/widgets/player_header.dart
+ M lib/features/player/presentation/widgets/profile_text_field.dart
+ M lib/features/player/presentation/widgets/promo_banner.dart
+ M lib/features/player/presentation/widgets/quick_action_card.dart
+ M lib/features/player/presentation/widgets/quick_actions.dart
+ M lib/features/player/presentation/widgets/screen_widgets.dart
+ M lib/features/player/presentation/widgets/stats_overview.dart
+ M lib/features/player/presentation/widgets/support_channel_card.dart
+ M lib/features/player/presentation/widgets/tournament_list_item.dart
+ M lib/features/player/presentation/widgets/transaction_item.dart
+ M lib/features/player/presentation/widgets/upcoming_tournaments.dart
+ M lib/features/tables/domain/providers/seating_provider.dart
+ M lib/features/tables/presentation/screens/seating_screen.dart
+ M lib/features/tournament/domain/models/tournament_model.dart
+ M lib/features/tournament/domain/providers/tournament_provider.dart
+ M lib/features/tournament/presentation/screens/tournament_list_screen.dart
+ M lib/features/tournament/presentation/widgets/create_tournament_dialog.dart
+ M lib/features/tournament/presentation/widgets/players_list_dialog.dart
+ M lib/features/tournament/presentation/widgets/register_players_dialog.dart
+ M lib/features/tournament/presentation/widgets/tournament_card.dart
+ M lib/features/tournament_clock/domain/providers/tournament_clock_provider.dart
+ M lib/features/tournament_clock/presentation/screens/tournament_clock_fullscreen.dart
+ M lib/features/tournament_clock/presentation/screens/tournament_clock_screen.dart
+ M lib/features/tournament_clock/presentation/screens/tournament_clock_window.dart
+ M lib/features/tournament_clock/presentation/widgets/blinds_card.dart
+ M lib/features/tournament_clock/presentation/widgets/control_buttons.dart
+ M lib/features/tournament_clock/presentation/widgets/level_indicator.dart
+ M lib/features/tournament_clock/presentation/widgets/next_level_card.dart
+ M lib/features/tournament_clock/presentation/widgets/timer_widget.dart
+ M lib/features/tournament_clock/presentation/widgets/tournament_info.dart
+ M lib/main.dart
+ M macos/Flutter/GeneratedPluginRegistrant.swift
+ M pubspec.lock
+ M pubspec.yaml
+ M test/features/auth/auth_state_and_login_test.dart
+ M test/features/rps/rps_models_test.dart
+ M test/widget_test.dart
+?? .domain_consumers.txt
+?? .git-status-agent.txt
+?? .postman/
+?? .postman_analyze_err.log
+?? .postman_analyze_exit.txt
+?? .postman_analyze_out.log
+?? .postman_file_picker_analyze.exit
+?? .postman_file_picker_analyze.log
+?? 0)
+?? 3d-cartoon-fish-underwater_23-2150720982.avif
+?? Number.isInteger(Number(v))
+?? ['admin'
+?? admin(r)
+?? analyze.exit
+?? analyze_check.log
+?? analyzer_actionable.log
+?? analyzer_initial.log
+?? assets/
+?? backend/
+?? backend_inventory.txt
+?? build_windows.exit
+?? build_windows.log
+?? callback_scan.txt
+?? coverage/
+?? final_analyze.log
+?? final_build.log
+?? final_test.log
+?? lib/core/config/
+?? lib/core/network/
+?? lib/core/services/platform_bootstrap.dart
+?? lib/core/services/platform_bootstrap_io.dart
+?? lib/core/services/platform_bootstrap_stub.dart
+?? lib/core/services/window_manager_service_io.dart
+?? lib/core/services/window_manager_service_stub.dart
+?? lib/core/widgets/desktop_app_shell.dart
+?? lib/features/achievements/
+?? lib/features/auth/data/datasources/
+?? lib/features/auth/data/repositories/auth_repository_impl_v2.dart
+?? lib/features/auth/domain/models/demo_session.dart
+?? lib/features/auth/domain/repositories/auth_repository_contract.dart
+?? lib/features/auth/domain/usecases/
+?? lib/features/dashboard/domain/
+?? lib/features/dashboard/presentation/screens/
+?? lib/features/news/
+?? lib/features/player/domain/providers/notifications_provider.dart
+?? lib/features/player/presentation/widgets/player_navigation.dart
+?? lib/features/players/
+?? lib/features/tournament/data/
+?? lib/features/tournament/domain/repositories/
+?? lib/features/tournament/domain/usecases/
+?? lib/features/user/
+?? mojibake_candidates.txt
+?? postman/
+?? test/features/player/player_dashboard_page_test.dart
+?? test/features/player/tournament_detail_page_test.dart
+?? test/features/remote_data_providers_test.dart
+?? test_after_fix.log
+?? test_initial_full.log
+?? test_initial_full_utf8.log
+?? test_run.log
+?? tools/
+?? {const
+?? {try{const
+?? {try{const{current_level
+?? {try{const{position
+?? {try{const{user_id
+?? {try{s.json((await

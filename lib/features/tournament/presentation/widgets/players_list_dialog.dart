@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/models/rps_rank.dart';
+import '../../../players/domain/models/admin_player.dart';
+import '../../../players/domain/providers/admin_players_provider.dart';
 import '../../domain/models/tournament_model.dart';
 import '../../domain/providers/tournament_provider.dart';
 
@@ -8,10 +11,7 @@ import '../../domain/providers/tournament_provider.dart';
 class PlayersListDialog extends ConsumerStatefulWidget {
   final Tournament tournament;
 
-  const PlayersListDialog({
-    super.key,
-    required this.tournament,
-  });
+  const PlayersListDialog({super.key, required this.tournament});
 
   @override
   ConsumerState<PlayersListDialog> createState() => _PlayersListDialogState();
@@ -21,47 +21,20 @@ class _PlayersListDialogState extends ConsumerState<PlayersListDialog> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
-  // Mock players data (такие же как в RegisterPlayersDialog)
-  final List<_MockPlayer> _allPlayers = const [
-    _MockPlayer('player1', 'Alex_Pok', 'Alexey Ivanov'),
-    _MockPlayer('player2', 'PokerKing', 'Dmitry Petrov'),
-    _MockPlayer('player3', 'Sniper777', 'Maxim Sidorov'),
-    _MockPlayer('player4', 'LuckyLady', 'Anna Kuznetsova'),
-    _MockPlayer('player5', 'DiamondHands', 'Igor Volkov'),
-    _MockPlayer('player6', 'BluffMaster', 'Elena Smirnova'),
-    _MockPlayer('player7', 'FoldEquity', 'Sergey Popov'),
-    _MockPlayer('player8', 'AceHigh', 'Maria Sokolova'),
-    _MockPlayer('player9', 'RiverShark', 'Vladimir Morozov'),
-    _MockPlayer('player10', 'Nutation', 'Oleg Vasilev'),
-  ];
-
-  List<_MockPlayer> get _filteredPlayers {
-    var all = _allPlayers.where((p) {
-      return widget.tournament.registeredPlayerIds.contains(p.id);
-    }).toList();
-
-    if (_searchQuery.isEmpty) return all;
-    
-    return all.where((p) =>
-      p.login.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-      p.name.toLowerCase().contains(_searchQuery.toLowerCase())
-    ).toList();
-  }
-
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
   }
 
-  void _removePlayer(String playerId) {
+  void _removePlayer(String playerId, List<AdminPlayer> players) {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
         backgroundColor: const Color(0xff1D232C),
         title: const Text('Удалить игрока?'),
         content: Text(
-          'Вы уверены, что хотите удалить игрока "${_getPlayerName(playerId)}" из турнира?',
+          'Вы уверены, что хотите удалить игрока "${_getPlayerName(playerId, players)}" из турнира?',
           style: const TextStyle(color: Colors.white70),
         ),
         actions: [
@@ -71,34 +44,41 @@ class _PlayersListDialogState extends ConsumerState<PlayersListDialog> {
           ),
           TextButton(
             onPressed: () {
-              ref.read(tournamentProvider.notifier).removePlayer(
-                widget.tournament.id,
-                playerId,
-              );
+              ref
+                  .read(tournamentProvider.notifier)
+                  .removePlayer(widget.tournament.id, playerId);
               Navigator.pop(dialogContext);
               Navigator.pop(context); // Close players list dialog
             },
-            child: const Text(
-              'Удалить',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text('Удалить', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
     );
   }
 
-  String _getPlayerName(String playerId) {
-    final player = _allPlayers.firstWhere(
-      (p) => p.id == playerId,
-      orElse: () => const _MockPlayer('', '', 'Unknown'),
-    );
-    return player.name;
+  String _getPlayerName(String playerId, List<AdminPlayer> players) {
+    for (final player in players) {
+      if (player.id == playerId) return player.name;
+    }
+    return 'Unknown';
   }
 
   @override
   Widget build(BuildContext context) {
-    final filteredPlayers = _filteredPlayers;
+    final players = ref.watch(adminPlayersProvider).players;
+    final query = _searchQuery.toLowerCase();
+    final filteredPlayers = players.where((player) {
+      final isRegistered = widget.tournament.registeredPlayerIds.contains(
+        player.id,
+      );
+      final matchesSearch =
+          query.isEmpty ||
+          player.name.toLowerCase().contains(query) ||
+          player.login.toLowerCase().contains(query) ||
+          player.email.toLowerCase().contains(query);
+      return isRegistered && matchesSearch;
+    }).toList();
     final isFull = widget.tournament.isFull;
 
     return Dialog(
@@ -116,7 +96,7 @@ class _PlayersListDialogState extends ConsumerState<PlayersListDialog> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1ABC9C).withOpacity(0.1),
+                    color: const Color(0xFF1ABC9C).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
@@ -168,19 +148,12 @@ class _PlayersListDialogState extends ConsumerState<PlayersListDialog> {
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.info_outline,
-                    color: Colors.white54,
-                    size: 18,
-                  ),
+                  Icon(Icons.info_outline, color: Colors.white54, size: 18),
                   const SizedBox(width: 8),
                   Text(
                     'Записано: ${widget.tournament.currentPlayers}/${widget.tournament.maxPlayers} '
                     '${isFull ? '(Мест нет)' : "(${widget.tournament.maxPlayers - widget.tournament.currentPlayers} мест свободно)"}',
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
+                    style: const TextStyle(color: Colors.white70, fontSize: 14),
                   ),
                 ],
               ),
@@ -191,7 +164,7 @@ class _PlayersListDialogState extends ConsumerState<PlayersListDialog> {
             TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Поиск по логину или имени...',
+                hintText: 'Поиск по имени, логину или email...',
                 prefixIcon: const Icon(Icons.search, color: Colors.white54),
                 filled: true,
                 fillColor: const Color(0xff0A0E14),
@@ -199,7 +172,10 @@ class _PlayersListDialogState extends ConsumerState<PlayersListDialog> {
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide.none,
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
               ),
               style: const TextStyle(color: Colors.white),
               onChanged: (value) {
@@ -245,22 +221,24 @@ class _PlayersListDialogState extends ConsumerState<PlayersListDialog> {
                 child: ListView.separated(
                   shrinkWrap: true,
                   itemCount: filteredPlayers.length,
-                  separatorBuilder: (context, index) => const Divider(
-                    color: Color(0xff2A2D35),
-                    height: 1,
-                  ),
+                  separatorBuilder: (context, index) =>
+                      const Divider(color: Color(0xff2A2D35), height: 1),
                   itemBuilder: (context, index) {
                     final player = filteredPlayers[index];
-                    final indexInTournament = widget.tournament
+                    final indexInTournament = widget
+                        .tournament
                         .registeredPlayerIds
                         .indexOf(player.id);
+                    final initial = player.login.isNotEmpty
+                        ? player.login[0].toUpperCase()
+                        : '?';
 
                     return ListTile(
                       dense: true,
                       leading: CircleAvatar(
                         backgroundColor: const Color(0xFF1ABC9C),
                         child: Text(
-                          player.login[0].toUpperCase(),
+                          initial,
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -276,12 +254,14 @@ class _PlayersListDialogState extends ConsumerState<PlayersListDialog> {
                         ),
                       ),
                       subtitle: Text(
-                        player.login,
+                        '@${player.login} • ${player.email}\n'
+                        '${player.rank.label} • ${player.rpsPoints > 0 ? player.rpsPoints.toString() : '—'} очков',
                         style: const TextStyle(
                           color: Colors.white54,
                           fontSize: 12,
                         ),
                       ),
+                      isThreeLine: true,
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -292,7 +272,9 @@ class _PlayersListDialogState extends ConsumerState<PlayersListDialog> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF1ABC9C).withOpacity(0.1),
+                                color: const Color(
+                                  0xFF1ABC9C,
+                                ).withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
@@ -306,7 +288,7 @@ class _PlayersListDialogState extends ConsumerState<PlayersListDialog> {
                             ),
                           const SizedBox(width: 8),
                           IconButton(
-                            onPressed: () => _removePlayer(player.id),
+                            onPressed: () => _removePlayer(player.id, players),
                             icon: const Icon(
                               Icons.delete_outline,
                               color: Colors.redAccent,
@@ -314,7 +296,9 @@ class _PlayersListDialogState extends ConsumerState<PlayersListDialog> {
                             ),
                             tooltip: 'Удалить из турнира',
                             style: IconButton.styleFrom(
-                              backgroundColor: Colors.redAccent.withOpacity(0.1),
+                              backgroundColor: Colors.redAccent.withValues(
+                                alpha: 0.1,
+                              ),
                             ),
                           ),
                         ],
@@ -341,12 +325,4 @@ class _PlayersListDialogState extends ConsumerState<PlayersListDialog> {
       ),
     );
   }
-}
-
-class _MockPlayer {
-  final String id;
-  final String login;
-  final String name;
-
-  const _MockPlayer(this.id, this.login, this.name);
 }

@@ -13,9 +13,6 @@ class TournamentsPage extends StatefulWidget {
 }
 
 class _TournamentsPageState extends State<TournamentsPage> {
-  String _selectedFilter = "Все";
-  String _selectedFormat = "Все";
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

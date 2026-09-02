@@ -19,7 +19,8 @@ void main() {
       xpToNextLevel: 100,
       rank: 1,
       rankPoints: 450,
-      rpsRank: RpsRank.regular,
+      rpsPoints: 450,
+      rpsRank: RpsRank.bronze,
       winRate: 0,
       totalTournaments: 0,
       totalWins: 0,
@@ -38,7 +39,7 @@ void main() {
         ),
       ),
     );
-    expect(find.text('RPS Regular'), findsOneWidget);
+    expect(find.text('RPS Bronze'), findsOneWidget);
     expect(find.text('450 rating'), findsOneWidget);
     expect(find.text('\u20bd12,500'), findsNothing);
     expect(find.text('\u0411\u0430\u043b\u0430\u043d\u0441'), findsNothing);

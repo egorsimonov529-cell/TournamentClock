@@ -61,8 +61,8 @@ class TournamentListItem extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: isCompleted
-                        ? AppColors.accent.withOpacity(0.15)
-                        : AppColors.warning.withOpacity(0.15),
+                        ? AppColors.accent.withValues(alpha: 0.15)
+                        : AppColors.warning.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(AppRadius.xs),
                   ),
                   child: Text(

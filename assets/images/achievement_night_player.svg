@@ -1,0 +1,8 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="256" height="256" rx="36" fill="#121916"/>
+  <circle cx="128" cy="100" r="52" fill="#3B82F6" fill-opacity="0.18"/>
+  <path d="M158 70C149 60 135.5 54 120 54C91 54 68 77 68 106C68 135 91 158 120 158C135 158 149 152 158 143C146 146 132 148 118 148C90.3 148 68 125.7 68 98C68 80.5 79.8 66 96 62C105 60 114 60 123 63C130 66 134 70 140 75C146 79 152 84 158 70Z" fill="#3B82F6"/>
+  <path d="M146 42L160 60L181 62L166 78L170 99L146 88L122 99L126 78L111 62L132 60L146 42Z" fill="#C9A84E"/>
+  <rect x="52" y="168" width="152" height="22" rx="11" fill="#3B82F6" fill-opacity="0.75"/>
+  <text x="128" y="182" text-anchor="middle" font-family="Segoe UI, Arial" font-size="18" font-weight="700" fill="#F2F5F3">23:00</text>
+</svg>

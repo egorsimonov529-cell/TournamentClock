@@ -15,8 +15,10 @@ class RecoveryPage extends StatefulWidget {
 }
 
 class _RecoveryPageState extends State<RecoveryPage> {
+  final _formKey = GlobalKey<FormState>();
   final _controller = TextEditingController();
   bool _sent = false;
+  bool _sending = false;
 
   @override
   void dispose() {
@@ -24,9 +26,15 @@ class _RecoveryPageState extends State<RecoveryPage> {
     super.dispose();
   }
 
-  void _handleSend() {
-    // TODO: Реализовать отправку на API
-    setState(() => _sent = true);
+  Future<void> _handleSend() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _sending = true);
+    await Future<void>.delayed(const Duration(milliseconds: 350));
+    if (!mounted) return;
+    setState(() {
+      _sending = false;
+      _sent = true;
+    });
   }
 
   @override
@@ -55,7 +63,7 @@ class _RecoveryPageState extends State<RecoveryPage> {
               Icon(
                 Icons.lock_reset_rounded,
                 size: 64,
-                color: AppColors.accent.withOpacity(0.6),
+                color: AppColors.accent.withValues(alpha: 0.6),
               ),
               const SizedBox(height: 24),
               const Text(
@@ -75,16 +83,31 @@ class _RecoveryPageState extends State<RecoveryPage> {
               const SizedBox(height: 40),
 
               if (!_sent) ...[
-                AppTextField(
-                  label: "Email или телефон",
-                  controller: _controller,
-                  keyboardType: TextInputType.emailAddress,
-                  hintText: "ivan@example.com",
+                Form(
+                  key: _formKey,
+                  child: AppTextField(
+                    label: "Email или телефон",
+                    controller: _controller,
+                    keyboardType: TextInputType.emailAddress,
+                    hintText: "ivan@example.com",
+                    validator: (value) {
+                      final input = value?.trim() ?? '';
+                      if (input.isEmpty) return 'Введите email или телефон';
+                      final isEmail = RegExp(
+                        r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
+                      ).hasMatch(input);
+                      final digits = input.replaceAll(RegExp(r'\D'), '');
+                      if (!isEmail && digits.length < 10) {
+                        return 'Введите корректный email или телефон';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
                 const SizedBox(height: 24),
                 PrimaryButton(
-                  label: "Отправить инструкцию",
-                  onPressed: _handleSend,
+                  label: _sending ? "Отправляем..." : "Отправить инструкцию",
+                  onPressed: _sending ? null : _handleSend,
                 ),
               ] else ...[
                 const AppCard(

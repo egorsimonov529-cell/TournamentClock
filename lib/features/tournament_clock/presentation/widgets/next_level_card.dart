@@ -26,7 +26,7 @@ class NextLevelCard extends StatelessWidget {
         color: const Color(0xff1D232C),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.info.withOpacity(0.3),
+          color: AppColors.info.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -38,7 +38,7 @@ class NextLevelCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.info.withOpacity(0.2),
+                  color: AppColors.info.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -72,16 +72,12 @@ class NextLevelCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.timer_rounded,
-                color: Colors.white54,
-                size: 14,
-              ),
+              const Icon(Icons.timer_rounded, color: Colors.white54, size: 14),
               const SizedBox(width: 6),
               Text(
                 '$duration мин',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.5),
+                  color: Colors.white.withValues(alpha: 0.5),
                   fontSize: 12,
                 ),
               ),
@@ -98,7 +94,7 @@ class NextLevelCard extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.5),
+            color: Colors.white.withValues(alpha: 0.5),
             fontSize: 11,
           ),
         ),

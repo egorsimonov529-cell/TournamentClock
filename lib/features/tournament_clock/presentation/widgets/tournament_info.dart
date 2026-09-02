@@ -29,10 +29,7 @@ class TournamentInfo extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xff1D232C),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xff2A2D35),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xff2A2D35), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,9 +55,9 @@ class TournamentInfo extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              _buildInfoChip('Format', format),
+              _buildInfoChip('Формат', format),
               const SizedBox(width: 12),
-              _buildInfoChip('Buy-in', _formatMoney(buyIn)),
+              _buildInfoChip('Взнос', _formatMoney(buyIn)),
               const SizedBox(width: 12),
               _buildStatusChip(),
             ],
@@ -72,12 +69,12 @@ class TournamentInfo extends StatelessWidget {
               Text(
                 'Игроки: $players/$maxPlayers',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 14,
                 ),
               ),
               Text(
-                'Призовой: $_formatMoney(prizePool)',
+                'Рейтинг: $_formatMoney(prizePool)',
                 style: const TextStyle(
                   color: AppColors.primary,
                   fontSize: 14,
@@ -93,12 +90,9 @@ class TournamentInfo extends StatelessWidget {
 
   Widget _buildInfoChip(String label, String value) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 6,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.15),
+        color: AppColors.primary.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -114,14 +108,11 @@ class TournamentInfo extends StatelessWidget {
 
   Widget _buildStatusChip() {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 6,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: status == 'В игре'
-            ? AppColors.success.withOpacity(0.2)
-            : AppColors.warning.withOpacity(0.2),
+            ? AppColors.success.withValues(alpha: 0.2)
+            : AppColors.warning.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -131,9 +122,7 @@ class TournamentInfo extends StatelessWidget {
             width: 8,
             height: 8,
             decoration: BoxDecoration(
-              color: status == 'В игре'
-                  ? AppColors.success
-                  : AppColors.warning,
+              color: status == 'В игре' ? AppColors.success : AppColors.warning,
               shape: BoxShape.circle,
             ),
           ),
@@ -141,9 +130,7 @@ class TournamentInfo extends StatelessWidget {
           Text(
             status,
             style: TextStyle(
-              color: status == 'В игре'
-                  ? AppColors.success
-                  : AppColors.warning,
+              color: status == 'В игре' ? AppColors.success : AppColors.warning,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),

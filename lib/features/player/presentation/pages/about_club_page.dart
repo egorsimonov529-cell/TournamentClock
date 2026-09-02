@@ -14,7 +14,7 @@ class AboutClubPage extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: CustomScrollView(
         slivers: [
-          const SliverToBoxAdapter(child: ScreenTitle(title: '╨Ю ╨║╨╗╤Г╨▒╨╡')),
+          const SliverToBoxAdapter(child: ScreenTitle(title: 'О клубе')),
           SliverPadding(
             padding: const EdgeInsets.all(AppSpacing.pageHorizontal),
             sliver: SliverList(
@@ -32,7 +32,7 @@ class AboutClubPage extends StatelessWidget {
                 ),
                 SizedBox(height: AppSpacing.sm),
                 Text(
-                  '╨Ь╨╡╤Б╤В╨╛ ╨┤╨╗╤П ╤З╨╡╤Б╤В╨╜╨╛╨╣ ╨╕╨│╤А╤Л, ╤П╤А╨║╨╕╤Е ╤В╤Г╤А╨╜╨╕╤А╨╛╨▓ ╨╕ ╤Б╨╕╨╗╤М╨╜╨╛╨│╨╛ ╤Б╨╛╨╛╨▒╤Й╨╡╤Б╤В╨▓╨░.',
+                  'Место для честной игры, ярких турниров и сильного сообщества.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 15,
@@ -46,7 +46,7 @@ class AboutClubPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '╨Э╨░╤И╨░ ╨╝╨╕╤Б╤Б╨╕╤П',
+                        'Наша миссия',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -55,7 +55,7 @@ class AboutClubPage extends StatelessWidget {
                       ),
                       SizedBox(height: AppSpacing.sm),
                       Text(
-                        '╨б╨╛╨╖╨┤╨░╨▓╨░╤В╤М ╨║╨╛╨╝╤Д╨╛╤А╤В╨╜╤Г╤О ╨╕ ╨▒╨╡╨╖╨╛╨┐╨░╤Б╨╜╤Г╤О ╤Б╤А╨╡╨┤╤Г ╨┤╨╗╤П ╨╕╨│╤А╨╛╨║╨╛╨▓ ╨╗╤О╨▒╨╛╨│╨╛ ╤Г╤А╨╛╨▓╨╜╤П.',
+                        'Создавать комфортную и безопасную среду для игроков любого уровня.',
                         style: TextStyle(
                           fontSize: 14,
                           height: 1.5,
@@ -71,18 +71,17 @@ class AboutClubPage extends StatelessWidget {
                     children: [
                       _InfoRow(
                         icon: Icons.location_on_outlined,
-                        text: '╨Ь╨╛╤Б╨║╨▓╨░, ╤Ж╨╡╨╜╤В╤А ╨│╨╛╤А╨╛╨┤╨░',
+                        text: 'Москва, центр города',
                       ),
                       Divider(height: 24),
                       _InfoRow(
                         icon: Icons.schedule_rounded,
-                        text: '╨Х╨╢╨╡╨┤╨╜╨╡╨▓╨╜╨╛ ╤Б 10:00 ╨┤╨╛ 02:00',
+                        text: 'Ежедневно с 10:00 до 02:00',
                       ),
                       Divider(height: 24),
                       _InfoRow(
                         icon: Icons.verified_user_outlined,
-                        text:
-                            '╨Ю╤В╨▓╨╡╤В╤Б╤В╨▓╨╡╨╜╨╜╨░╤П ╨╕╨│╤А╨░ ╨╕ ╤З╨╡╤Б╤В╨╜╤Л╨╡ ╨┐╤А╨░╨▓╨╕╨╗╨░',
+                        text: 'Ответственная игра и честные правила',
                       ),
                     ],
                   ),

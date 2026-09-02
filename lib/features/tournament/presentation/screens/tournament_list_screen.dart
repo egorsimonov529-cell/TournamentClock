@@ -6,8 +6,13 @@ import '../widgets/tournament_card.dart';
 import '../widgets/create_tournament_dialog.dart';
 import '../widgets/register_players_dialog.dart';
 import '../widgets/players_list_dialog.dart';
+import '../widgets/tournament_results_dialog.dart';
+import '../widgets/rps_settings_dialog.dart';
+import '../widgets/season_reset_dialog.dart';
+import '../widgets/edit_player_rps_dialog.dart';
 import '../../domain/models/tournament_model.dart';
 import '../../domain/providers/tournament_provider.dart';
+import '../../domain/providers/rps_provider.dart';
 
 class TournamentListScreen extends ConsumerStatefulWidget {
   const TournamentListScreen({super.key});
@@ -47,7 +52,7 @@ class _TournamentListScreenState extends ConsumerState<TournamentListScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(icon, color: color, size: 24),
@@ -92,9 +97,9 @@ class _TournamentListScreenState extends ConsumerState<TournamentListScreen> {
     );
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Stats row
+        _buildRpsSettingsButton(),
+        const SizedBox(height: 16),
         _buildStatsSection(tournaments, stats),
         const SizedBox(height: 24),
         // Search and filters
@@ -104,6 +109,44 @@ class _TournamentListScreenState extends ConsumerState<TournamentListScreen> {
         Expanded(
           child: SingleChildScrollView(
             child: _buildTournamentsList(tournaments),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRpsSettingsButton() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        FilledButton.icon(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => const SeasonResetDialog(),
+            );
+          },
+          icon: const Icon(Icons.autorenew),
+          label: const Text('Сезонный сброс'),
+          style: FilledButton.styleFrom(
+            backgroundColor: Colors.red,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          ),
+        ),
+        const SizedBox(width: 12),
+        FilledButton.icon(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => const RpsSettingsDialog(),
+            );
+          },
+          icon: const Icon(Icons.trending_up),
+          label: const Text('Настройки RPS'),
+          style: FilledButton.styleFrom(
+            backgroundColor: const Color(0xFFFFD700),
+            foregroundColor: Colors.black,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           ),
         ),
       ],
@@ -323,6 +366,18 @@ class _TournamentListScreenState extends ConsumerState<TournamentListScreen> {
                     ),
                   ],
                 ),
+              );
+            },
+            onResults: () {
+              showDialog(
+                context: context,
+                builder: (context) => TournamentResultsDialog(tournament: tournament),
+              );
+            },
+            onRpsSettings: () {
+              showDialog(
+                context: context,
+                builder: (context) => const RpsSettingsDialog(),
               );
             },
           ),

@@ -1,15 +1,18 @@
 import 'dart:convert';
 
+import '../../../../core/config/app_config.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/models/auth_exception.dart';
 import '../../../../core/models/auth_response.dart';
 import '../../../../core/models/user.dart';
 import '../../../../core/services/api_service.dart';
 import '../../../../core/services/secure_storage_service.dart';
 import '../../../../core/services/shared_prefs_service.dart';
+import '../../domain/models/demo_session.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../../domain/repositories/auth_repository_contract.dart';
 
-/// Реализация репозитория авторизации
-class AuthRepositoryImpl implements AuthRepository {
+class AuthRepositoryImpl implements AuthRepository, AuthRepositoryContract {
   final ApiService _apiService;
   final SecureStorageService _secureStorage;
   final SharedPrefsService _sharedPrefs;
@@ -19,10 +22,23 @@ class AuthRepositoryImpl implements AuthRepository {
     required ApiService apiService,
     required SecureStorageService secureStorage,
     required SharedPrefsService sharedPrefs,
-    this.isDemoMode = true, // Демо-режим включен по умолчанию
+    this.isDemoMode = AppConfig.useDemoAuth,
   }) : _apiService = apiService,
        _secureStorage = secureStorage,
        _sharedPrefs = sharedPrefs;
+
+  Future<void> _persistSession(User user, bool rememberMe) async {
+    await _secureStorage.write(
+      key: AppConstants.demoSessionUserKey,
+      value: jsonEncode(user.toJson()),
+    );
+    await _sharedPrefs.setBool(AppConstants.rememberMeKey, rememberMe);
+    if (rememberMe) {
+      await _sharedPrefs.setString(AppConstants.savedLoginKey, user.login);
+    } else {
+      await _sharedPrefs.remove(AppConstants.savedLoginKey);
+    }
+  }
 
   @override
   Future<AuthResponse> login({
@@ -30,85 +46,25 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
     bool rememberMe = false,
   }) async {
-    // Демо-режим: любой логин/пароль работают
-    if (isDemoMode) {
-      // Определяем роль по логину
-      final role = login.contains('admin') ? 'admin' : 'player';
-
-      final authResponse = AuthResponse(
-        accessToken:
-            'demo_access_token_${DateTime.now().millisecondsSinceEpoch}',
-        refreshToken:
-            'demo_refresh_token_${DateTime.now().millisecondsSinceEpoch}',
-        user: User(
-          id: role == 'admin' ? 'admin-001' : 'player-001',
-          login: login,
-          email: '$login@pokerclub.demo',
-          role: role,
-          firstName: role == 'admin' ? 'Админ' : 'Игрок',
-          lastName: 'Пользователь',
-          isActive: true,
-        ),
-      );
-
-      // Сохраняем токены и данные пользователя (с обработкой ошибок)
-      try {
-        await _secureStorage.write(
-          key: 'access_token',
-          value: authResponse.accessToken,
-        );
-        await _secureStorage.write(
-          key: 'refresh_token',
-          value: authResponse.refreshToken,
-        );
-        await _secureStorage.write(
-          key: 'user_data',
-          value: jsonEncode(authResponse.user.toJson()),
-        );
-        await _secureStorage.write(key: 'user_role', value: role);
-      } catch (e) {
-        // SecureStorage может не работать на Windows в debug режиме
-      }
-
-      // Если "Запомнить меня" — сохраняем логин
-      if (rememberMe) {
-        await _sharedPrefs.setString('saved_login', login);
-      } else {
-        await _sharedPrefs.remove('saved_login');
-      }
-
-      return authResponse;
-    }
-
     try {
       final response = await _apiService.post(
         '/auth/login',
         data: {'login': login, 'password': password, 'remember_me': rememberMe},
       );
-
-      final authResponse = AuthResponse.fromJson(response.data);
-
-      // Сохраняем токены в secure storage
+      final auth = AuthResponse.fromJson(response.data);
       await _secureStorage.write(
-        key: 'access_token',
-        value: authResponse.accessToken,
+        key: AppConstants.accessTokenKey,
+        value: auth.accessToken,
       );
       await _secureStorage.write(
-        key: 'refresh_token',
-        value: authResponse.refreshToken,
+        key: AppConstants.refreshTokenKey,
+        value: auth.refreshToken,
       );
-
-      // Если "Запомнить меня" — сохраняем логин
-      if (rememberMe) {
-        await _sharedPrefs.setString('saved_login', login);
-      } else {
-        await _sharedPrefs.remove('saved_login');
-      }
-
-      return authResponse;
+      await _persistSession(auth.user, rememberMe);
+      return auth;
     } on AuthException {
       rethrow;
-    } catch (e) {
+    } catch (_) {
       throw const NetworkException();
     }
   }
@@ -122,167 +78,127 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     if (!acceptedTerms) {
       throw const ValidationException(
-        message: '╨Э╨╡╨╛╨▒╤Е╨╛╨┤╨╕╨╝╨╛ ╤Б╨╛╨│╨╗╨░╤Б╨╕╨╡ ╤Б ╨┐╤А╨░╨▓╨╕╨╗╨░╨╝╨╕',
-        fieldErrors: {'acceptedTerms': '╨Э╨╡╨╛╨▒╤Е╨╛╨┤╨╕╨╝╨╛ ╤Б╨╛╨│╨╗╨░╤Б╨╕╨╡'},
+        message: 'Необходимо согласие с правилами',
+        fieldErrors: {'acceptedTerms': 'Необходимо согласие'},
       );
     }
-
-    if (!isDemoMode) {
-      try {
-        final response = await _apiService.post(
-          '/auth/register',
-          data: {'name': name, 'email': email, 'password': password},
-        );
-        return AuthResponse.fromJson(response.data);
-      } on AuthException {
-        rethrow;
-      } catch (_) {
-        throw const NetworkException();
-      }
-    }
-
-    final parts = name.trim().split(RegExp(r'\s+'));
-    final response = AuthResponse(
-      accessToken: 'demo_access_token_${DateTime.now().millisecondsSinceEpoch}',
-      refreshToken:
-          'demo_refresh_token_${DateTime.now().millisecondsSinceEpoch}',
-      user: User(
-        id: 'player-${DateTime.now().millisecondsSinceEpoch}',
-        login: email,
-        email: email,
-        role: 'player',
-        firstName: parts.isEmpty ? name : parts.first,
-        lastName: parts.length > 1 ? parts.skip(1).join(' ') : null,
-      ),
-    );
     try {
-      await _secureStorage.write(
-        key: 'access_token',
-        value: response.accessToken,
+      final response = await _apiService.post(
+        '/auth/register',
+        data: {'name': name, 'email': email, 'password': password},
       );
-      await _secureStorage.write(
-        key: 'refresh_token',
-        value: response.refreshToken,
-      );
-      await _secureStorage.write(
-        key: 'user_data',
-        value: jsonEncode(response.user.toJson()),
-      );
-      await _secureStorage.write(key: 'user_role', value: 'player');
+      final auth = AuthResponse.fromJson(response.data);
+      await _persistSession(auth.user, true);
+      return auth;
+    } on AuthException {
+      rethrow;
     } catch (_) {
-      // SecureStorage ╨╝╨╛╨╢╨╡╤В ╨▒╤Л╤В╤М ╨╜╨╡╨┤╨╛╤Б╤В╤Г╨┐╨╡╨╜ ╨╜╨░ desktop ╨▓ debug-╤А╨╡╨╢╨╕╨╝╨╡.
+      throw const NetworkException();
     }
-    return response;
   }
 
   @override
-  Future<AuthResponse> signInWithGoogle() {
-    throw const OAuthUnavailableException();
-  }
+  Future<AuthResponse> signInWithGoogle() =>
+      throw const OAuthUnavailableException();
 
   @override
   Future<AuthResponse> refreshToken({required String refreshToken}) async {
+    if (isDemoMode) throw const TokenException();
     try {
       final response = await _apiService.post(
         '/auth/refresh',
         data: {'refresh_token': refreshToken},
       );
-
-      final authResponse = AuthResponse.fromJson(response.data);
-
-      // Обновляем токены в secure storage
+      final auth = AuthResponse.fromJson(response.data);
       await _secureStorage.write(
-        key: 'access_token',
-        value: authResponse.accessToken,
+        key: AppConstants.accessTokenKey,
+        value: auth.accessToken,
       );
       await _secureStorage.write(
-        key: 'refresh_token',
-        value: authResponse.refreshToken,
+        key: AppConstants.refreshTokenKey,
+        value: auth.refreshToken,
       );
-
-      return authResponse;
+      return auth;
     } on AuthException {
-      // Если refresh токен тоже истёк — очищаем всё
       await clearAll();
       throw const TokenException();
-    } catch (e) {
+    } catch (_) {
       await clearAll();
       throw const NetworkException();
     }
   }
 
   @override
+  Future<DemoSession> restoreSession() async {
+    final user = await checkSession();
+    return user == null
+        ? const DemoSession.anonymous()
+        : DemoSession.authenticated(user);
+  }
+
+  @override
   Future<void> logout() async {
-    try {
-      // Отправляем запрос на logout (токен уже в headers)
-      await _apiService.postLogout('/auth/logout');
-    } catch (e) {
-      // Игнорируем ошибки при logout — всё равно очищаем локально
-    } finally {
-      await clearAll();
+    if (!isDemoMode) {
+      try {
+        await _apiService.postLogout('/auth/logout');
+      } catch (_) {}
     }
+    await clearAll();
   }
 
   @override
   Future<User?> checkSession() async {
-    try {
-      final token = await _secureStorage.read('access_token');
-      if (token == null || token.isEmpty) {
-        return null;
-      }
-
-      // В демо-режиме checkSession всегда возвращает null
-      // Роль определяется строго при login, чтобы не было конфликтов
-      if (isDemoMode) {
-        return null;
-      }
-
-      // Можно проверить валидность токена запросом к серверу
-      return null;
-    } catch (e) {
-      await clearAll();
-      return null;
-    }
+    final token = await _secureStorage.read(AppConstants.accessTokenKey);
+    return token == null || token.isEmpty ? null : getCurrentUser();
   }
 
   @override
   Future<AuthResponse?> autoLogin() async {
-    try {
-      final accessToken = await _secureStorage.read('access_token');
-      final refreshToken = await _secureStorage.read('refresh_token');
+    final user = await getCurrentUser();
+    if (user == null) return null;
 
-      if (accessToken == null || refreshToken == null) {
-        return null;
-      }
-
-      // Пытаемся обновить токен
-      return await this.refreshToken(refreshToken: refreshToken);
-    } catch (e) {
-      await clearAll();
+    final token = await _secureStorage.read(AppConstants.accessTokenKey);
+    final refreshToken = await _secureStorage.read(AppConstants.refreshTokenKey);
+    if ((token == null || token.isEmpty) || (refreshToken == null || refreshToken.isEmpty)) {
       return null;
     }
+
+    return AuthResponse(
+      accessToken: token,
+      refreshToken: refreshToken,
+      user: user,
+    );
   }
 
   @override
   Future<User?> getCurrentUser() async {
-    try {
-      final userData = await _secureStorage.read('user_data');
-      if (userData == null) {
+    if (isDemoMode) {
+      await _sharedPrefs.init();
+      final data = _sharedPrefs.getString(AppConstants.demoSessionUserKey);
+      if (data == null) return null;
+      try {
+        return User.fromJson(jsonDecode(data) as Map<String, dynamic>);
+      } catch (_) {
         return null;
       }
+    }
 
-      return User.fromJson(jsonDecode(userData) as Map<String, dynamic>);
-    } catch (e) {
+    final data = await _secureStorage.read(AppConstants.demoSessionUserKey);
+    if (data == null) return null;
+    try {
+      return User.fromJson(jsonDecode(data) as Map<String, dynamic>);
+    } catch (_) {
       return null;
     }
   }
 
   @override
   Future<void> clearAll() async {
-    await _secureStorage.delete('access_token');
-    await _secureStorage.delete('refresh_token');
-    await _secureStorage.delete('user_data');
-
-    // Не удаляем saved_login — он нужен для auto-fill
+    await _secureStorage.delete(AppConstants.accessTokenKey);
+    await _secureStorage.delete(AppConstants.refreshTokenKey);
+    await _secureStorage.delete(AppConstants.demoSessionUserKey);
+    await _sharedPrefs.remove(AppConstants.rememberMeKey);
+    await _sharedPrefs.remove(AppConstants.savedLoginKey);
+    await _sharedPrefs.remove(AppConstants.demoSessionUserKey);
   }
 }

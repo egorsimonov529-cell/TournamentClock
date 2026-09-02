@@ -106,8 +106,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          ref.read(authStateProvider).message ??
-              '╨Ю╤И╨╕╨▒╨║╨░ ╤А╨╡╨│╨╕╤Б╤В╤А╨░╤Ж╨╕╨╕',
+          ref.read(authStateProvider).message ?? 'Ошибка регистрации',
         ),
       ),
     );
@@ -126,7 +125,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
       SnackBar(
         content: Text(
           ref.read(authStateProvider).message ??
-              'Google-╨▓╤Е╨╛╨┤ ╤В╤А╨╡╨▒╤Г╨╡╤В ╨╜╨░╤Б╤В╤А╨╛╨╣╨║╨╕ OAuth',
+              'Вход через Google требует настройки OAuth',
         ),
       ),
     );
@@ -272,7 +271,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
 
             const SizedBox(height: 12),
             GhostButton(
-              label: '╨Т╨╛╨╣╤В╨╕ ╤З╨╡╤А╨╡╨╖ Google',
+              label: 'Войти через Google',
               onPressed: isLoading ? null : _handleGoogleLogin,
             ),
 

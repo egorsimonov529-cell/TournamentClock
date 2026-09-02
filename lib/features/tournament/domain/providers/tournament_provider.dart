@@ -1,6 +1,33 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/services/api_service.dart';
+import '../../../auth/domain/providers/auth_state_provider.dart';
+import '../../data/datasources/tournament_remote_data_source.dart';
+import '../../data/repositories/tournament_repository_impl.dart';
+import '../../domain/repositories/tournament_repository_contract.dart';
+import '../../domain/usecases/get_tournaments_usecase.dart';
+import '../../domain/usecases/register_player_usecase.dart';
 import '../models/tournament_model.dart';
+
+final tournamentRemoteDataSourceProvider = Provider<TournamentRemoteDataSource>(
+  (ref) => TournamentRemoteDataSourceImpl(
+    apiService: ref.watch(apiServiceProvider),
+  ),
+);
+
+final tournamentRepositoryProvider = Provider<TournamentRepositoryContract>(
+  (ref) => TournamentRepositoryImpl(
+    remoteDataSource: ref.watch(tournamentRemoteDataSourceProvider),
+  ),
+);
+
+final getTournamentsUseCaseProvider = Provider<GetTournamentsUseCase>(
+  (ref) => GetTournamentsUseCase(ref.read(tournamentRepositoryProvider)),
+);
+
+final registerPlayerUseCaseProvider = Provider<RegisterPlayerUseCase>(
+  (ref) => RegisterPlayerUseCase(ref.read(tournamentRepositoryProvider)),
+);
 
 enum TournamentRegistrationResult {
   success,
@@ -33,117 +60,133 @@ class TournamentStats {
 }
 
 class TournamentNotifier extends StateNotifier<List<Tournament>> {
-  TournamentNotifier()
-    : super([
-        Tournament(
-          id: '1',
-          name: 'Sunday Mega Tournament',
-          description: 'Главный воскресный турнир с призовым фондом 500,000₽',
-          startDate: DateTime.now().add(const Duration(days: 2)),
-          endDate: DateTime.now().add(const Duration(days: 3)),
-          maxPlayers: 100,
-          buyIn: 1000,
-          format: 'TT No-Limit',
-          status: 'upcoming',
-          registeredPlayerIds: ['player1', 'player2', 'player3'],
-        ),
-        Tournament(
-          id: '2',
-          name: 'Monday Mystery Battle',
-          description: 'Турнир с неизвестной структуройblind-ов',
-          startDate: DateTime.now().add(const Duration(days: 1)),
-          endDate: DateTime.now().add(const Duration(days: 2)),
-          maxPlayers: 50,
-          buyIn: 500,
-          format: 'TT No-Limit',
-          status: 'inProgress',
-          registeredPlayerIds: ['player4', 'player5'],
-        ),
-        Tournament(
-          id: '3',
-          name: 'Friday Night Championship',
-          description: 'Чемпионский турнир с рейтинговыми очками',
-          startDate: DateTime.now().subtract(const Duration(days: 5)),
-          endDate: DateTime.now().subtract(const Duration(days: 6)),
-          maxPlayers: 200,
-          buyIn: 2000,
-          format: 'TT No-Limit',
-          status: 'completed',
-          registeredPlayerIds: ['player6', 'player7', 'player8', 'player9'],
-        ),
-        Tournament(
-          id: '4',
-          name: 'Quick Spin 30',
-          description: 'Быстрый турнир на 30 минут',
-          startDate: DateTime.now().add(const Duration(hours: 5)),
-          endDate: DateTime.now().add(const Duration(hours: 6)),
-          maxPlayers: 30,
-          buyIn: 200,
-          format: 'TT No-Limit',
-          status: 'upcoming',
-          registeredPlayerIds: [],
-        ),
-      ]);
-
-  void addTournament(Tournament tournament) {
-    state = [tournament, ...state];
+  TournamentNotifier() : super(const []) {
+    load();
   }
 
-  void updateTournament(Tournament updated) {
-    state = [...state.map((t) => t.id == updated.id ? updated : t)];
+  Future<void> load() async {
+    try {
+      final response = await ApiService().get('/tournaments');
+      final data = response.data as List<dynamic>;
+      state = data
+          .map((item) => Tournament.fromJson(item as Map<String, dynamic>))
+          .toList();
+    } catch (_) {
+      state = const [];
+    }
   }
 
-  void deleteTournament(String id) {
-    state = state.where((t) => t.id != id).toList();
+  Future<void> addTournament(Tournament tournament) async {
+    try {
+      final response = await ApiService().post('/tournaments', data: {
+        'name': tournament.name,
+        'description': tournament.description,
+        'start_date': tournament.startDate.toIso8601String(),
+        'end_date': tournament.endDate.toIso8601String(),
+        'max_players': tournament.maxPlayers,
+        'buy_in': tournament.buyIn,
+        'format': tournament.format,
+        'status': tournament.status,
+      });
+      if (response.data != null) {
+        final created = Tournament.fromJson(response.data as Map<String, dynamic>);
+        state = [created, ...state];
+      }
+    } catch (e) {
+      print('Ошибка создания турнира: $e');
+      // Не добавляем в стейт при ошибке
+    }
   }
 
-  TournamentRegistrationResult registerPlayer(
+  Future<void> updateTournament(Tournament tournament) async {
+    try {
+      await ApiService().post('/tournaments/${tournament.id}', data: {
+        'name': tournament.name,
+        'description': tournament.description,
+        'start_date': tournament.startDate.toIso8601String(),
+        'end_date': tournament.endDate.toIso8601String(),
+        'max_players': tournament.maxPlayers,
+        'buy_in': tournament.buyIn,
+        'format': tournament.format,
+        'status': tournament.status,
+      });
+      // Обновляем локально
+      state = [...state.map((t) => t.id == tournament.id ? tournament : t)];
+    } catch (e) {
+      print('Ошибка обновления турнира: $e');
+    }
+  }
+
+  Future<void> deleteTournament(String id) async {
+    try {
+      await ApiService().post('/tournaments/$id/delete');
+      state = state.where((t) => t.id != id).toList();
+    } catch (e) {
+      print('Ошибка удаления турнира: $e');
+    }
+  }
+
+  Future<TournamentRegistrationResult> registerPlayer(
     String tournamentId,
     String playerId,
-  ) {
-    final index = state.indexWhere((t) => t.id == tournamentId);
-    if (index < 0) return TournamentRegistrationResult.notFound;
+  ) async {
+    try {
+      final response = await ApiService().post('/tournaments/$tournamentId/players', data: {
+        'player_id': playerId,
+      });
+      
+      if (response.data != null) {
+        final updated = Tournament.fromJson(response.data as Map<String, dynamic>);
+        state = [
+          for (final item in state)
+            if (item.id == tournamentId) updated else item,
+        ];
+      }
+      
+      final index = state.indexWhere((t) => t.id == tournamentId);
+      if (index < 0) return TournamentRegistrationResult.notFound;
 
-    final tournament = state[index];
-    if (tournament.registeredPlayerIds.contains(playerId)) {
-      return TournamentRegistrationResult.duplicate;
-    }
-    if (tournament.status != 'upcoming') {
-      return TournamentRegistrationResult.registrationClosed;
-    }
-    if (tournament.isFull) return TournamentRegistrationResult.full;
+      final tournament = state[index];
+      if (tournament.registeredPlayerIds.contains(playerId)) {
+        return TournamentRegistrationResult.duplicate;
+      }
+      if (tournament.status != 'upcoming') {
+        return TournamentRegistrationResult.registrationClosed;
+      }
+      if (tournament.isFull) return TournamentRegistrationResult.full;
 
-    state = [
-      for (final item in state)
-        if (item.id == tournamentId)
-          _copyTournament(
-            item,
-            registeredPlayerIds: [...item.registeredPlayerIds, playerId],
-          )
-        else
-          item,
-    ];
-    return TournamentRegistrationResult.success;
+      return TournamentRegistrationResult.success;
+    } catch (e) {
+      print('Ошибка регистрации игрока: $e');
+      return TournamentRegistrationResult.notFound;
+    }
   }
 
-  bool removePlayer(String tournamentId, String playerId) {
-    final index = state.indexWhere((t) => t.id == tournamentId);
-    if (index < 0 || !state[index].registeredPlayerIds.contains(playerId)) {
+  Future<bool> removePlayer(String tournamentId, String playerId) async {
+    try {
+      await ApiService().delete('/tournaments/$tournamentId/players/$playerId');
+      
+      final index = state.indexWhere((t) => t.id == tournamentId);
+      if (index < 0 || !state[index].registeredPlayerIds.contains(playerId)) {
+        return false;
+      }
+      state = [
+        for (final item in state)
+          if (item.id == tournamentId)
+            _copyTournament(
+              item,
+              registeredPlayerIds: item.registeredPlayerIds
+                  .where((id) => id != playerId)
+                  .toList(),
+            )
+          else
+            item,
+      ];
+      return true;
+    } catch (e) {
+      print('Ошибка удаления игрока: $e');
       return false;
     }
-    state = [
-      for (final item in state)
-        if (item.id == tournamentId)
-          _copyTournament(
-            item,
-            registeredPlayerIds: item.registeredPlayerIds
-                .where((id) => id != playerId)
-                .toList(),
-          )
-        else
-          item,
-    ];
-    return true;
   }
 
   Tournament _copyTournament(

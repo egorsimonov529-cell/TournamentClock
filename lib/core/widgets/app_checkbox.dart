@@ -21,17 +21,10 @@ class AppCheckbox extends StatelessWidget {
         Checkbox(
           value: value,
           activeColor: AppColors.primary,
-          side: const BorderSide(
-            color: AppColors.border,
-          ),
+          side: const BorderSide(color: AppColors.border),
           onChanged: onChanged,
         ),
-        Text(
-          text,
-          style: const TextStyle(
-            color: Colors.white70,
-          ),
-        ),
+        Text(text, style: const TextStyle(color: Colors.white70)),
       ],
     );
   }

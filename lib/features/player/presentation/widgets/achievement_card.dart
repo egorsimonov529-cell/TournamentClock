@@ -13,6 +13,7 @@ class AchievementCard extends StatelessWidget {
   final int required;
   final bool achieved;
   final Color? accentColor;
+  final String? imageUrl;
 
   const AchievementCard({
     super.key,
@@ -23,6 +24,7 @@ class AchievementCard extends StatelessWidget {
     this.required = 100,
     this.achieved = false,
     this.accentColor,
+    this.imageUrl,
   });
 
   @override
@@ -33,6 +35,7 @@ class AchievementCard extends StatelessWidget {
     final progressPercent = required > 0
         ? (progress / required).clamp(0.0, 1.0)
         : 0.0;
+    final hasImage = (imageUrl ?? '').trim().isNotEmpty;
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -42,7 +45,7 @@ class AchievementCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(
           color: achieved
-              ? (accentColor ?? AppColors.gold).withOpacity(0.4)
+              ? (accentColor ?? AppColors.gold).withValues(alpha: 0.4)
               : AppColors.border,
           width: 1,
         ),
@@ -53,16 +56,35 @@ class AchievementCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                width: 52,
+                height: 52,
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.15),
+                  color: achieved ? color.withValues(alpha: 0.12) : AppColors.surface,
                   borderRadius: BorderRadius.circular(AppRadius.sm),
+                  border: Border.all(
+                    color: achieved ? color.withValues(alpha: 0.5) : AppColors.border,
+                  ),
                 ),
-                child: Icon(
-                  achieved ? icon : Icons.lock_outline_rounded,
-                  color: achieved ? color : AppColors.textMuted,
-                  size: 24,
-                ),
+                child: hasImage
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.asset(
+                          imageUrl!,
+                          fit: BoxFit.cover,
+                          color: achieved ? null : Colors.white.withValues(alpha: 0.35),
+                          colorBlendMode: BlendMode.modulate,
+                          errorBuilder: (_, __, ___) => Icon(
+                            achieved ? icon : Icons.lock_outline_rounded,
+                            color: achieved ? color : AppColors.textMuted,
+                          ),
+                        ),
+                      )
+                    : Icon(
+                        achieved ? icon : Icons.lock_outline_rounded,
+                        color: achieved ? color : AppColors.textMuted,
+                        size: 22,
+                      ),
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
@@ -77,9 +99,7 @@ class AchievementCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: achieved
-                                  ? AppColors.white
-                                  : AppColors.textMuted,
+                              color: achieved ? AppColors.white : AppColors.textMuted,
                             ),
                           ),
                         ),
@@ -111,7 +131,9 @@ class AchievementCard extends StatelessWidget {
               minHeight: 6,
               borderRadius: BorderRadius.circular(3),
               backgroundColor: AppColors.border,
-              valueColor: AlwaysStoppedAnimation<Color>(color.withOpacity(0.7)),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                color.withValues(alpha: 0.7),
+              ),
             ),
             const SizedBox(height: 4),
             Text(

@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/player_model.dart';
-import '../widgets/player_header.dart';
-import '../pages/overview_page.dart';
-import '../pages/tournaments_page.dart';
-import '../pages/my_tournaments_page.dart';
 import '../pages/leaderboard_page.dart';
+import '../pages/my_seating_page.dart';
+import '../pages/my_tournaments_page.dart';
+import '../pages/overview_page.dart';
+import '../pages/profile_page.dart';
 import '../pages/profile_settings_page.dart';
+import '../pages/tournaments_page.dart';
+import '../pages/ios_profile_page.dart';
+import '../pages/ios_tournaments_page.dart';
+import '../pages/ios_my_tournaments_page.dart';
+import '../pages/ios_my_seating_page.dart';
+import '../pages/ios_leaderboard_page.dart';
+import '../pages/ios_news_page.dart';
+import '../widgets/player_header.dart';
+import '../widgets/player_navigation.dart';
+import '../../../news/presentation/widgets/posts_feed.dart';
 
 class PlayerCabinetLayout extends StatefulWidget {
   final PlayerProfile player;
@@ -20,103 +29,199 @@ class PlayerCabinetLayout extends StatefulWidget {
 
 class _PlayerCabinetLayoutState extends State<PlayerCabinetLayout> {
   int _selectedIndex = 0;
+  bool _showProfileSettings = false;
 
-  List<_MenuItem> get _menuItems => [
-    _MenuItem(
-      icon: Icons.dashboard_rounded,
-      title: "Обзор",
-      page: () => OverviewPage(player: widget.player),
-    ),
-    _MenuItem(
-      icon: Icons.emoji_events_rounded,
-      title: "Турниры",
-      page: () => const TournamentsPage(),
-    ),
-    _MenuItem(
-      icon: Icons.schedule_rounded,
-      title: "Мои турниры",
-      page: () => const MyTournamentsPage(),
-    ),
-    _MenuItem(
-      icon: Icons.leaderboard_rounded,
-      title: "Рейтинг",
-      page: () => const LeaderboardPage(),
-    ),
-    _MenuItem(
-      icon: Icons.person_rounded,
-      title: "Настройки",
-      page: () => const ProfileSettingsPage(),
-    ),
-  ];
+  void _select(int index) {
+    if (_selectedIndex == index && (index != 4 || !_showProfileSettings)) {
+      return;
+    }
+    setState(() {
+      _selectedIndex = index;
+      if (index != 4) _showProfileSettings = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final selectedPage = _menuItems[_selectedIndex].page;
+    final width = MediaQuery.sizeOf(context).width;
+    final desktop = width >= 900;
+    final phone = width < 700;
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    final items = () {
+      // build menu items with platform-specific page variants
+      final useIosPages = isIOS && phone;
+      return <_MenuItem>[
+        _MenuItem(
+          icon: Icons.dashboard_rounded,
+          title: 'Обзор',
+          page: () => OverviewPage(
+            player: widget.player,
+            onOpenTournaments: () => _select(1),
+            onOpenLeaderboard: () => _select(4),
+          ),
+        ),
+        _MenuItem(
+          icon: Icons.emoji_events_rounded,
+          title: 'Турниры',
+          page: () => useIosPages ? const IosTournamentsPage() : const TournamentsPage(),
+        ),
+        _MenuItem(
+          icon: Icons.schedule_rounded,
+          title: 'Мои турниры',
+          page: () => useIosPages ? const IosMyTournamentsPage() : const MyTournamentsPage(),
+        ),
+        _MenuItem(
+          icon: Icons.chair_rounded,
+          title: 'Рассадка',
+          page: () => useIosPages ? const IosMySeatingPage() : const MySeatingPage(),
+        ),
+        _MenuItem(
+          icon: Icons.leaderboard_rounded,
+          title: 'Рейтинг',
+          page: () => useIosPages ? const IosLeaderboardPage() : const LeaderboardPage(),
+        ),
+        _MenuItem(
+          icon: Icons.person_rounded,
+          title: 'Профиль',
+          page: () => _showProfileSettings
+              ? Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+                        child: TextButton.icon(
+                          onPressed: () {
+                            setState(() => _showProfileSettings = false);
+                          },
+                          icon: const Icon(Icons.arrow_back_rounded),
+                          label: const Text('Назад к профилю'),
+                        ),
+                      ),
+                    ),
+                    Expanded(child: ProfileSettingsPage(player: widget.player)),
+                  ],
+                )
+              : (useIosPages ? IosProfilePage(player: widget.player) : ProfilePage(
+                  player: widget.player,
+                  onEditProfile: () {
+                    setState(() => _showProfileSettings = true);
+                  },
+                )),
+        ),
+        _MenuItem(
+          icon: Icons.newspaper_rounded,
+          title: 'Новости',
+          page: () => useIosPages ? const IosNewsPage() : const PostsFeed(),
+        ),
+      ];
+    }();
 
     return Scaffold(
-      backgroundColor: const Color(0xff0F1117),
-      body: Row(
-        children: [
-          if (MediaQuery.sizeOf(context).width >= 900) _buildSidebar(context),
-          Expanded(
-            child: Column(
-              children: [
-                PlayerHeader(player: widget.player),
-                Expanded(child: SingleChildScrollView(child: selectedPage())),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSidebar(BuildContext context) {
-    return Container(
-      width: 280,
-      decoration: BoxDecoration(
-        color: const Color(0xff151921),
-        border: Border(
-          right: BorderSide(color: const Color(0xff2A2D35), width: 1),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.casino_rounded, color: AppColors.primary, size: 28),
-                const SizedBox(width: 12),
-                const Text(
-                  "Poker Club",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+      backgroundColor: isIOS
+          ? const Color(0xff0E151A)
+          : const Color(0xff0F1117),
+      body: SafeArea(
+        top: false,
+        bottom: phone,
+        child: phone
+            ? Container(
+                margin: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: isIOS
+                      ? const Color(0xff121A22)
+                      : const Color(0xff111821),
+                  borderRadius: BorderRadius.circular(isIOS ? 28 : 20),
+                  border: Border.all(
+                    color: const Color(0xff10B981).withValues(alpha: 0.28),
+                    width: 1,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.22),
+                      blurRadius: 18,
+                      spreadRadius: 0,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            const SizedBox(height: 40),
-            ..._menuItems.asMap().entries.map((entry) {
-              final index = entry.key;
-              final item = entry.value;
-              return SidebarItem(
-                icon: item.icon,
-                title: item.title,
-                selected: _selectedIndex == index,
-                onTap: () {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                },
-              );
-            }),
-          ],
-        ),
+                clipBehavior: Clip.antiAlias,
+                child: Column(
+                  children: [
+                    PlayerHeader(player: widget.player),
+                    Expanded(
+                      child: IndexedStack(
+                        index: _selectedIndex,
+                        children: items
+                            .map(
+                              (item) => KeyedSubtree(
+                                key: PageStorageKey(item.title),
+                                child: item.page(),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : Row(
+                children: [
+                  if (desktop)
+                    PlayerNavigationRail(
+                      items: items
+                          .map((item) => PlayerNavigationItem(item.icon, item.title))
+                          .toList(),
+                      selectedIndex: _selectedIndex,
+                      onSelected: _select,
+                    ),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        PlayerHeader(player: widget.player),
+                        Expanded(
+                          child: IndexedStack(
+                            index: _selectedIndex,
+                            children: items
+                                .map(
+                                  (item) => KeyedSubtree(
+                                    key: PageStorageKey(item.title),
+                                    child: item.page(),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
       ),
+      bottomNavigationBar: desktop
+          ? null
+          : NavigationBar(
+              selectedIndex: _selectedIndex,
+              onDestinationSelected: _select,
+              backgroundColor: isIOS
+                  ? const Color(0xff141D24)
+                  : const Color(0xff151921),
+              indicatorColor: const Color(0xffD4AF37).withValues(alpha: .18),
+              shadowColor: Colors.black.withValues(alpha: 0.2),
+              surfaceTintColor: Colors.transparent,
+              height: phone ? 64 : 72,
+              labelBehavior: width < 430
+                  ? NavigationDestinationLabelBehavior.onlyShowSelected
+                  : NavigationDestinationLabelBehavior.alwaysShow,
+              destinations: items
+                  .map(
+                    (item) => NavigationDestination(
+                      icon: Icon(item.icon),
+                      label: item.title,
+                    ),
+                  )
+                  .toList(),
+            ),
     );
   }
 }
@@ -131,62 +236,4 @@ class _MenuItem {
     required this.title,
     required this.page,
   });
-}
-
-class SidebarItem extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final bool selected;
-  final VoidCallback? onTap;
-
-  const SidebarItem({
-    super.key,
-    required this.icon,
-    required this.title,
-    this.selected = false,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: Container(
-          height: 48,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: selected
-                ? AppColors.primary.withOpacity(0.15)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                icon,
-                color: selected
-                    ? AppColors.primary
-                    : Colors.white.withOpacity(0.6),
-                size: 22,
-              ),
-              const SizedBox(width: 14),
-              Text(
-                title,
-                style: TextStyle(
-                  color: selected
-                      ? Colors.white
-                      : Colors.white.withOpacity(0.7),
-                  fontSize: 15,
-                  fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }

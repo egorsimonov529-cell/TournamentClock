@@ -12,6 +12,16 @@ class _ClockStub extends TournamentClockNotifier {
   }
 }
 
+class TestBlindLevelsNotifier extends TournamentBlindLevelsNotifier {
+  TestBlindLevelsNotifier() { state = TournamentClockScreen.blindLevels; }
+
+  @override
+  Future<void> loadBlindLevels() async {
+    // Avoid network during tests – provide default levels immediately
+    state = TournamentClockScreen.blindLevels;
+  }
+}
+
 void main() {
   Future<void> pumpClock(
     WidgetTester tester,
@@ -27,6 +37,7 @@ void main() {
       ProviderScope(
         overrides: [
           tournamentClockProvider.overrideWith((ref) => _ClockStub(state)),
+          tournamentBlindLevelsProvider.overrideWith((ref) => TestBlindLevelsNotifier()),
         ],
         child: MaterialApp(
           theme: AppTheme.dark,

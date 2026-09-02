@@ -16,12 +16,13 @@ class FormValidators {
       return 'Логин не должен превышать 50 символов';
     }
 
-    // Разрешаем буквы, цифры, точку, дефис, подчёркивание
-    final pattern = r'^[a-zA-Z0-9._-]+$';
-    final regex = RegExp(pattern);
+    // Разрешаем буквы (любые языки), цифры, точку, дефис, подчёркивание и @
+    // Пробелы не разрешаем (логин не должен содержать пробелы)
+    final pattern = r'^[\p{L}\p{N}_.@-]+$';
+    final regex = RegExp(pattern, unicode: true);
 
     if (!regex.hasMatch(value)) {
-      return 'Логин может содержать только буквы, цифры, точку, дефис и подчёркивание';
+      return 'Логин может содержать буквы, цифры, пробел, точку, дефис, подчёркивание и @';
     }
 
     return null;
@@ -50,8 +51,9 @@ class FormValidators {
       return 'Введите email';
     }
 
-    final pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
-    final regex = RegExp(pattern);
+    // Поддерживаем Unicode-символы в local-part (кириллица), но домен остаётся ASCII
+    final pattern = r'^[\p{L}\p{N}._%+-]+@[\p{L}\p{N}-]+\.[\p{L}\p{N}]{2,}$';
+    final regex = RegExp(pattern, unicode: true);
 
     if (!regex.hasMatch(value)) {
       return 'Введите корректный email';

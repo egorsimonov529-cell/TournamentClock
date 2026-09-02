@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../players/domain/providers/admin_players_provider.dart';
 import '../../domain/models/tournament_model.dart';
 import '../../domain/providers/tournament_provider.dart';
 
@@ -18,48 +19,45 @@ class _RegisterPlayersDialogState extends ConsumerState<RegisterPlayersDialog> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
-  // Mock players data
-  final List<_MockPlayer> _allPlayers = const [
-    _MockPlayer('player1', 'Alex_Pok', 'Alexey Ivanov'),
-    _MockPlayer('player2', ' PokerKing', 'Dmitry Petrov'),
-    _MockPlayer('player3', 'Sniper777', 'Maxim Sidorov'),
-    _MockPlayer('player4', 'LuckyLady', 'Anna Kuznetsova'),
-    _MockPlayer('player5', 'DiamondHands', 'Igor Volkov'),
-    _MockPlayer('player6', 'BluffMaster', 'Elena Smirnova'),
-    _MockPlayer('player7', 'FoldEquity', 'Sergey Popov'),
-    _MockPlayer('player8', 'AceHigh', 'Maria Sokolova'),
-    _MockPlayer('player9', 'RiverShark', 'Vladimir Morozov'),
-    _MockPlayer('player10', 'Nutation', 'Oleg Vasilev'),
-  ];
-
-  List<_MockPlayer> get _filteredPlayers {
-    if (_searchQuery.isEmpty) return _allPlayers;
-    return _allPlayers.where((p) =>
-      p.login.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-      p.name.toLowerCase().contains(_searchQuery.toLowerCase())
-    ).toList();
-  }
-
-  List<String> get _registeredIds => widget.tournament.registeredPlayerIds;
-
-  bool _isRegistered(String playerId) {
-    return _registeredIds.contains(playerId);
-  }
-
-  void _togglePlayer(String playerId) {
-    if (_isRegistered(playerId)) {
-      ref.read(tournamentProvider.notifier).removePlayer(
-        widget.tournament.id,
-        playerId,
-      );
-    } else {
-      if (widget.tournament.currentPlayers < widget.tournament.maxPlayers) {
-        ref.read(tournamentProvider.notifier).registerPlayer(
-          widget.tournament.id,
-          playerId,
-        );
-      }
+  Tournament? get _currentTournament {
+    for (final tournament in ref.read(tournamentProvider)) {
+      if (tournament.id == widget.tournament.id) return tournament;
     }
+    return null;
+  }
+
+  List<String> get _registeredIds =>
+      _currentTournament?.registeredPlayerIds ?? const [];
+
+  bool _isRegistered(String playerId) => _registeredIds.contains(playerId);
+
+  Future<void> _togglePlayer(String playerId) async {
+    final wasRegistered = _isRegistered(playerId);
+    final notifier = ref.read(tournamentProvider.notifier);
+    
+    TournamentRegistrationResult result;
+    if (wasRegistered) {
+      final removed = await notifier.removePlayer(widget.tournament.id, playerId);
+      result = removed 
+          ? TournamentRegistrationResult.success 
+          : TournamentRegistrationResult.notFound;
+    } else {
+      result = await notifier.registerPlayer(widget.tournament.id, playerId);
+    }
+
+    if (!mounted) return;
+    setState(() {});
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          result == TournamentRegistrationResult.success
+              ? wasRegistered
+                    ? 'Игрок удалён из турнира'
+                    : 'Игрок записан на турнир'
+              : 'Ошибка: ${result?.message ?? "неизвестная ошибка"}',
+        ),
+      ),
+    );
   }
 
   @override
@@ -70,6 +68,22 @@ class _RegisterPlayersDialogState extends ConsumerState<RegisterPlayersDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final players = ref.watch(adminPlayersProvider).players;
+    final tournaments = ref.watch(tournamentProvider);
+    final currentTournament = tournaments
+        .where((tournament) => tournament.id == widget.tournament.id)
+        .firstOrNull;
+    final query = _searchQuery.trim().toLowerCase();
+    final filteredPlayers = query.isEmpty
+        ? players
+        : players
+              .where(
+                (player) =>
+                    player.login.toLowerCase().contains(query) ||
+                    player.name.toLowerCase().contains(query),
+              )
+              .toList();
+
     return Dialog(
       backgroundColor: const Color(0xff1D232C),
       child: Container(
@@ -148,10 +162,14 @@ class _RegisterPlayersDialogState extends ConsumerState<RegisterPlayersDialog> {
               ),
               child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: _filteredPlayers.length,
+                itemCount: filteredPlayers.length,
                 itemBuilder: (context, index) {
-                  final player = _filteredPlayers[index];
-                  final registered = _isRegistered(player.id);
+                  final player = filteredPlayers[index];
+                  final registered =
+                      currentTournament?.registeredPlayerIds.contains(
+                        player.id,
+                      ) ??
+                      false;
 
                   return ListTile(
                     leading: CircleAvatar(
@@ -180,9 +198,7 @@ class _RegisterPlayersDialogState extends ConsumerState<RegisterPlayersDialog> {
                         registered
                             ? Icons.check_circle
                             : Icons.add_circle_outline,
-                        color: registered
-                            ? Colors.greenAccent
-                            : Colors.white54,
+                        color: registered ? Colors.greenAccent : Colors.white54,
                       ),
                       label: Text(
                         registered ? 'Записан' : 'Записать',
@@ -204,7 +220,7 @@ class _RegisterPlayersDialogState extends ConsumerState<RegisterPlayersDialog> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Записано: ${widget.tournament.currentPlayers}/${widget.tournament.maxPlayers}',
+                  'Записано: ${currentTournament?.currentPlayers ?? widget.tournament.currentPlayers}/${currentTournament?.maxPlayers ?? widget.tournament.maxPlayers}',
                   style: const TextStyle(color: Colors.white54),
                 ),
                 FilledButton(
@@ -221,12 +237,4 @@ class _RegisterPlayersDialogState extends ConsumerState<RegisterPlayersDialog> {
       ),
     );
   }
-}
-
-class _MockPlayer {
-  final String id;
-  final String login;
-  final String name;
-
-  const _MockPlayer(this.id, this.login, this.name);
 }

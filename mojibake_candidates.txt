@@ -1,0 +1,522 @@
+﻿C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\app\router.dart:56:// Авторизация
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\models\auth_exception.dart:1:/// Базовый класс исключений авторизации
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\models\auth_exception.dart:9:/// Ошибка сети (нет соединения, таймаут и т.д.)
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\models\auth_exception.dart:12:super.message = 'Ошибка сетевого подключения. Проверьте интернет.',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\models\auth_exception.dart:17:/// Ошибка неавторизации (неверные учётные данные)
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\models\auth_exception.dart:20:super.message = 'Неверный логин или пароль',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\models\auth_exception.dart:25:/// Ошибка токена (истёк, невалидный)
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\models\auth_exception.dart:28:super.message = 'Ошибка авторизации. Войдите в систему снова.',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\models\auth_exception.dart:33:/// Ошибка сервера (5xx)
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\models\auth_exception.dart:36:super.message = 'Ошибка сервера. Попробуйте позже.',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\models\auth_exception.dart:52:/// Ошибка блокировки (аккаунт заблокирован)
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\models\auth_exception.dart:55:super.message = 'Аккаунт заблокирован. Обратитесь к администратору.',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\models\auth_exception.dart:60:/// Google OAuth ещё не настроен для production-окружения.
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\models\auth_exception.dart:63:super.message = 'Google-вход требует настройки OAuth',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\models\auth_response.dart:8:/// Ответ от сервера при авторизации
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\api_service.dart:7:/// HTTP-сервис для работы с API
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\api_service.dart:23:// Добавляем интерцептор для автоматического добавления токена
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\api_service.dart:34:// Если 401 — очищаем сессию
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\api_service.dart:54:/// Очистить все токены
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\api_service.dart:66:/// POST запрос
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\api_service.dart:71:// Преобразуем любую ошибку в DioException если нужно
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\api_service.dart:79:/// GET запрос
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\api_service.dart:91:/// POST запрос для logout
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\api_service.dart:119:// Пытаемся распарсить ошибки валидации
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\api_service.dart:136:return ServerException(message: 'Сервер вернул ошибку $statusCode');
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\api_service.dart:141:message: 'Превышено время ожидания ответа от сервера',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\api_service.dart:145:return const NetworkException(message: 'Запрос отменён');
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\api_service.dart:148:return NetworkException(message: error.message ?? 'Неизвестная ошибка');
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\api_service.dart:152:/// Установка токена авторизации
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\api_service.dart:154:// Реализация через SecureStorage
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\api_service.dart:159:// Реализация через SecureStorage
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\api_service.dart:165:// Реализация через SecureStorage
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\secure_storage_service.dart:3:/// Сервис для безопасного хранения敏感 данных (токены)
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\secure_storage_service.dart:12:/// Инициализация (опционально, для консистентности с SharedPrefsService)
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\secure_storage_service.dart:14:// На Windows и других платформах дополнительная инициализация не требуется
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\secure_storage_service.dart:15:// Метод добавлен для консистентности API с SharedPrefsService
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\secure_storage_service.dart:18:/// Записать значение
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\secure_storage_service.dart:23:/// Прочитать значение
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\secure_storage_service.dart:33:/// Очистить всё хранилище
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\secure_storage_service.dart:38:/// Проверить наличие ключа
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\shared_prefs_service.dart:3:/// Сервис для хранения простых данных (настройки, сохранённый логин)
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\shared_prefs_service.dart:16:/// Установить строковое значение
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\shared_prefs_service.dart:22:/// Получить строковое значение
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\shared_prefs_service.dart:27:/// Установить bool значение
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\shared_prefs_service.dart:44:/// Проверить наличие ключа
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\services\shared_prefs_service.dart:49:/// Очистить всё
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\theme\app_colors.dart:6:// Фон — почти чёрный графит
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\theme\app_colors.dart:12:// Границы и разделители
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\theme\app_colors.dart:16:// Основные фирменные цвета
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\theme\app_colors.dart:21:// Premium-акцент — приглушённое золото
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\theme\app_colors.dart:25:// Статусы
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\theme\app_colors.dart:31:// Текст
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\theme\app_colors.dart:36:// Доп. цвета для карточек
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\utils\form_validators.dart:1:/// Утилиты для валидации форм
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\utils\form_validators.dart:12:return 'Логин должен содержать минимум 3 символа';
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\utils\form_validators.dart:16:return 'Логин не должен превышать 50 символов';
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\utils\form_validators.dart:19:// Разрешаем буквы, цифры, точку, дефис, подчёркивание
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\utils\form_validators.dart:24:return 'Логин может содержать только буквы, цифры, точку, дефис и подчёркивание';
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\utils\form_validators.dart:30:/// Валидация поля пароля
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\utils\form_validators.dart:33:return 'Введите пароль';
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\utils\form_validators.dart:37:return 'Пароль должен содержать минимум 6 символов';
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\utils\form_validators.dart:41:return 'Пароль не должен превышать 128 символов';
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\utils\form_validators.dart:47:/// Валидация email (если используется)
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\utils\form_validators.dart:57:return 'Введите корректный email';
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\utils\form_validators.dart:63:/// Валидация всего формы входа
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\widgets\app_button.dart:7:/// Основная кнопка с фирменным зелёным
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\core\widgets\app_button.dart:139:/// Вторичная кнопка (ghost)
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\data\repositories\auth_repository_impl.dart:42:: (isAdmin ? '╨Р╨┤╨╝╨╕╨╜' : '╨Ш╨│╤А╨╛╨║'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\data\repositories\auth_repository_impl.dart:116:message: '╨Э╨╡╨╛╨▒╤Е╨╛╨┤╨╕╨╝╨╛ ╤Б╨╛╨│╨╗╨░╤Б╨╕╨╡ ╤Б ╨┐╤А╨░╨▓╨╕╨╗╨░╨╝╨╕',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\data\repositories\auth_repository_impl.dart:117:fieldErrors: {'acceptedTerms': '╨Э╨╡╨╛╨▒╤Е╨╛╨┤╨╕╨╝╨╛ ╤Б╨╛╨│╨╗╨░╤Б╨╕╨╡'},
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\domain\providers\auth_state_provider.dart:81:message: '╨Э╨╡╨╕╨╖╨▓╨╡╤Б╤В╨╜╨░╤П ╨╛╤И╨╕╨▒╨║╨░',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\domain\providers\auth_state_provider.dart:109:message: '╨Э╨╡╨╕╨╖╨▓╨╡╤Б╤В╨╜╨░╤П ╨╛╤И╨╕╨▒╨║╨░',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\layout\login_left_panel.dart:14:// Покерный зеленый фон
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\layout\login_left_panel.dart:56:// Описание
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\layout\login_left_panel.dart:60:"Современная система управления спортивным покерным клубом.\n\n"
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\layout\login_left_panel.dart:61:"• Турниры\n"
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\layout\login_left_panel.dart:62:"• Игроки\n"
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\layout\login_left_panel.dart:63:"• Финансы\n"
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\layout\login_left_panel.dart:65:"• Лояльность\n"
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\layout\login_left_panel.dart:66:"• Касса\n"
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\layout\login_left_panel.dart:67:"• Сотрудники",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\layout\login_left_panel.dart:78:// Версия
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\layout\login_left_panel.dart:102:// Покерный фон с мастями и картами
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\layout\login_left_panel.dart:107:// Основной темный фон
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\layout\login_left_panel.dart:116:// Текстура сукна
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\layout\login_left_panel.dart:128:// Рисуем разбросанные покерные масти
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\layout\login_left_panel.dart:162:// Рисуем контуры игровых фишек
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\recovery_page.dart:28:// TODO: Реализовать отправку на API
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\recovery_page.dart:62:"Восстановление пароля",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\recovery_page.dart:71:"Введите email или телефон, и мы отправим вам инструкции",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\recovery_page.dart:86:label: "Отправить инструкцию",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\recovery_page.dart:100:"Инструкция отправлена!",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\recovery_page.dart:109:"Проверьте вашу почту или SMS",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\recovery_page.dart:124:label: "Вернуться ко входу",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:50:if (value.length < 2) return 'Минимум 2 символа';
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:61:if (clean.length < 10) return 'Некорректный номер';
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:70:if (value == null || value.isEmpty) return 'Подтвердите пароль';
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:71:if (value != _passwordController.text) return 'Пароли не совпадают';
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:110:'╨Ю╤И╨╕╨▒╨║╨░ ╤А╨╡╨│╨╕╤Б╤В╤А╨░╤Ж╨╕╨╕',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:129:'Google-╨▓╤Е╨╛╨┤ ╤В╤А╨╡╨▒╤Г╨╡╤В ╨╜╨░╤Б╤В╤А╨╛╨╣╨║╨╕ OAuth',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:160:"Создание аккаунта",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:169:"Зарегистрируйтесь в нашем покерном клубе",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:174:// Форма
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:178:hintText: "Иван Петров",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:205:label: "Пароль",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:208:hintText: "Минимум 6 символов",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:227:label: "Повторите пароль",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:230:hintText: "Повторите пароль",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:247:// Согласие с правилами
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:251:"Я согласен с правилами клуба и политикой конфиденциальности",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:260:'Необходимо согласие',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:268:label: "Зарегистрироваться",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:275:label: '╨Т╨╛╨╣╤В╨╕ ╤З╨╡╤А╨╡╨╖ Google',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:281:// Ссылка на вход
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\pages\registration_page.dart:286:"Уже есть аккаунт? Войти",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_form.dart:34:// Автозаполнение логина если "Запомнить меня" было включено
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_form.dart:58:/// Очистить ошибки валидации
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_form.dart:66:/// Валидация формы
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_form.dart:81:/// Обработка входа
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_form.dart:83:// Сначала валидируем форму
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_form.dart:88:// Проверяем текущее состояние авторизации
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_form.dart:95:// Вызываем login через provider
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_form.dart:104:// Если успешно — переходим на нужную страницу по роли
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_form.dart:115:// Ошибка уже отображена через authStateProvider
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_form.dart:127:'Google-╨▓╤Е╨╛╨┤ ╤В╤А╨╡╨▒╤Г╨╡╤В ╨╜╨░╤Б╤В╤А╨╛╨╣╨║╨╕ OAuth';
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_form.dart:139:// Следим за состоянием авторизации
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_form.dart:146:// Если есть ошибка от сервера — отображаем
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_form.dart:148:// Проверяем что это не просто "Session verified"
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_form.dart:184:label: "Пароль",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_form.dart:219:// Подсказка для демо-режима
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_form.dart:223:"В демо-режиме подходит любой логин и пароль",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_form.dart:255:label: 'Войти через Google',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_form.dart:261:child: const Text('Нет аккаунта? Зарегистрироваться'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\auth\presentation\widgets\login_header.dart:24:"Добро пожаловать обратно!",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\layout\dashboard_layout.dart:24:"Игроки",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\layout\dashboard_layout.dart:25:"Ранги",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\layout\dashboard_layout.dart:26:"Турниры",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\layout\dashboard_layout.dart:27:"Финансы",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\layout\dashboard_layout.dart:28:"Лояльность",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\layout\dashboard_layout.dart:29:"Настройки",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\layout\dashboard_layout.dart:33:// Кэш для TournamentListScreen чтобы он не пересоздавался
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\layout\dashboard_layout.dart:72:// Турниры
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\layout\dashboard_layout.dart:89:title: "Доход сегодня",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\layout\dashboard_layout.dart:97:title: "Игроков онлайн",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\layout\dashboard_layout.dart:105:title: "Активные столы",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\layout\dashboard_layout.dart:113:title: "Турниры",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\layout\dashboard_layout.dart:130:"Здесь будет график, таблицы и аналитика",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\layout\dashboard_layout.dart:167:"Раздел в разработке",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\widgets\sidebar\sidebar.dart:55:message: 'Открыть таймер в отдельном окне',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\widgets\sidebar\sidebar.dart:102:// Кнопка закрытия приложения
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\widgets\sidebar\sidebar.dart:127:_MenuItem(icon: Icons.people_alt_rounded, title: "Игроки"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\widgets\sidebar\sidebar.dart:128:_MenuItem(icon: Icons.military_tech_rounded, title: "Ранги"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\widgets\sidebar\sidebar.dart:129:_MenuItem(icon: Icons.emoji_events_rounded, title: "Турниры"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\widgets\sidebar\sidebar.dart:130:_MenuItem(icon: Icons.payments_rounded, title: "Финансы"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\widgets\sidebar\sidebar.dart:131:_MenuItem(icon: Icons.card_giftcard_rounded, title: "Лояльность"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\widgets\sidebar\sidebar.dart:132:_MenuItem(icon: Icons.settings_rounded, title: "Настройки"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\widgets\topbar\top_bar.dart:19:"Добро пожаловать 👋",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\dashboard\presentation\widgets\topbar\top_bar.dart:40:hintText: "Поиск...",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\domain\providers\player_provider.dart:11:throw StateError('Пользователь не авторизован');
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\layout\player_cabinet_layout.dart:36:title: 'Турниры',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\layout\player_cabinet_layout.dart:41:title: 'Мои турниры',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\layout\player_cabinet_layout.dart:46:title: 'Рейтинг',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\layout\player_cabinet_layout.dart:51:title: 'Настройки',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\about_club_page.dart:17:const SliverToBoxAdapter(child: ScreenTitle(title: '╨Ю ╨║╨╗╤Г╨▒╨╡')),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\about_club_page.dart:35:'╨Ь╨╡╤Б╤В╨╛ ╨┤╨╗╤П ╤З╨╡╤Б╤В╨╜╨╛╨╣ ╨╕╨│╤А╤Л, ╤П╤А╨║╨╕╤Е ╤В╤Г╤А╨╜╨╕╤А╨╛╨▓ ╨╕ ╤Б╨╕╨╗╤М╨╜╨╛╨│╨╛ ╤Б╨╛╨╛╨▒╤Й╨╡╤Б╤В╨▓╨░.',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\about_club_page.dart:49:'╨Э╨░╤И╨░ ╨╝╨╕╤Б╤Б╨╕╤П',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\about_club_page.dart:58:'╨б╨╛╨╖╨┤╨░╨▓╨░╤В╤М ╨║╨╛╨╝╤Д╨╛╤А╤В╨╜╤Г╤О ╨╕ ╨▒╨╡╨╖╨╛╨┐╨░╤Б╨╜╤Г╤О ╤Б╤А╨╡╨┤╤Г ╨┤╨╗╤П ╨╕╨│╤А╨╛╨║╨╛╨▓ ╨╗╤О╨▒╨╛╨│╨╛ ╤Г╤А╨╛╨▓╨╜╤П.',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\about_club_page.dart:74:text: '╨Ь╨╛╤Б╨║╨▓╨░, ╤Ж╨╡╨╜╤В╤А ╨│╨╛╤А╨╛╨┤╨░',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\about_club_page.dart:79:text: '╨Х╨╢╨╡╨┤╨╜╨╡╨▓╨╜╨╛ ╤Б 10:00 ╨┤╨╛ 02:00',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\about_club_page.dart:85:'╨Ю╤В╨▓╨╡╤В╤Б╤В╨▓╨╡╨╜╨╜╨░╤П ╨╕╨│╤А╨░ ╨╕ ╤З╨╡╤Б╤В╨╜╤Л╨╡ ╨┐╤А╨░╨▓╨╕╨╗╨░',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\achievements_page.dart:16:String _filter = "Все";
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\achievements_page.dart:25:const SliverToBoxAdapter(child: ScreenTitle(title: "Мои достижения")),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\achievements_page.dart:36:FilterChipWidget(label: "Все", selected: true),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\achievements_page.dart:40:FilterChipWidget(label: "Недоступные"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\achievements_page.dart:54:title: "Первый турнир",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\achievements_page.dart:55:description: "Примите участие в первом турнире",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\achievements_page.dart:68:title: "Регуляр",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\achievements_page.dart:69:description: "Участвуйте в 10 турнирах",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\achievements_page.dart:81:description: "Займите 1 место в турнире",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\achievements_page.dart:92:title: "Крупный выигрыш",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\achievements_page.dart:93:description: "Выиграйте 50 000 ₽ в одном турнире",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\achievements_page.dart:104:title: "Ночной игрок",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\achievements_page.dart:105:description: "Участвуйте в турнирах после 23:00",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\achievements_page.dart:117:description: "Проиграйте 100 000 ₽ в турнирах",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\balance_page.dart:16:"Баланс и финансы",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\balance_page.dart:27:"История операций",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\balance_page.dart:37:description: "Пополнение баланса",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\balance_page.dart:49:description: "Приз: Weekly Championship #11",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\balance_page.dart:61:description: "Пополнение баланса",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\balance_page.dart:153:"Вывести",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\bonuses_page.dart:26:const SliverToBoxAdapter(child: ScreenTitle(title: "Бонусы")),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\bonuses_page.dart:37:_buildTab("Доступные", "available", true),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\bonuses_page.dart:41:_buildTab("История", "history", false),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\bonuses_page.dart:57:description: "Бонус за первую регистрацию",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\bonuses_page.dart:68:description: "Бонус на пополнение баланса",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\bonuses_page.dart:80:description: "При регистрации в 3-х турнирах",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\bonuses_page.dart:92:description: "Персональный бонус в день рождения",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\bonuses_page.dart:93:validUntil: "1 сен",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\leaderboard_page.dart:16:"Таблица лидеров",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\leaderboard_page.dart:25:"Общий рейтинг спортсменов",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\leaderboard_page.dart:35:"Полный рейтинг",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\loyalty_page.dart:21:child: ScreenTitle(title: "Уровень лояльности"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\loyalty_page.dart:37:"Приоритетная регистрация на турниры",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\loyalty_page.dart:38:"Персональные бонусы",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\loyalty_page.dart:39:"Приглашения на закрытые ивенты",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\loyalty_page.dart:48:child: SectionHeader(title: "Как заработать очки?"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\loyalty_page.dart:59:"Участие в турнирах",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\loyalty_page.dart:64:"Пополнение баланса",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\loyalty_page.dart:69:"Победы в турнирах",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\loyalty_page.dart:70:"+500 очков за 1 место",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\loyalty_page.dart:74:"Регулярная игра",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\loyalty_page.dart:75:"+200 бонусных очков в месяц",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\loyalty_page.dart:85:const SliverToBoxAdapter(child: SectionHeader(title: "Уровни")),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\membership_page.dart:16:"Подписки и платежи",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\membership_page.dart:25:"Управление подпиской и история платежей",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\membership_page.dart:35:"Текущая подписка",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\membership_page.dart:46:"История платежей",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\membership_page.dart:56:description: "Ежемесячная подписка Pro",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\membership_page.dart:70:description: "Индивидуальная тренировка",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\membership_page.dart:77:description: "Ежемесячная подписка Pro",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\membership_page.dart:123:"Ваш текущий статус",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\membership_page.dart:140:"Действует до 5 сен 2026",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\membership_page.dart:160:"Продлить",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\membership_page.dart:221:_buildFeature("Тренировки", "Безлимит"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\membership_page.dart:222:_buildFeature("Турниры", "Скидка 20%"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\membership_page.dart:223:_buildFeature("Персональные", "2x в месяц"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\my_tournaments_page.dart:37:'Мои турниры',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\my_tournaments_page.dart:46:'Зарегистрированные турниры',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\my_tournaments_page.dart:82:content: Text('Регистрация отменена'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\my_tournaments_page.dart:124:'Нет зарегистрированных турниров',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\my_tournaments_page.dart:133:'Выберите турнир в разделе «Турниры»',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\notifications_page.dart:37:"Сегодня",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\notifications_page.dart:53:title: "Турнир Night Deepstack",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\notifications_page.dart:54:description: "Регистрация открыта до 21:00",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\notifications_page.dart:68:title: "Пополнение баланса",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\notifications_page.dart:69:description: "5 000 ₽ успешно зачислены",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\notifications_page.dart:88:"Вчера",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\notifications_page.dart:104:title: "Бонус активирован",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\notifications_page.dart:119:description: "Завтра Sunday Special в 18:00",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\notifications_page.dart:137:"Ранее",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\notifications_page.dart:153:title: "Вывод средств",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\notifications_page.dart:154:description: "3 000 ₽ обрабатываются",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\player_cabinet_page.dart:30:"Ошибка загрузки профиля",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\player_dashboard_page.dart:14:/// Dashboard игрока — главный экран
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\player_dashboard_page.dart:41:label: "Бонусы",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\player_dashboard_page.dart:51:child: SectionHeader(title: "Быстрые действия"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\player_dashboard_page.dart:64:title: "Мой профиль",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\player_dashboard_page.dart:72:title: "Мои турниры",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\player_dashboard_page.dart:90:title: "Касса",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\player_dashboard_page.dart:102:subtitle: "Еженедельный турнир с гарантированным призовым фондом",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\player_dashboard_page.dart:103:cta: "Участвовать",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\player_dashboard_page.dart:110:child: SectionHeader(title: "Ближайшие турниры"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\player_dashboard_page.dart:125:status: "Регистрация",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\player_dashboard_page.dart:138:status: "Скоро",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\player_dashboard_page.dart:169:"Иван Петров",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\profile_page.dart:37:"Иван Петров",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\profile_page.dart:78:child: GhostButton(label: "Редактировать профиль"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\profile_page.dart:96:"История посещений",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\profile_page.dart:101:"Мои достижения",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\profile_page.dart:106:"Уровень лояльности",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\profile_page.dart:113:const SliverToBoxAdapter(child: SectionHeader(title: "Настройки")),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\profile_page.dart:122:_buildMenuItem(context, Icons.security_rounded, "Безопасность"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\profile_settings_page.dart:56:_message('Данные профиля сохранены');
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\profile_settings_page.dart:68:_message('Пароль изменён');
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\profile_settings_page.dart:86:'Настройки профиля',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\profile_settings_page.dart:95:'Управляйте своими данными и настройками',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\profile_settings_page.dart:137:label: 'Сохранить',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\profile_settings_page.dart:147:title: 'Безопасность',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\profile_settings_page.dart:153:label: 'Текущий пароль',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\profile_settings_page.dart:159:label: 'Новый пароль',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\profile_settings_page.dart:165:label: 'Подтвердите пароль',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\profile_settings_page.dart:171:label: 'Изменить пароль',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\support_page.dart:19:child: ScreenTitle(title: '╨Я╨╛╨┤╨┤╨╡╤А╨╢╨║╨░'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\support_page.dart:22:child: SectionHeader(title: '╨б╨▓╤П╨╖╨░╤В╤М╤Б╤П ╤Б ╨╜╨░╨╝╨╕'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\support_page.dart:32:title: '╨з╨░╤В ╨┐╨╛╨┤╨┤╨╡╤А╨╢╨║╨╕',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\support_page.dart:34:'╨Ю╨▒╤Л╤З╨╜╨╛ ╨╛╤В╨▓╨╡╤З╨░╨╡╨╝ ╨▓ ╤В╨╡╤З╨╡╨╜╨╕╨╡ 5 ╨╝╨╕╨╜╤Г╤В',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\support_page.dart:39:title: '╨н╨╗╨╡╨║╤В╤А╨╛╨╜╨╜╨░╤П ╨┐╨╛╤З╤В╨░',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\support_page.dart:45:title: '╨в╨╡╨╗╨╡╤Д╨╛╨╜',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\support_page.dart:46:subtitle: '╨Х╨╢╨╡╨┤╨╜╨╡╨▓╨╜╨╛ ╤Б 10:00 ╨┤╨╛ 23:00',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\support_page.dart:52:child: SectionHeader(title: '╨з╨░╤Б╤В╤Л╨╡ ╨▓╨╛╨┐╤А╨╛╤Б╤Л'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\support_page.dart:62:'╨Ъ╨░╨║ ╨╖╨░╤А╨╡╨│╨╕╤Б╤В╤А╨╕╤А╨╛╨▓╨░╤В╤М╤Б╤П ╨╜╨░ ╤В╤Г╤А╨╜╨╕╤А?',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\support_page.dart:64:'╨Ю╤В╨║╤А╨╛╨╣╤В╨╡ ╤В╤Г╤А╨╜╨╕╤А ╨╕ ╨╜╨░╨╢╨╝╨╕╤В╨╡ ╨║╨╜╨╛╨┐╨║╤Г ╤А╨╡╨│╨╕╤Б╤В╤А╨░╤Ж╨╕╨╕.',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\support_page.dart:67:question: '╨Ъ╨░╨║ ╨┐╨╛╨┐╨╛╨╗╨╜╨╕╤В╤М ╨▒╨░╨╗╨░╨╜╤Б?',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\support_page.dart:69:'╨Я╨╡╤А╨╡╨╣╨┤╨╕╤В╨╡ ╨▓ ╤А╨░╨╖╨┤╨╡╨╗ ╨▒╨░╨╗╨░╨╜╤Б╨░ ╨╕ ╨▓╤Л╨▒╨╡╤А╨╕╤В╨╡ ╤Г╨┤╨╛╨▒╨╜╤Л╨╣ ╤Б╨┐╨╛╤Б╨╛╨▒.',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\support_page.dart:72:question: '╨Ъ╨░╨║ ╨▓╨╛╤Б╤Б╤В╨░╨╜╨╛╨▓╨╕╤В╤М ╨┤╨╛╤Б╤В╤Г╨┐?',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\support_page.dart:74:'╨Ш╤Б╨┐╨╛╨╗╤М╨╖╤Г╨╣╤В╨╡ ╨▓╨╛╤Б╤Б╤В╨░╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╡ ╨┐╨░╤А╨╛╨╗╤П ╨╜╨░ ╤Б╤В╤А╨░╨╜╨╕╤Ж╨╡ ╨▓╤Е╨╛╨┤╨░.',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_list_page.dart:16:String _selectedFilter = "Все";
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_list_page.dart:17:String _selectedFormat = "Все";
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_list_page.dart:26:const SliverToBoxAdapter(child: ScreenTitle(title: "Турниры")),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_list_page.dart:37:FilterChipWidget(label: "Все", selected: true),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_list_page.dart:39:FilterChipWidget(label: "Предстоящие"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_list_page.dart:56:FilterChipWidget(label: "Все", selected: true),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_list_page.dart:62:FilterChipWidget(label: "Сателлиты"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_list_page.dart:81:status: "Регистрация",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_list_page.dart:94:status: "Скоро",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_list_page.dart:107:status: "Регистрация",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_list_page.dart:119:prizePool: "Место в Main Event",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_list_page.dart:120:status: "Регистрация",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_page.dart:22:'Доступные турниры',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_page.dart:31:const Text('Войдите, чтобы зарегистрироваться')
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_page.dart:52:'Buy-in ₽${t.buyIn.toStringAsFixed(0)} • Игроки ${t.currentPlayers}/${t.maxPlayers}',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_page.dart:75:? 'Зарегистрирован'
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournaments_page.dart:76:: 'Зарегистрироваться',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournament_detail_page.dart:42:"15 августа 2026",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournament_detail_page.dart:108:const SliverToBoxAdapter(child: SectionHeader(title: "Информация")),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournament_detail_page.dart:118:"Призовой фонд",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournament_detail_page.dart:124:"Стартовый стек",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournament_detail_page.dart:129:_buildInfoRow("Уровни", "15 минут", Icons.timer_rounded),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournament_detail_page.dart:132:"Поздняя рег.",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournament_detail_page.dart:141:"Доступен",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournament_detail_page.dart:159:Expanded(child: _Tab(label: "О турнире", selected: true)),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournament_detail_page.dart:161:Expanded(child: _Tab(label: "Структура")),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournament_detail_page.dart:163:Expanded(child: _Tab(label: "Игроки")),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournament_detail_page.dart:174:"Deepstack турнир с замедленной структурой. Поздняя регистрация до 22:00. Re-entry разрешен. Add-on после 2-го уровня.",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\tournament_detail_page.dart:191:child: PrimaryButton(label: "Зарегистрироваться"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\transactions_page.dart:16:String _filter = "Все";
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\transactions_page.dart:26:child: ScreenTitle(title: "История операций"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\transactions_page.dart:38:FilterChipWidget(label: "Все", selected: true),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\transactions_page.dart:44:FilterChipWidget(label: "Турниры"),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\transactions_page.dart:62:description: "Пополнение через СБП",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\transactions_page.dart:71:type: "Турнир",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\transactions_page.dart:88:description: "Вывод на карту",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\pages\transactions_page.dart:110:type: "Турнир",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\achievement_card.dart:7:/// Карточка достижения
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\balance_card.dart:7:/// Карточка баланса
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\bonus_card.dart:7:/// Карточка бонуса
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\bonus_card.dart:129:isActive ? 'Активен' : 'Активировать',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\faq_item.dart:7:/// Карточка FAQ (поддержка)
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\loyalty_card.dart:7:/// Карточка уровня лояльности
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\loyalty_card.dart:65:'Уровень: $level',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\loyalty_card.dart:104:'До уровня $nextLevel — ${nextLevelRequired - currentPoints} очков',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\loyalty_card.dart:115:'Ваши привилегии:',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\notification_card.dart:7:/// Карточка уведомления
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\player_bottom_nav.dart:5:/// Постоянная нижняя навигация Player App
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\player_bottom_nav.dart:29:_buildItem(Icons.emoji_events_rounded, 'Турниры', 1),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\player_bottom_nav.dart:30:_buildItem(Icons.account_balance_wallet_rounded, 'Касса', 2),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\player_bottom_nav.dart:31:_buildItem(Icons.person_rounded, 'Профиль', 3),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\player_header.dart:44:'Добро пожаловать, ${player.login}!',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\promo_banner.dart:7:/// Промо-баннер (на Dashboard)
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\promo_banner.dart:18:this.cta = 'Участвовать',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\quick_actions.dart:21:title: 'Найти турнир',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\quick_actions.dart:22:description: 'Посмотрите доступные турниры и зарегистрируйтесь',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\quick_actions.dart:27:title: 'Мой рейтинг',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\quick_actions.dart:28:description: 'Следите за прогрессом в RPS',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\quick_action_card.dart:7:/// Быстрое действие
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\screen_widgets.dart:6:/// Секция-разделитель на экране
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\screen_widgets.dart:97:/// Заголовок экрана
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\stats_overview.dart:22:"Ваша статистика",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\stats_overview.dart:43:title: 'Турниров',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\stats_overview.dart:102:? 'Максимальный ранг достигнут'
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\stats_overview.dart:103:: 'До ранга ${next.label}: ${target - player.rankPoints} очков',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\support_channel_card.dart:7:/// Карточка поддержки — канал связи
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\tournament_list_item.dart:7:/// Карточка турнира (список)
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\tournament_list_item.dart:86:_buildInfoItem(Icons.emoji_events_rounded, 'Призовой $prizePool'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\tournament_list_item.dart:108:'Регистрация',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\transaction_item.dart:7:/// Карточка транзакции
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\transaction_item.dart:133:return 'В обработке';
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\transaction_item.dart:137:return 'Обработка';
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\upcoming_tournaments.dart:23:"Ближайшие турниры",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\upcoming_tournaments.dart:33:"Все турниры",
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\upcoming_tournaments.dart:121:_buildMiniInfo("Приз.", prizePool),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\player\presentation\widgets\upcoming_tournaments.dart:123:_buildMiniInfo("Места", spots),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\players\presentation\screens\admin_players_screen.dart:30:hintText: 'Поиск игрока...',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\players\presentation\widgets\admin_player_profile_dialog.dart:16:return const AlertDialog(content: Text('Игрок не найден'));
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\players\presentation\widgets\admin_player_profile_dialog.dart:29:Text('Турниров: ${player.tournaments}'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\players\presentation\widgets\admin_player_profile_dialog.dart:31:Text('Рейтинговые очки: ${player.rankPoints}'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\players\presentation\widgets\admin_player_profile_dialog.dart:35:decoration: const InputDecoration(labelText: 'RPS ранг'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\players\presentation\widgets\admin_player_profile_dialog.dart:53:child: const Text('Закрыть'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:19:Player(id: 'p1', name: 'Алексей Морозов'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:20:Player(id: 'p2', name: 'Мария Вяземская'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:21:Player(id: 'p3', name: 'Дмитрий Каменский'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:22:Player(id: 'p4', name: 'Екатерина Орлова'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:23:Player(id: 'p5', name: 'Михаил Серафим'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:26:Player(id: 'p8', name: 'Сергей Виноградов'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:27:Player(id: 'p9', name: 'Олег Семёнов'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:28:Player(id: 'p10', name: 'Ирина Павлова'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:29:Player(id: 'p11', name: 'Максим Белов'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:30:Player(id: 'p12', name: 'Наталья Соколова'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:43:PokerTable(id: 't1', name: 'Стол 1', seats: first),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:44:PokerTable(id: 't2', name: 'Стол 2', seats: second),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\domain\providers\seating_provider.dart:179:name: 'Стол $suffix',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:36:const Text('Рассадка игроков'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:38:'Турнир $tournamentId',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:114:tooltip: 'Добавить стол',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:131:if (table == null) return const Center(child: Text('Стол не выбран'));
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:180:'${table!.occupiedCount} из ${table!.capacity} мест занято',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:269:seat.player?.name ?? 'Свободно',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:291:const SnackBar(content: Text('Нет нерассаженных игроков')),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:303:title: Text('Выберите игрока'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:304:subtitle: Text('Игрок займёт выбранное свободное место'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:325:title: const Text('Освободить место?'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:326:content: Text('${seat.player!.name} вернётся в список нерассаженных.'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:334:child: const Text('Освободить'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:364:'Панель действий',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:373:label: const Text('Авторассадка'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:377:'Нерассаженные (${state.unseatedPlayers.length})',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:384:child: Center(child: Text('Все игроки рассажены')),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tables\presentation\screens\seating_screen.dart:397:subtitle: const Text('Нажмите свободное место'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\domain\models\tournament_model.dart:71:return 'Предстоящий';
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\domain\models\tournament_model.dart:75:return 'Завершен';
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\domain\models\tournament_model.dart:79:return 'Неизвестный';
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:13:success => 'Вы зарегистрированы на турнир',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:14:duplicate => 'Вы уже зарегистрированы',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:15:full => 'В турнире нет свободных мест',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:16:registrationClosed => 'Регистрация на турнир закрыта',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:17:notFound => 'Турнир не найден',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:41:description: 'Главный воскресный турнир с призовым фондом 500,000₽',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:53:description: 'Турнир с неизвестной структуройblind-ов',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:65:description: 'Чемпионский турнир с рейтинговыми очками',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\domain\providers\tournament_provider.dart:77:description: 'Быстрый турнир на 30 минут',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:85:// Используем ref.watch вместо ref.read для автоматической перестройки
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:122:title: 'Всего турниров',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:129:title: 'Предстоящие',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:143:title: 'Завершены',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:161:hintText: 'Поиск турниров...',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:192:DropdownMenuItem(value: 'all', child: Text('Все')),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:193:DropdownMenuItem(value: 'upcoming', child: Text('Предстоящие')),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:195:DropdownMenuItem(value: 'completed', child: Text('Завершены')),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:217:label: const Text('Создать турнир'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:232:// Применяем фильтры
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:260:'Турниры не найдены',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:302:title: const Text('Удалить турнир?'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\screens\tournament_list_screen.dart:304:'Вы уверены, что хотите удалить турнир "${tournament.name}"?',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:84:// Простая валидация без Form
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:91:).showSnackBar(const SnackBar(content: Text('Введите название турнира')));
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:97:const SnackBar(content: Text('Введите корректное количество игроков')),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:125:// Показываем успех
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:130:? 'Турнир обновлен'
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:131:: 'Турнир создан: $name',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:151:? 'Редактировать турнир'
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:152:: 'Создать турнир',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:165:labelText: 'Название турнира',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:179:labelText: 'Описание',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:257:labelText: 'Макс. игроков',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:290:labelText: 'Формат',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:322:widget.tournament != null ? 'Сохранить' : 'Создать',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:7:/// Диалог для просмотра списка зарегистрированных игроков на турнире
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:62:title: const Text('Удалить игрока?'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:64:'Вы уверены, что хотите удалить игрока "${_getPlayerName(playerId)}" из турнира?',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:130:'Зарегистрированные игроки',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:151:tooltip: 'Закрыть',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:170:'Записано: ${widget.tournament.currentPlayers}/${widget.tournament.maxPlayers} '
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:171:'${isFull ? '(Мест нет)' : "(${widget.tournament.maxPlayers - widget.tournament.currentPlayers} мест свободно)"}',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:183:hintText: 'Поиск по логину или имени...',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:222:: 'Игроки не записаны',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:306:tooltip: 'Удалить из турнира',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\players_list_dialog.dart:328:child: const Text('Закрыть'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\register_players_dialog.dart:50:? 'Игрок удалён из турнира'
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\register_players_dialog.dart:51:: 'Игрок записан на турнир'
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\register_players_dialog.dart:105:'Запись игроков на турнир',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\register_players_dialog.dart:135:hintText: 'Поиск по логину или имени...',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\register_players_dialog.dart:199:registered ? 'Записан' : 'Записать',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\register_players_dialog.dart:218:'Записано: ${currentTournament?.currentPlayers ?? widget.tournament.currentPlayers}/${currentTournament?.maxPlayers ?? widget.tournament.maxPlayers}',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:138:label: 'Игроки',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:150:label: 'Формат',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:173:? 'Мест нет'
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:174:: '${tournament.maxPlayers - tournament.currentPlayers} мест свободно',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:197:label: const Text('Рассадка'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:207:label: Text('Игроки (${tournament.currentPlayers})'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:219:label: const Text('Записать'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament\presentation\widgets\tournament_card.dart:230:label: const Text('Редактировать'),
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\domain\providers\tournament_clock_provider.dart:16:// При создании — запускаем проверку таймера
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\domain\providers\tournament_clock_provider.dart:22:// Защита от выхода за границы массива
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\domain\providers\tournament_clock_provider.dart:57:// Защита от выхода за границы массива
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\domain\providers\tournament_clock_provider.dart:72:// Защита от выхода за границы массива
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\domain\providers\tournament_clock_provider.dart:88:// Читаем актуальное состояние из провайдера
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\domain\providers\tournament_clock_provider.dart:91:// Время вышло — можно автоматически перейти на следующий уровень
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\domain\providers\tournament_clock_provider.dart:114:// Форматирование времени
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:13:/// Полноэкранный режим для проектора/экрана
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:14:/// Открывается по маршруту /clock — без сайдбара, с крупными шрифтами
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:30:// Включаем полноэкранный режим (скрываем системные панели)
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:32:// Фиксируем ориентацию в ландшафтном режиме
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:42:// Восстанавливаем системные панели
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:44:// Восстанавливаем все ориентации
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:56:// При изменении размеров экрана — корректируем ориентацию
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:71:// Моковые данные blind-уровней
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:134:// Определяем масштаб в зависимости от размера экрана
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:146:// Выход из fullscreen по свайпу/кнопке назад
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:173:// Основной контент
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:190:? 'В игре'
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:254:'Последний уровень',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_fullscreen.dart:280:// Кнопка выхода из fullscreen (правый верхний угол)
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:79:? 'ПЕРЕРЫВ'
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:83:? 'ИДЁТ ИГРА'
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:84:: 'ГОТОВ К СТАРТУ';
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:263:label: 'Статус турнира: $label',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:317:'$status. Осталось $time. Блайнды ${current.smallBlind} / ${current.bigBlind}. Анте ${current.ante}',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:341:isBreak ? 'ПЕРЕРЫВ' : 'ДО КОНЦА УРОВНЯ',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:385:'УРОВЕНЬ ${current.level}',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:456:'СЛЕДУЮЩИЙ УРОВЕНЬ',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:480:'Финальный уровень',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:550:tooltip: 'Предыдущий уровень',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:551:semantic: 'Перейти на предыдущий уровень',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:559:? 'Запустить таймер'
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:561:? 'Продолжить таймер'
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:562:: 'Поставить таймер на паузу',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:573:? 'СТАРТ'
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:575:? 'ПРОДОЛЖИТЬ'
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:594:tooltip: 'Следующий уровень',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:595:semantic: 'Перейти на следующий уровень',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:601:tooltip: 'Сбросить таймер',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:602:semantic: 'Сбросить турнирный таймер',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:666:label: 'СТРУКТУРА',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:668:detail: 'текущий уровень',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:672:label: 'ДЛИТЕЛЬНОСТЬ',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:674:detail: 'на один уровень',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_screen.dart:680:detail: ante == 0 ? 'пока не активен' : 'на каждого игрока',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:14:/// Окно таймера для отдельного системного окна (проектора)
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:25:// Моковые данные blind-уровней
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:88:// Масштаб в зависимости от ширины окна
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:130:status: clockState.isRunning ? 'В игре' : 'Ожидание',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\screens\tournament_clock_window.dart:189:'Последний уровень',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\widgets\blinds_card.dart:65:isCurrent ? 'ТЕКУЩИЙ' : 'УРОВЕНЬ $level',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\widgets\level_indicator.dart:35:'ТАБЛИЦА УРОВНЕЙ',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\widgets\next_level_card.dart:49:'СЛЕДУЮЩИЙ УРОВЕНЬ',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\widgets\timer_widget.dart:44:isRunning ? 'ТЕКУЩИЙ УРОВЕНЬ' : 'ГОТОВ К СТАРТУ',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\widgets\timer_widget.dart:81:: 'Нажмите START для начала турнира',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\widgets\tournament_info.dart:70:'Игроки: $players/$maxPlayers',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\widgets\tournament_info.dart:77:'Призовой: $_formatMoney(prizePool)',
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\widgets\tournament_info.dart:113:color: status == 'В игре'
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\widgets\tournament_info.dart:125:color: status == 'В игре' ? AppColors.success : AppColors.warning,
+C:\Users\Lenovo\Desktop\works\MVP_Poker\tournament_clock\lib\features\tournament_clock\presentation\widgets\tournament_info.dart:133:color: status == 'В игре' ? AppColors.success : AppColors.warning,

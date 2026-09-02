@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.tournament_clock"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

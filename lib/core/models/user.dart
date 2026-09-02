@@ -18,6 +18,5 @@ class User with _$User {
     DateTime? lastLoginAt,
   }) = _User;
 
-  factory User.fromJson(Map<String, dynamic> json) =>
-      _$UserFromJson(json);
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 }

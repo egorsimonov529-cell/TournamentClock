@@ -103,10 +103,10 @@ class _LoginFormState extends ConsumerState<LoginForm> {
     // Если успешно — переходим на нужную страницу по роли
     if (success && mounted) {
       final authState = ref.read(authStateProvider);
-      final role = authState.userRole ?? "admin";
+      final role = authState.userRole ?? "player";
 
       if (role == "player") {
-        context.go("/cabinet");
+        context.go("/user");
       } else {
         context.go("/dashboard");
       }
@@ -130,7 +130,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
       return;
     }
     final role = ref.read(authStateProvider).userRole ?? 'player';
-    context.go(role == 'admin' ? '/dashboard' : '/cabinet');
+    context.go(role == 'admin' ? '/dashboard' : '/user');
   }
 
   @override
@@ -257,9 +257,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
         const Gap(18),
         TextButton(
           onPressed: isLoading ? null : () => context.push('/register'),
-          child: const Text(
-            'Нет аккаунта? Зарегистрироваться',
-          ),
+          child: const Text('Нет аккаунта? Зарегистрироваться'),
         ),
       ],
     );

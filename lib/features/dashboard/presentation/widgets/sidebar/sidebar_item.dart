@@ -29,7 +29,7 @@ class SidebarItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 18),
           decoration: BoxDecoration(
             color: selected
-                ? AppColors.primary.withOpacity(.12)
+                ? AppColors.primary.withValues(alpha: .12)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(14),
           ),
@@ -45,11 +45,9 @@ class SidebarItem extends StatelessWidget {
                 child: Text(
                   title,
                   style: TextStyle(
-                    color:
-                        selected ? Colors.white : Colors.white70,
+                    color: selected ? Colors.white : Colors.white70,
                     fontSize: 15,
-                    fontWeight:
-                        selected ? FontWeight.w700 : FontWeight.w500,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                   ),
                 ),
               ),

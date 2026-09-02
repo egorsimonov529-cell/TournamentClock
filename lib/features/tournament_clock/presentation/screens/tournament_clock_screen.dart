@@ -70,7 +70,13 @@ class TournamentClockScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(tournamentClockProvider);
+    final blindLevels = ref.watch(tournamentBlindLevelsProvider);
     final notifier = ref.read(tournamentClockProvider.notifier);
+
+    if (blindLevels.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     final index = state.currentLevel.clamp(0, blindLevels.length - 1);
     final current = blindLevels[index];
     final next = index + 1 < blindLevels.length ? blindLevels[index + 1] : null;

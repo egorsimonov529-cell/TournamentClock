@@ -9,6 +9,8 @@ class TournamentCard extends StatelessWidget {
   final VoidCallback onDelete;
   final VoidCallback onViewPlayers;
   final VoidCallback onSeating;
+  final VoidCallback onResults;
+  final VoidCallback onRpsSettings;
 
   const TournamentCard({
     super.key,
@@ -18,6 +20,8 @@ class TournamentCard extends StatelessWidget {
     required this.onDelete,
     required this.onViewPlayers,
     required this.onSeating,
+    required this.onResults,
+    required this.onRpsSettings,
   });
 
   @override
@@ -39,7 +43,7 @@ class TournamentCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1ABC9C).withOpacity(0.1),
+                    color: const Color(0xFF1ABC9C).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
@@ -79,7 +83,7 @@ class TournamentCard extends StatelessWidget {
                                       radix: 16,
                                     ) |
                                     0xFF000000,
-                              ).withOpacity(0.1),
+                              ).withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
@@ -141,7 +145,7 @@ class TournamentCard extends StatelessWidget {
                 _buildStatItem(
                   icon: Icons.payment_rounded,
                   value: '₽${tournament.buyIn.toInt()}',
-                  label: 'Buy-in',
+                  label: 'Взнос',
                 ),
                 const SizedBox(width: 24),
                 _buildStatItem(
@@ -191,6 +195,24 @@ class TournamentCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                TextButton.icon(
+                  onPressed: onRpsSettings,
+                  icon: const Icon(Icons.trending_up, size: 18),
+                  label: const Text('Настройки RPS'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: const Color(0xFFFFD700),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                TextButton.icon(
+                  onPressed: onResults,
+                  icon: const Icon(Icons.emoji_events, size: 18),
+                  label: const Text('Результаты'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: const Color(0xFF1ABC9C),
+                  ),
+                ),
+                const SizedBox(width: 8),
                 TextButton.icon(
                   onPressed: onSeating,
                   icon: const Icon(Icons.event_seat, size: 18),

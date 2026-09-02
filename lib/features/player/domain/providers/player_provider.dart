@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/models/rps_rank.dart';
+import '../../../../core/services/api_service.dart';
 import '../../../auth/domain/providers/auth_state_provider.dart';
 import '../models/player_model.dart';
 
@@ -11,6 +12,17 @@ final playerProfileProvider = FutureProvider<PlayerProfile>((ref) async {
     throw StateError('Пользователь не авторизован');
   }
 
+  try {
+    final response = await ApiService().get('/users/profile');
+    
+    if (response.data is Map<String, dynamic>) {
+      return PlayerProfile.fromApiJson(response.data as Map<String, dynamic>, authUser);
+    }
+  } catch (e) {
+    print('Failed to fetch player profile from API: $e');
+  }
+
+  // Fallback to default profile
   return PlayerProfile(
     userId: authUser.id,
     login: authUser.login,
@@ -19,18 +31,19 @@ final playerProfileProvider = FutureProvider<PlayerProfile>((ref) async {
     lastName: authUser.lastName,
     avatarUrl: authUser.avatarUrl,
     role: authUser.role,
-    level: 12,
-    xp: 4500,
-    xpToNextLevel: 5000,
-    rank: 142,
-    rankPoints: 650,
-    rpsRank: RpsRank.grinder,
-    winRate: 12.5,
-    totalTournaments: 24,
-    totalWins: 3,
-    totalPodiums: 8,
-    totalProfit: 45200,
-    averageScore: 18.5,
+    level: 1,
+    xp: 0,
+    xpToNextLevel: 100,
+    rank: 0,
+    rankPoints: 0,
+    rpsPoints: 0,
+    rpsRank: RpsRank.fish,
+    winRate: 0,
+    totalTournaments: 0,
+    totalWins: 0,
+    totalPodiums: 0,
+    totalProfit: 0,
+    averageScore: 0,
     balance: 0,
     createdAt: authUser.createdAt ?? DateTime.now(),
     lastLoginAt: authUser.lastLoginAt ?? DateTime.now(),

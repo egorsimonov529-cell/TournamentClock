@@ -2,8 +2,64 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 
-class MembershipPage extends StatelessWidget {
+class MembershipPage extends StatefulWidget {
   const MembershipPage({super.key});
+
+  @override
+  State<MembershipPage> createState() => _MembershipPageState();
+}
+
+class _MembershipPageState extends State<MembershipPage> {
+  DateTime _expiresAt = DateTime(2026, 9, 5);
+
+  Future<void> _renew() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Продлить членство'),
+        content: const Text('Продлить PRO на один месяц за 5 000 ₽?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Отмена'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Продлить'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    setState(() {
+      _expiresAt = DateTime(
+        _expiresAt.year,
+        _expiresAt.month + 1,
+        _expiresAt.day,
+      );
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('PRO-членство продлено на один месяц')),
+    );
+  }
+
+  String get _expiryLabel {
+    const months = <String>[
+      'янв',
+      'фев',
+      'мар',
+      'апр',
+      'май',
+      'июн',
+      'июл',
+      'авг',
+      'сен',
+      'окт',
+      'ноя',
+      'дек',
+    ];
+    return '${_expiresAt.day} ${months[_expiresAt.month - 1]} ${_expiresAt.year}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +80,7 @@ class MembershipPage extends StatelessWidget {
           Text(
             "Управление подпиской и история платежей",
             style: TextStyle(
-              color: Colors.white.withOpacity(0.6),
+              color: Colors.white.withValues(alpha: 0.6),
               fontSize: 14,
             ),
           ),
@@ -90,22 +146,25 @@ class MembershipPage extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.primary.withOpacity(0.3),
-            AppColors.primary.withOpacity(0.1),
+            AppColors.primary.withValues(alpha: 0.3),
+            AppColors.primary.withValues(alpha: 0.1),
             Colors.transparent,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 1),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.3),
+          width: 1,
+        ),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.2),
+              color: AppColors.primary.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
@@ -122,7 +181,7 @@ class MembershipPage extends StatelessWidget {
                 Text(
                   "Ваш текущий статус",
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     fontSize: 14,
                   ),
                 ),
@@ -137,9 +196,9 @@ class MembershipPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "Действует до 5 сен 2026",
+                  'Действует до $_expiryLabel',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.6),
+                    color: Colors.white.withValues(alpha: 0.6),
                     fontSize: 13,
                   ),
                 ),
@@ -148,7 +207,7 @@ class MembershipPage extends StatelessWidget {
           ),
           const SizedBox(width: 16),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: _renew,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
@@ -184,7 +243,7 @@ class MembershipPage extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.warning.withOpacity(0.2),
+                      color: AppColors.warning.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(
@@ -233,7 +292,10 @@ class MembershipPage extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.5),
+            fontSize: 12,
+          ),
         ),
         const SizedBox(height: 4),
         Text(
@@ -266,7 +328,7 @@ class MembershipPage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.15),
+              color: AppColors.primary.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Icon(
@@ -292,7 +354,7 @@ class MembershipPage extends StatelessWidget {
                 Text(
                   date,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.4),
+                    color: Colors.white.withValues(alpha: 0.4),
                     fontSize: 12,
                   ),
                 ),

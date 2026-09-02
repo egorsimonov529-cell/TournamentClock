@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/ui/ios/ios_card.dart';
+import '../../../../core/ui/ios/ios_button.dart';
 import '../../../auth/domain/providers/auth_state_provider.dart';
 import '../../../tournament/domain/models/tournament_model.dart';
 import '../../../tournament/domain/providers/tournament_provider.dart';
@@ -29,7 +31,7 @@ class MyTournamentsPage extends ConsumerWidget {
                       .toList();
 
             return Padding(
-              padding: const EdgeInsets.all(32),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -37,16 +39,16 @@ class MyTournamentsPage extends ConsumerWidget {
                     'Мои турниры',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 24,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Зарегистрированные турниры',
-                    style: TextStyle(color: Colors.white.withOpacity(.6)),
+                    style: TextStyle(color: Colors.white.withValues(alpha: .6)),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 18),
                   Expanded(
                     child: registered.isEmpty
                         ? const _EmptyTournaments()
@@ -56,7 +58,7 @@ class MyTournamentsPage extends ConsumerWidget {
                                 const SizedBox(height: 12),
                             itemBuilder: (context, index) {
                               final tournament = registered[index];
-                              return Card(
+                              return IosCard(
                                 child: ListTile(
                                   leading: const Icon(
                                     Icons.emoji_events_outlined,
@@ -67,7 +69,9 @@ class MyTournamentsPage extends ConsumerWidget {
                                     '${tournament.registeredPlayerIds.length}/'
                                     '${tournament.maxPlayers}',
                                   ),
-                                  trailing: TextButton(
+                                  trailing: IosButton(
+                                    label: 'Отменить',
+                                    filled: false,
                                     onPressed: () {
                                       ref
                                           .read(tournamentProvider.notifier)
@@ -83,7 +87,6 @@ class MyTournamentsPage extends ConsumerWidget {
                                         ),
                                       );
                                     },
-                                    child: const Text('Отменить'),
                                   ),
                                 ),
                               );
@@ -131,7 +134,7 @@ class _EmptyTournaments extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Выберите турнир в разделе «Турниры»',
-              style: TextStyle(color: Colors.white.withOpacity(.6)),
+              style: TextStyle(color: Colors.white.withValues(alpha: .6)),
             ),
           ],
         ),

@@ -22,21 +22,14 @@ class LevelIndicator extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xff1D232C),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xff2A2D35),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xff2A2D35), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
-                Icons.grid_view_rounded,
-                color: AppColors.primary,
-                size: 20,
-              ),
+              Icon(Icons.grid_view_rounded, color: AppColors.primary, size: 20),
               const SizedBox(width: 8),
               Text(
                 'ТАБЛИЦА УРОВНЕЙ',
@@ -72,30 +65,27 @@ class LevelIndicator extends StatelessWidget {
     BlindLevel level,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 8,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: isCurrent
             ? AppColors.primary
             : isPast
-                ? AppColors.primary.withOpacity(0.2)
-                : Colors.black.withOpacity(0.3),
+            ? AppColors.primary.withValues(alpha: 0.2)
+            : Colors.black.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isCurrent
               ? AppColors.primary
               : isPast
-                  ? AppColors.primary.withOpacity(0.5)
-                  : const Color(0xff2A2D35),
+              ? AppColors.primary.withValues(alpha: 0.5)
+              : const Color(0xff2A2D35),
           width: 1,
         ),
       ),
       child: Text(
         'L${index + 1}: ${level.smallBlind}/${level.bigBlind}',
         style: TextStyle(
-          color: isCurrent ? Colors.white : Colors.white.withOpacity(0.6),
+          color: isCurrent ? Colors.white : Colors.white.withValues(alpha: 0.6),
           fontSize: 11,
           fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
         ),

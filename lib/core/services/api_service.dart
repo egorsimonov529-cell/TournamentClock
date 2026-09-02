@@ -9,17 +9,17 @@ class ApiService {
   late final Dio _dio;
 
   ApiService()
-      : _dio = Dio(
-          BaseOptions(
-            baseUrl: AppConstants.apiBaseUrl,
-            connectTimeout: const Duration(seconds: AppConstants.connectTimeout),
-            receiveTimeout: const Duration(seconds: AppConstants.receiveTimeout),
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-            },
-          ),
-        ) {
+    : _dio = Dio(
+        BaseOptions(
+          baseUrl: AppConstants.apiBaseUrl,
+          connectTimeout: const Duration(seconds: AppConstants.connectTimeout),
+          receiveTimeout: const Duration(seconds: AppConstants.receiveTimeout),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        ),
+      ) {
     // Добавляем интерцептор для автоматического добавления токена
     _dio.interceptors.add(
       InterceptorsWrapper(
@@ -45,7 +45,7 @@ class ApiService {
   Future<String?> _getAccessToken() async {
     try {
       final storage = SecureStorageService();
-      return await storage.read('access_token');
+      return await storage.read(AppConstants.accessTokenKey);
     } catch (e) {
       return null;
     }
@@ -55,9 +55,9 @@ class ApiService {
   Future<void> _clearAllTokens() async {
     try {
       final storage = SecureStorageService();
-      await storage.delete('access_token');
-      await storage.delete('refresh_token');
-      await storage.delete('user_data');
+      await storage.delete(AppConstants.accessTokenKey);
+      await storage.delete(AppConstants.refreshTokenKey);
+      await storage.delete(AppConstants.demoSessionUserKey);
     } catch (e) {
       // Ignored
     }
@@ -76,10 +76,58 @@ class ApiService {
     }
   }
 
-  /// GET запрос
-  Future<Response> get(String path) async {
+  /// POST multipart/form-data
+  Future<Response> postMultipart(String path, dynamic data) async {
     try {
-      return await _dio.get(path);
+      return await _dio.post(path, data: data);
+    } catch (e) {
+      if (e is DioException) {
+        throw _mapDioError(e);
+      }
+      throw const NetworkException();
+    }
+  }
+
+  /// PUT multipart/form-data
+  Future<Response> putMultipart(String path, dynamic data) async {
+    try {
+      return await _dio.put(path, data: data);
+    } catch (e) {
+      if (e is DioException) {
+        throw _mapDioError(e);
+      }
+      throw const NetworkException();
+    }
+  }
+
+  /// GET запрос
+  Future<Response> get(String path, {Map<String, dynamic>? queryParameters}) async {
+    try {
+      return await _dio.get(path, queryParameters: queryParameters);
+    } catch (e) {
+      if (e is DioException) {
+        throw _mapDioError(e);
+      }
+      throw const NetworkException();
+    }
+  }
+
+  /// PATCH request
+  Future<Response> patch(String path, {Map<String, dynamic>? data}) async {
+    try {
+      return await _dio.patch(path, data: data);
+    } catch (e) {
+      if (e is DioException) {
+        throw _mapDioError(e);
+      }
+      throw const NetworkException();
+    }
+  }
+
+  /// DELETE запрос
+  Future<Response> delete(String path) async {
+    try {
+      return await _dio.delete(path);
     } catch (e) {
       if (e is DioException) {
         throw _mapDioError(e);
@@ -118,7 +166,8 @@ class ApiService {
         if (statusCode == 422) {
           // Пытаемся распарсить ошибки валидации
           try {
-            final errors = error.response?.data['errors'] as Map<String, dynamic>?;
+            final errors =
+                error.response?.data['errors'] as Map<String, dynamic>?;
             if (errors != null) {
               return ValidationException(
                 message: 'Ошибка валидации',
@@ -139,13 +188,12 @@ class ApiService {
       case DioExceptionType.receiveTimeout:
       case DioExceptionType.sendTimeout:
         return const NetworkException(
-          message: 'Превышено время ожидания ответа от сервера',
+          message:
+              'Превышено время ожидания ответа от сервера',
         );
 
       case DioExceptionType.cancel:
-        return const NetworkException(
-          message: 'Запрос отменён',
-        );
+        return const NetworkException(message: 'Запрос отменён');
 
       default:
         return NetworkException(

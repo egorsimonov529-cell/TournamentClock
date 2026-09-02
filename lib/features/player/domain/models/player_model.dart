@@ -13,6 +13,7 @@ class PlayerProfile {
   final int xpToNextLevel;
   final int rank;
   final int rankPoints;
+  final int rpsPoints;
   final RpsRank rpsRank;
   final double winRate;
   final int totalTournaments;
@@ -37,6 +38,7 @@ class PlayerProfile {
     required this.xpToNextLevel,
     required this.rank,
     required this.rankPoints,
+    required this.rpsPoints,
     this.rpsRank = RpsRank.fish,
     required this.winRate,
     required this.totalTournaments,
@@ -50,20 +52,26 @@ class PlayerProfile {
   });
 
   factory PlayerProfile.fromJson(Map<String, dynamic> json) {
+    final rpsRankCode = (json['rps_rank'] ?? json['rpsRank']) as String?;
     return PlayerProfile(
       userId: json['id'] as String? ?? '',
       login: json['login'] as String? ?? '',
       email: json['email'] as String? ?? '',
-      firstName: json['first_name'] as String?,
-      lastName: json['last_name'] as String?,
-      avatarUrl: json['avatar_url'] as String?,
+      firstName: (json['first_name'] ?? json['firstName']) as String?,
+      lastName: (json['last_name'] ?? json['lastName']) as String?,
+      avatarUrl: (json['avatar_url'] ?? json['avatarUrl']) as String?,
       role: json['role'] as String? ?? 'player',
-      level: json['level'] as int? ?? 1,
-      xp: json['xp'] as int? ?? 0,
-      xpToNextLevel: json['xp_to_next_level'] as int? ?? 100,
-      rank: json['rank'] as int? ?? 0,
-      rankPoints: json['rank_points'] as int? ?? 0,
-      rpsRank: RpsRankX.parse(json['rps_rank'] ?? json['rpsRank']),
+      level: (json['level'] as num?)?.toInt() ?? 1,
+      xp: (json['xp'] as num?)?.toInt() ?? 0,
+      xpToNextLevel: (json['xp_to_next_level'] as num?)?.toInt() ?? 100,
+      rank: (json['rank'] as num?)?.toInt() ?? 0,
+      rankPoints: (json['rank_points'] ?? json['rankPoints']) is num
+          ? ((json['rank_points'] ?? json['rankPoints']) as num).toInt()
+          : 0,
+      rpsPoints: (json['rps_points'] ?? json['rpsPoints']) is num
+          ? ((json['rps_points'] ?? json['rpsPoints']) as num).toInt()
+          : 0,
+      rpsRank: rpsRankCode != null ? RpsRankX.fromCode(rpsRankCode) : RpsRank.fish,
       winRate: (json['win_rate'] as num?)?.toDouble() ?? 0.0,
       totalTournaments: json['total_tournaments'] as int? ?? 0,
       totalWins: json['total_wins'] as int? ?? 0,
@@ -77,6 +85,39 @@ class PlayerProfile {
       lastLoginAt: json['last_login_at'] != null
           ? DateTime.parse(json['last_login_at'] as String)
           : DateTime.now(),
+    );
+  }
+
+  /// Create PlayerProfile from API response (snake_case format)
+  factory PlayerProfile.fromApiJson(Map<String, dynamic> json, dynamic authUser) {
+    return PlayerProfile(
+      userId: json['id'] as String? ?? authUser.id,
+      login: json['login'] as String? ?? authUser.login,
+      email: json['email'] as String? ?? authUser.email,
+      firstName: json['firstName'] as String? ?? json['first_name'] as String? ?? authUser.firstName,
+      lastName: json['lastName'] as String? ?? json['last_name'] as String? ?? authUser.lastName,
+      avatarUrl: json['avatarUrl'] as String? ?? json['avatar_url'] as String? ?? authUser.avatarUrl,
+      role: json['role'] as String? ?? 'player',
+      level: 1,
+      xp: 0,
+      xpToNextLevel: 100,
+      rank: 0,
+      rankPoints: 0,
+      rpsPoints: 0,
+      rpsRank: RpsRank.fish,
+      winRate: 0.0,
+      totalTournaments: 0,
+      totalWins: 0,
+      totalPodiums: 0,
+      totalProfit: 0.0,
+      averageScore: 0.0,
+      balance: 0.0,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'] as String)
+          : authUser.createdAt ?? DateTime.now(),
+      lastLoginAt: json['lastLoginAt'] != null
+          ? DateTime.parse(json['lastLoginAt'] as String)
+          : authUser.lastLoginAt ?? DateTime.now(),
     );
   }
 
@@ -118,6 +159,7 @@ class PlayerProfile {
     int? xpToNextLevel,
     int? rank,
     int? rankPoints,
+    int? rpsPoints,
     RpsRank? rpsRank,
     double? winRate,
     int? totalTournaments,
@@ -141,6 +183,7 @@ class PlayerProfile {
     xpToNextLevel: xpToNextLevel ?? this.xpToNextLevel,
     rank: rank ?? this.rank,
     rankPoints: rankPoints ?? this.rankPoints,
+    rpsPoints: rpsPoints ?? this.rpsPoints,
     rpsRank: rpsRank ?? this.rpsRank,
     winRate: winRate ?? this.winRate,
     totalTournaments: totalTournaments ?? this.totalTournaments,

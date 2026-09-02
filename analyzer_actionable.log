@@ -1,0 +1,12 @@
+﻿warning - The value of the field '_filter' isn't used. Try removing the field, or using it - lib\features\player\presentation\pages\achievements_page.dart:16:10 - unused_field
+warning - Unused import: '../widgets/section_header.dart'. Try removing the import directive - lib\features\player\presentation\pages\bonuses_page.dart:7:8 - unused_import
+warning - The value of the field '_tab' isn't used. Try removing the field, or using it - lib\features\player\presentation\pages\bonuses_page.dart:17:10 - unused_field
+warning - The left operand can't be null, so the right operand is never executed. Try removing the operator and the right operand - lib\features\player\presentation\pages\overview_page.dart:58:38 - dead_null_aware_expression
+warning - Unused import: '../../../../core/widgets/app_button.dart'. Try removing the import directive - lib\features\player\presentation\pages\player_dashboard_page.dart:6:8 - unused_import
+warning - Unused import: '../../../../core/widgets/app_card.dart'. Try removing the import directive - lib\features\player\presentation\pages\player_dashboard_page.dart:7:8 - unused_import
+warning - The value of the field '_selectedFilter' isn't used. Try removing the field, or using it - lib\features\player\presentation\pages\tournaments_list_page.dart:16:10 - unused_field
+warning - The value of the field '_selectedFormat' isn't used. Try removing the field, or using it - lib\features\player\presentation\pages\tournaments_list_page.dart:17:10 - unused_field
+warning - The value of the field '_filter' isn't used. Try removing the field, or using it - lib\features\player\presentation\pages\transactions_page.dart:16:10 - unused_field
+warning - The left operand can't be null, so the right operand is never executed. Try removing the operator and the right operand - lib\features\tournament\presentation\widgets\create_tournament_dialog.dart:112:48 - dead_null_aware_expression
+167 issues found. (ran in 4.2s)
+EXITCODE:0

@@ -1,19 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/ui/ios/ios_card.dart';
+import '../../../../features/auth/domain/providers/auth_state_provider.dart';
+import '../../../../features/players/domain/models/admin_player.dart';
+import '../../../../features/players/domain/providers/admin_players_provider.dart';
 
-class LeaderboardPage extends StatelessWidget {
+class LeaderboardPage extends ConsumerWidget {
   const LeaderboardPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(32),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final players = [...ref.watch(adminPlayersProvider).players]
+      ..sort((a, b) => b.rpsPoints.compareTo(a.rpsPoints));
+    final authUser = ref.watch(currentAuthUserProvider).valueOrNull;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "Таблица лидеров",
+            'Таблица лидеров',
             style: TextStyle(
               color: Colors.white,
               fontSize: 24,
@@ -22,17 +31,17 @@ class LeaderboardPage extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            "Общий рейтинг спортсменов",
+            'Общий рейтинг спортсменов',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.6),
+              color: Colors.white.withValues(alpha: 0.6),
               fontSize: 14,
             ),
           ),
           const SizedBox(height: 24),
-          _buildTop3Podium(),
+          _buildTop3Podium(players),
           const SizedBox(height: 32),
           const Text(
-            "Полный рейтинг",
+            'Полный рейтинг',
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -40,62 +49,52 @@ class LeaderboardPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          _buildRankingTable(),
+          _buildRankingTable(players, authUser?.login),
         ],
       ),
     );
   }
 
-  Widget _buildTop3Podium() {
+  Widget _buildTop3Podium(List<AdminPlayer> players) {
+    if (players.isEmpty) {
+      return const Center(
+        child: Text('Нет данных', style: TextStyle(color: Colors.white54)),
+      );
+    }
+
+    final podium = <Widget>[];
+    void addPlayer(int index, Color color, double height) {
+      if (index >= players.length) return;
+      podium.add(
+        _buildPodiumPlayer(
+          rank: index + 1,
+          player: players[index],
+          color: color,
+          height: height,
+        ),
+      );
+    }
+
+    addPlayer(1, const Color(0xff94A3B8), 180);
+    addPlayer(0, AppColors.primary, 220);
+    addPlayer(2, const Color(0xffB45309), 160);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // 2nd place
-        _buildPodiumPlayer(
-          rank: 2,
-          name: "Dmitry K.",
-          points: 2850,
-          wins: 12,
-          color: const Color(0xff94A3B8),
-          height: 180,
-          isSecond: true,
-        ),
-        const SizedBox(width: 24),
-        // 1st place
-        _buildPodiumPlayer(
-          rank: 1,
-          name: "Alexei V.",
-          points: 3120,
-          wins: 15,
-          color: AppColors.primary,
-          height: 220,
-          isFirst: true,
-        ),
-        const SizedBox(width: 24),
-        // 3rd place
-        _buildPodiumPlayer(
-          rank: 3,
-          name: "Maxim R.",
-          points: 2740,
-          wins: 11,
-          color: const Color(0xffB45309),
-          height: 160,
-          isThird: true,
-        ),
+        for (var index = 0; index < podium.length; index++) ...[
+          if (index > 0) const SizedBox(width: 24),
+          podium[index],
+        ],
       ],
     );
   }
 
   Widget _buildPodiumPlayer({
     required int rank,
-    required String name,
-    required int points,
-    required int wins,
+    required AdminPlayer player,
     required Color color,
     required double height,
-    bool isFirst = false,
-    bool isSecond = false,
-    bool isThird = false,
   }) {
     return Expanded(
       child: Column(
@@ -104,25 +103,17 @@ class LeaderboardPage extends StatelessWidget {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha: 0.2),
               shape: BoxShape.circle,
               border: Border.all(color: color, width: 3),
             ),
-            child: Center(
-              child: Icon(
-                rank == 1
-                    ? Icons.emoji_events_rounded
-                    : rank == 2
-                    ? Icons.emoji_events_rounded
-                    : Icons.emoji_events_rounded,
-                color: color,
-                size: 36,
-              ),
-            ),
+            child: Icon(Icons.emoji_events_rounded, color: color, size: 36),
           ),
           const SizedBox(height: 12),
           Text(
-            name,
+            player.name,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -131,7 +122,7 @@ class LeaderboardPage extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            "$points очков",
+            '${player.rpsPoints > 0 ? player.rpsPoints.toString() : '—'} очков',
             style: TextStyle(
               color: color,
               fontSize: 18,
@@ -140,9 +131,9 @@ class LeaderboardPage extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            "$wins побед",
+            '${player.wins} побед',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.5),
+              color: Colors.white.withValues(alpha: 0.5),
               fontSize: 12,
             ),
           ),
@@ -151,11 +142,25 @@ class LeaderboardPage extends StatelessWidget {
             height: height,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.15),
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(16),
               ),
               border: Border(top: BorderSide(color: color, width: 2)),
+            ),
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Text(
+                  '#$rank',
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -163,143 +168,116 @@ class LeaderboardPage extends StatelessWidget {
     );
   }
 
-  Widget _buildRankingTable() {
-    final List<Map<String, dynamic>> rankings = [
-      {"rank": 1, "name": "Alexei V.", "points": 3120, "wins": 15, "games": 42},
-      {"rank": 2, "name": "Dmitry K.", "points": 2850, "wins": 12, "games": 38},
-      {"rank": 3, "name": "Maxim R.", "points": 2740, "wins": 11, "games": 35},
-      {"rank": 4, "name": "Petr A.", "points": 2680, "wins": 10, "games": 40},
-      {"rank": 5, "name": "Ivan S.", "points": 2550, "wins": 9, "games": 36},
-      {"rank": 6, "name": "Sergei M.", "points": 2480, "wins": 9, "games": 34},
-      {"rank": 7, "name": "Andrei L.", "points": 2390, "wins": 8, "games": 33},
-      {"rank": 8, "name": "Nikolay B.", "points": 2310, "wins": 7, "games": 30},
-      {
-        "rank": 9,
-        "name": "Vladimir T.",
-        "points": 2250,
-        "wins": 7,
-        "games": 32,
-      },
-      {
-        "rank": 10,
-        "name": "PokerStar123",
-        "points": 2180,
-        "wins": 6,
-        "games": 28,
-        "isCurrentUser": true,
-      },
-    ];
-
+  Widget _buildRankingTable(List<AdminPlayer> players, String? currentLogin) {
     return Column(
-      children: rankings.map((player) {
-        final isCurrentUser = player['isCurrentUser'] as bool? ?? false;
-        return Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: isCurrentUser
-                ? AppColors.primary.withOpacity(0.1)
-                : const Color(0xff1D232C),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isCurrentUser
-                  ? AppColors.primary.withOpacity(0.3)
-                  : const Color(0xff2A2D35),
-              width: 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: player['rank'] <= 3
-                      ? AppColors.primary.withOpacity(0.2)
-                      : const Color(0xff2A2D35),
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(
-                    "#${player['rank']}",
-                    style: TextStyle(
-                      color: player['rank'] <= 3
-                          ? AppColors.primary
-                          : Colors.white.withOpacity(0.7),
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+      children: players.asMap().entries.map((entry) {
+        final rank = entry.key + 1;
+        final player = entry.value;
+        final isCurrentUser =
+            currentLogin != null &&
+            player.login.toLowerCase() == currentLogin.toLowerCase();
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: IosCard(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: rank <= 3
+                          ? AppColors.primary.withValues(alpha: 0.2)
+                          : const Color(0xff2A2D35),
+                      shape: BoxShape.circle,
                     ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          player['name'],
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        if (isCurrentUser) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: const Text(
-                              "Вы",
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "${player['wins']} побед / ${player['games']} игр",
+                    alignment: Alignment.center,
+                    child: Text(
+                      '#$rank',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
-                        fontSize: 12,
+                        color: rank <= 3
+                            ? AppColors.primary
+                            : Colors.white.withValues(alpha: 0.7),
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  "${player['points']}",
-                  style: const TextStyle(
-                    color: AppColors.primary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
                   ),
-                ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                player.name,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            if (isCurrentUser) ...[
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: const Text(
+                                  'Вы',
+                                  style: TextStyle(
+                                    color: AppColors.primary,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${player.wins} побед / ${player.tournaments} игр',
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.5),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${player.rpsPoints}',
+                      style: const TextStyle(
+                        color: AppColors.primary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         );
       }).toList(),

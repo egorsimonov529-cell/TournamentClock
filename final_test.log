@@ -1,0 +1,32 @@
+00:00 +0: loading C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart
+00:00 +0: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: auth redirects anonymous users are sent to login
+00:00 +1: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: auth redirects player and admin role guards redirect without loops
+00:00 +2: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: AuthStateNotifier restore, login, and logout update state
+00:00 +3: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: AuthStateNotifier register sets player authenticated state
+00:00 +4: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: AuthStateNotifier register error is exposed in state
+00:00 +5: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: AuthStateNotifier google unavailable is a safe error state
+00:00 +6: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: login form shows Google and registration actions
+00:00 +7: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: login form shows Google and registration actions
+00:01 +8: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: login form shows Google and registration actions
+00:01 +9: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: login form shows Google and registration actions
+00:01 +10: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: login form shows Google and registration actions
+00:01 +11: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: login form shows Google and registration actions
+00:01 +12: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: login form shows Google and registration actions
+00:01 +13: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: login form shows Google and registration actions
+00:01 +14: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: login form shows Google and registration actions
+00:01 +15: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: login form shows Google and registration actions
+00:01 +16: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: login form shows Google and registration actions
+00:01 +17: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: login form shows Google and registration actions
+00:01 +18: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: login form shows Google and registration actions
+00:01 +19: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: login form shows Google and registration actions
+00:01 +20: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: login form shows Google and registration actions
+00:01 +21: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: login form shows Google and registration actions
+00:01 +22: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: login form shows Google and registration actions
+00:01 +23: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/auth/auth_state_and_login_test.dart: login form shows Google and registration actions
+00:01 +24: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/tournament_clock/tournament_clock_screen_test.dart: shows ready state and real first level data
+00:02 +25: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/tournament_clock/tournament_clock_screen_test.dart: shows ready state and real first level data
+00:02 +26: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/tournament_clock/tournament_clock_screen_test.dart: shows ready state and real first level data
+00:02 +27: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/tournament_clock/tournament_clock_screen_test.dart: shows ready state and real first level data
+00:02 +28: C:/Users/Lenovo/Desktop/works/MVP_Poker/tournament_clock/test/features/tournament_clock/tournament_clock_screen_test.dart: shows paused state without overflow on a small screen
+00:02 +29: All tests passed!
+EXITCODE:0
