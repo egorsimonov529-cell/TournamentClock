@@ -1,0 +1,20 @@
+workflows:
+  ios-workflow:
+    name: iOS Build
+    instance_type: mac_mini_m2
+    max_build_time: 30
+    
+    environment:
+      flutter: stable
+      
+    scripts:
+      - name: Install dependencies
+        script: flutter pub get
+      
+      - name: Build for Simulator (Appetize.io)
+        script: |
+          flutter build ios --release --simulator
+      
+    artifacts:
+      - build/ios/iphonesimulator/*.app
+      - /tmp/xcodebuild_logs/*.log
