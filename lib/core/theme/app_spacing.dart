@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+
 class AppSpacing {
   AppSpacing._();
 
@@ -17,4 +19,26 @@ class AppSpacing {
   static const double card = 20;
   static const double cardSm = 16;
   static const double cardLg = 24;
+
+  // Responsive helpers
+  static double responsivePadding(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width < 360) return 12.0;
+    if (width < 600) return 16.0;
+    return 24.0;
+  }
+
+  static double responsiveCardPadding(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width < 360) return 12.0;
+    if (width < 600) return 16.0;
+    return 20.0;
+  }
+
+  static double responsiveFontSize(BuildContext context, double baseSize) {
+    final width = MediaQuery.of(context).size.width;
+    if (width < 360) return baseSize * 0.85;
+    if (width < 600) return baseSize * 0.92;
+    return baseSize;
+  }
 }

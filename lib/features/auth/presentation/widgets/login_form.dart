@@ -114,25 +114,6 @@ class _LoginFormState extends ConsumerState<LoginForm> {
     // Ошибка уже отображена через authStateProvider
   }
 
-  Future<void> _handleGoogleLogin() async {
-    if (ref.read(authStateProvider).status == AuthStatus.authenticating) return;
-    final success = await ref
-        .read(authStateProvider.notifier)
-        .signInWithGoogle();
-    if (!mounted) return;
-    if (!success) {
-      final message =
-          ref.read(authStateProvider).message ??
-          'Google-╨▓╤Е╨╛╨┤ ╤В╤А╨╡╨▒╤Г╨╡╤В ╨╜╨░╤Б╤В╤А╨╛╨╣╨║╨╕ OAuth';
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
-      return;
-    }
-    final role = ref.read(authStateProvider).userRole ?? 'player';
-    context.go(role == 'admin' ? '/dashboard' : '/user');
-  }
-
   @override
   Widget build(BuildContext context) {
     // Следим за состоянием авторизации
@@ -215,21 +196,6 @@ class _LoginFormState extends ConsumerState<LoginForm> {
 
         const Gap(8),
 
-        // Подсказка для демо-режима
-        const Padding(
-          padding: EdgeInsets.only(left: 16, bottom: 8),
-          child: Text(
-            "В демо-режиме подходит любой логин и пароль",
-            style: TextStyle(
-              color: Color(0xff999999),
-              fontSize: 12,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-        ),
-
-        const Gap(14),
-
         AppCheckbox(
           value: _rememberMe,
           text: "Запомнить меня",
@@ -250,11 +216,12 @@ class _LoginFormState extends ConsumerState<LoginForm> {
           loading: isLoading,
         ),
         const Gap(12),
-        GhostButton(
-          label: 'Войти через Google',
-          onPressed: isLoading ? null : _handleGoogleLogin,
-        ),
+
         const Gap(18),
+        TextButton(
+          onPressed: isLoading ? null : () => context.push('/recovery'),
+          child: const Text('Забыли пароль?'),
+        ),
         TextButton(
           onPressed: isLoading ? null : () => context.push('/register'),
           child: const Text('Нет аккаунта? Зарегистрироваться'),

@@ -21,11 +21,13 @@ class QuickActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isCompact = MediaQuery.of(context).size.width < 400;
+    
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppRadius.md),
       child: Container(
-        padding: const EdgeInsets.all(AppSpacing.card),
+        padding: EdgeInsets.all(isCompact ? 12.0 : AppSpacing.card),
         decoration: BoxDecoration(
           color: AppColors.card,
           borderRadius: BorderRadius.circular(AppRadius.md),
@@ -39,14 +41,14 @@ class QuickActionButton extends StatelessWidget {
                 color: AppColors.primaryLight.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
-              child: Icon(icon, color: AppColors.accent, size: 28),
+              child: Icon(icon, color: AppColors.accent, size: isCompact ? 24 : 28),
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 14,
+              style: TextStyle(
+                fontSize: isCompact ? 12 : 14,
                 fontWeight: FontWeight.w600,
                 color: AppColors.white,
               ),
@@ -57,7 +59,7 @@ class QuickActionButton extends StatelessWidget {
                 description!,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  fontSize: 12,
+                  fontSize: 11,
                   color: AppColors.textSecondary,
                 ),
               ),

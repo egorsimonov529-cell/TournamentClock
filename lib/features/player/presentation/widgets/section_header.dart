@@ -17,8 +17,10 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isCompact = MediaQuery.of(context).size.width < 400;
+    
     return Padding(
-      padding: const EdgeInsets.only(
+      padding: EdgeInsets.only(
         left: AppSpacing.pageHorizontal,
         right: AppSpacing.pageHorizontal,
         bottom: AppSpacing.md,
@@ -29,8 +31,8 @@ class SectionHeader extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 18,
+            style: TextStyle(
+              fontSize: isCompact ? 15 : 18,
               fontWeight: FontWeight.w600,
               color: AppColors.white,
             ),
@@ -40,8 +42,8 @@ class SectionHeader extends StatelessWidget {
               onTap: onAction,
               child: Text(
                 action!,
-                style: const TextStyle(
-                  fontSize: 14,
+                style: TextStyle(
+                  fontSize: isCompact ? 12 : 14,
                   fontWeight: FontWeight.w500,
                   color: AppColors.accent,
                 ),

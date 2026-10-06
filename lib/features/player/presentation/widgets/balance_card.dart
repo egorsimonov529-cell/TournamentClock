@@ -24,11 +24,14 @@ class BalanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = accentColor ?? AppColors.accent;
+    final isCompact = MediaQuery.of(context).size.width < 400;
+    final padding = isCompact ? 14.0 : AppSpacing.cardLg;
+    final amountSize = isCompact ? 26.0 : 32.0;
 
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: AppSpacing.pageHorizontal),
-      padding: const EdgeInsets.all(AppSpacing.cardLg),
+      padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -65,7 +68,7 @@ class BalanceCard extends StatelessWidget {
           Text(
             amount,
             style: TextStyle(
-              fontSize: 32,
+              fontSize: amountSize,
               fontWeight: FontWeight.bold,
               color: color,
             ),

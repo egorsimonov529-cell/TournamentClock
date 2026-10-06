@@ -1,1 +1,8 @@
-#include "Generated.xcconfig"
+// This is a generated file; do not edit or check into version control.
+// iOS-specific configuration
+EXCLUDED_ARCHS[sdk=iphonesimulator*]=i386
+EXCLUDED_ARCHS[sdk=iphoneos*]=armv7
+DART_OBFUSCATION=false
+TRACK_WIDGET_CREATION=true
+TREE_SHAKE_ICONS=false
+PACKAGE_CONFIG=.dart_tool/package_config.json

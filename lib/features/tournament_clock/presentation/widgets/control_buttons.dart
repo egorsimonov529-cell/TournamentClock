@@ -24,6 +24,11 @@ class ControlButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isCompact = screenWidth < 400;
+    final buttonHeight = isCompact ? 48.0 : 56.0;
+    final iconSize = isCompact ? 24.0 : 36.0;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -32,6 +37,7 @@ class ControlButtons extends StatelessWidget {
           icon: Icons.skip_previous_rounded,
           onPressed: isRunning && !isPaused ? onPrev : null,
           color: Colors.white.withValues(alpha: 0.6),
+          size: isCompact ? 40.0 : 48.0,
         ),
 
         // Start/Pause/Stop
@@ -44,12 +50,12 @@ class ControlButtons extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  padding: EdgeInsets.symmetric(vertical: buttonHeight / 2.5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: Icon(Icons.play_arrow_rounded, size: 36),
+                child: Icon(Icons.play_arrow_rounded, size: iconSize),
               ),
             ),
           )
@@ -62,12 +68,12 @@ class ControlButtons extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.warning,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  padding: EdgeInsets.symmetric(vertical: buttonHeight / 2.5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: Icon(Icons.pause_rounded, size: 36),
+                child: Icon(Icons.pause_rounded, size: iconSize),
               ),
             ),
           ),
@@ -77,10 +83,14 @@ class ControlButtons extends StatelessWidget {
           icon: Icons.skip_next_rounded,
           onPressed: isRunning && !isPaused ? onNext : null,
           color: Colors.white.withValues(alpha: 0.6),
+          size: isCompact ? 40.0 : 48.0,
         ),
 
         // Stop
-        _buildStopButton(onPressed: isRunning ? onStop : null),
+        _buildStopButton(
+          onPressed: isRunning ? onStop : null,
+          size: isCompact ? 40.0 : 48.0,
+        ),
       ],
     );
   }
@@ -89,24 +99,27 @@ class ControlButtons extends StatelessWidget {
     required IconData icon,
     VoidCallback? onPressed,
     required Color color,
+    double size = 48.0,
   }) {
     return IconButton.filled(
       onPressed: onPressed,
       icon: Icon(
         icon,
         color: onPressed != null ? Colors.white : color.withValues(alpha: 0.3),
+        size: size * 0.6,
       ),
       style: IconButton.styleFrom(
         backgroundColor: onPressed != null
             ? AppColors.card
             : const Color(0xff1D232C),
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(size * 0.33),
+        minimumSize: Size(size, size),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
 
-  Widget _buildStopButton({VoidCallback? onPressed}) {
+  Widget _buildStopButton({VoidCallback? onPressed, double size = 48.0}) {
     return IconButton.filled(
       onPressed: onPressed,
       icon: const Icon(Icons.stop_rounded, color: Colors.white),
@@ -114,7 +127,8 @@ class ControlButtons extends StatelessWidget {
         backgroundColor: onPressed != null
             ? AppColors.error
             : AppColors.error.withValues(alpha: 0.3),
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(size * 0.33),
+        minimumSize: Size(size, size),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );

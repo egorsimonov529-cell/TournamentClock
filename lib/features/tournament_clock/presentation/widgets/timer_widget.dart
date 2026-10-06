@@ -16,92 +16,94 @@ class TimerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isCompact = screenWidth < 400;
+    final timeFontSize = isCompact ? 42.0 : 58.0;
+    final labelFontSize = isCompact ? 10.0 : 12.0;
+    final padding = isCompact ? 12.0 : 18.0;
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(40),
+      padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isPaused
-              ? [AppColors.primary.withValues(alpha: 0.05), Colors.transparent]
-              : [
-                  AppColors.primary.withValues(alpha: 0.15),
-                  AppColors.primary.withValues(alpha: 0.05),
-                ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        borderRadius: BorderRadius.circular(24),
+        color: const Color(0xFF141A22),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isPaused
-              ? AppColors.warning.withValues(alpha: 0.3)
-              : AppColors.primary.withValues(alpha: 0.3),
-          width: 2,
+          color: Colors.white.withValues(alpha: 0.08),
+          width: 1,
         ),
       ),
-      child: Column(
+      child: Stack(
         children: [
-          Text(
-            isRunning ? 'ТЕКУЩИЙ УРОВЕНЬ' : 'ГОТОВ К СТАРТУ',
-            style: TextStyle(
-              color: isPaused
-                  ? AppColors.warning
-                  : isRunning
-                  ? AppColors.primary
-                  : Colors.white.withValues(alpha: 0.5),
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 2,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            time,
-            style: TextStyle(
-              color: isPaused
-                  ? AppColors.warning
-                  : isRunning
-                  ? Colors.white
-                  : Colors.white.withValues(alpha: 0.7),
-              fontSize: 96,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'monospace',
-              letterSpacing: 8,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              isRunning
-                  ? 'Blind: 25/50 | Ante: 5'
-                  : 'Нажмите START для начала турнира',
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.6),
-                fontSize: 14,
+          Column(
+            children: [
+              Text(
+                isRunning ? 'ТЕКУЩИЙ УРОВЕНЬ' : 'ГОТОВ К СТАРТУ',
+                style: TextStyle(
+                  color: isPaused
+                      ? Colors.white.withValues(alpha: 0.7)
+                      : isRunning
+                          ? AppColors.primary
+                          : Colors.white.withValues(alpha: 0.5),
+                  fontSize: labelFontSize,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 2,
+                ),
               ),
-            ),
-          ),
-          if (isRunning) ...[
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.timer_rounded, color: AppColors.primary, size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  'Начало: 14:30',
+              SizedBox(height: isCompact ? 10 : 14),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  time,
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.5),
+                    color: isPaused
+                        ? Colors.white.withValues(alpha: 0.8)
+                        : isRunning
+                            ? Colors.white
+                            : Colors.white.withValues(alpha: 0.7),
+                    fontSize: timeFontSize,
+                    fontWeight: FontWeight.w800,
+                    fontFamily: 'monospace',
+                    letterSpacing: 3,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.22),
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Text(
+                  isRunning
+                      ? 'Blind: 25/50 | Ante: 5'
+                      : 'Нажмите START для начала турнира',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.65),
                     fontSize: 12,
                   ),
                 ),
+              ),
+              if (isRunning) ...[
+                const SizedBox(height: 14),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.timer_rounded, color: AppColors.primary, size: 16),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Начало: 14:30',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.5),
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
               ],
-            ),
-          ],
+            ],
+          ),
         ],
       ),
     );

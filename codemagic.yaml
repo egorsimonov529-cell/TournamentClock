@@ -1,20 +1,138 @@
+# Codemagic CI/CD configuration for Tournament Clock
+# Docs: https://docs.codemagic.io/yaml-configurations/getting-started
+
+groups:
+  # Добавь эти секреты в Codemagic Dashboard → Settings → Environment variables
+  - ios_credentials:
+      - APPLE_CERTIFICATES
+      - APPLE_PROVISIONING_PROFILES
+      - APPLE_KEYCHAIN_PASSWORD
+
 workflows:
-  ios-workflow:
-    name: iOS Build
+  ios-release:
+    name: iOS Release (IPA)
     instance_type: mac_mini_m2
-    max_build_time: 30
-    
+    max_build_time: 60
+
     environment:
       flutter: stable
-      
+      xcode: latest
+      cocoapods: latest
+      groups:
+        - ios_credentials
+      vars:
+        APPLE_ID: "your@appleid.com"
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.example.tournamentClock
+
+    scripts:
+      - name: Set up code signing settings
+        script: |
+          flutter config --no-analytics
+          flutter clean
+          
+      - name: Install dependencies
+        script: |
+          flutter pub get
+          
+      - name: Run tests
+        script: |
+          flutter test --no-pub
+          
+      - name: Build IPA for App Store / TestFlight
+        script: |
+          flutter build ipa \
+            --release \
+            --no-codesign \
+            --export-options-plist=ios/ExportOptions.plist || true
+          
+          # Если код-подписание не настроено — собираем без подписи
+          flutter build ipa --release
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**
+
+    publishing:
+      email:
+        recipients:
+          - your@email.com
+        notify:
+          success: true
+          failure: true
+
+  ios-testflight:
+    name: iOS → TestFlight
+    instance_type: mac_mini_m2
+    max_build_time: 60
+
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: latest
+      groups:
+        - ios_credentials
+      vars:
+        APPLE_ID: "your@appleid.com"
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.example.tournamentClock
+
+    scripts:
+      - name: Set up
+        script: |
+          flutter config --no-analytics
+          flutter clean
+          flutter pub get
+          
+      - name: Build and upload to TestFlight
+        script: |
+          flutter build ipa --release
+          
+          # Upload to App Store Connect
+          xcrun altool --upload-app \
+            --type ios \
+            --file build/ios/ipa/*.ipa \
+            --apiKey your-api-key \
+            --apiIssuer your-issuer-id
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+
+    publishing:
+      email:
+        recipients:
+          - your@email.com
+        notify:
+          success: true
+          failure: true
+
+  ios-simulator:
+    name: iOS Simulator (Appetize)
+    instance_type: mac_mini_m2
+    max_build_time: 30
+
+    environment:
+      flutter: stable
+      xcode: latest
+
     scripts:
       - name: Install dependencies
-        script: flutter pub get
-      
-      - name: Build for Simulator (Appetize.io)
+        script: |
+          flutter pub get
+          
+      - name: Build for Simulator
         script: |
           flutter build ios --release --simulator
-      
+          
+      - name: Upload to Appetize.io
+        script: |
+          # Регистрируйся на https://appetize.io
+          # curl -F "file=@build/ios/iphonesimulator/Runner.app.zip" \
+          #      https://appetize.io/api/upload
+
     artifacts:
       - build/ios/iphonesimulator/*.app
       - /tmp/xcodebuild_logs/*.log

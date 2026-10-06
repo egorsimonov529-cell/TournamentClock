@@ -7,17 +7,25 @@ class IosLoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isCompact = MediaQuery.of(context).size.width < 400;
+    
     return CupertinoPageScaffold(
       navigationBar: const CupertinoNavigationBar(middle: Text('Вход')),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              const SizedBox(height: 24),
-              const LoginForm(),
-              const Spacer(),
-            ],
+        bottom: true,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isCompact ? 12.0 : 16.0,
+              vertical: 24.0,
+            ),
+            child: Column(
+              children: [
+                const LoginForm(),
+                const Spacer(),
+                SizedBox(height: isCompact ? 40.0 : 60.0),
+              ],
+            ),
           ),
         ),
       ),
