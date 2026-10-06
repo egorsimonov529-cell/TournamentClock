@@ -111,7 +111,7 @@ class _TournamentClockScreenState extends ConsumerState<TournamentClockScreen> {
                         ),
                         const SizedBox(height: 8),
                         TournamentInfo(
-                          name: clockState.tournamentName,
+                          name: 'Poker Club Tournament',
                           format: 'TT No-Limit',
                           players: 45,
                           maxPlayers: 100,
@@ -193,47 +193,14 @@ class _TournamentClockScreenState extends ConsumerState<TournamentClockScreen> {
                 children: [
                   Expanded(
                     child: currentLevel != null
-                        ? (currentLevel.isBreak
-                            ? Container(
-                                padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xff1B2A1E),
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    color: const Color(0xff2E6D4A),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Column(
-                                  children: [
-                                    const Text(
-                                      'ПЕРЕРЫВ',
-                                      style: TextStyle(
-                                        color: Colors.greenAccent,
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      '${currentLevel.durationMinutes} мин',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : BlindsCard(
-                                level: currentLevel.level,
-                                smallBlind: currentLevel.smallBlind,
-                                bigBlind: currentLevel.bigBlind,
-                                ante: currentLevel.ante,
-                                duration: Duration(minutes: currentLevel.durationMinutes),
-                                isCurrent: true,
-                              ))
+                        ? BlindsCard(
+                            level: currentLevel.level,
+                            smallBlind: currentLevel.smallBlind,
+                            bigBlind: currentLevel.bigBlind,
+                            ante: currentLevel.ante,
+                            duration: Duration(minutes: currentLevel.durationMinutes),
+                            isCurrent: true,
+                          )
                         : BlindsCard(
                             level: 1,
                             smallBlind: 25,
@@ -246,46 +213,13 @@ class _TournamentClockScreenState extends ConsumerState<TournamentClockScreen> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: nextLevel != null
-                        ? (nextLevel.isBreak
-                            ? Container(
-                                padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xff2A1A16),
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    color: const Color(0xffB96C4D),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Column(
-                                  children: [
-                                    const Text(
-                                      'СЛЕДУЮЩИЙ ПЕРЕРЫВ',
-                                      style: TextStyle(
-                                        color: Colors.orangeAccent,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      '${nextLevel.durationMinutes} мин',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : NextLevelCard(
-                                nextLevel: nextLevel.level,
-                                smallBlind: nextLevel.smallBlind,
-                                bigBlind: nextLevel.bigBlind,
-                                ante: nextLevel.ante,
-                                duration: nextLevel.durationMinutes,
-                              ))
+                        ? NextLevelCard(
+                            nextLevel: nextLevel.level,
+                            smallBlind: nextLevel.smallBlind,
+                            bigBlind: nextLevel.bigBlind,
+                            ante: nextLevel.ante,
+                            duration: nextLevel.durationMinutes,
+                          )
                         : Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
