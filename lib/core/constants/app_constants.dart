@@ -4,7 +4,7 @@ import '../config/app_config.dart';
 class AppConstants {
   AppConstants._();
 
-  static const String apiBaseUrl = AppConfig.apiBaseUrl;
+  static String get apiBaseUrl => AppConfig.apiBaseUrl;
   static const int connectTimeout = 30;
   static const int receiveTimeout = 30;
 
