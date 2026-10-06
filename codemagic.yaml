@@ -8,7 +8,6 @@ workflows:
   ios-simulator:
     name: iOS Simulator (Appetize)
     instance_type: mac_mini_m2
-    max_build_time: 30
 
     environment:
       flutter: stable
