@@ -14,8 +14,9 @@ workflows:
       xcode: latest
 
     scripts:
-      - name: Install dependencies
+      - name: Clean and get dependencies
         script: |
+          flutter clean
           flutter pub get
           
       - name: Build for Simulator
