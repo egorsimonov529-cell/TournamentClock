@@ -32,7 +32,7 @@ jobs:
         run: flutter pub get
 
       - name: Build APK
-        run: flutter build apk --release
+        run: flutter build apk --release --dart-define=VPS_HOST=188.225.81.114
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -60,7 +60,7 @@ jobs:
         run: flutter pub get
 
       - name: Build Windows
-        run: flutter build windows --release
+        run: flutter build windows --release --dart-define=VPS_HOST=188.225.81.114
 
       - name: Zip Windows build
         run: |
@@ -92,7 +92,7 @@ jobs:
         run: flutter pub get
 
       - name: Build iOS (no codesign)
-        run: flutter build ios --release --no-codesign
+        run: flutter build ios --release --no-codesign --dart-define=VPS_HOST=188.225.81.114
 
       - name: Package IPA
         run: |
