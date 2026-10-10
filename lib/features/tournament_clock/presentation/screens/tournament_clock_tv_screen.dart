@@ -639,58 +639,57 @@ class _TournamentClockTVScreenState extends ConsumerState<TournamentClockTVScree
                         ],
                       ),
                       const SizedBox(height: 20),
-                      // Main timer + next break info side by side
-                      if (currentLevel != null && !currentLevel.isBreak) ...[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: Text(
-                                      _formatTime(clockState.timeRemaining),
-                                      style: TextStyle(
-                                        color: const Color(0xFFEAB749),
-                                        fontSize: 200,
-                                        fontWeight: FontWeight.w800,
-                                        height: 1,
-                                        letterSpacing: 1,
-                                        shadows: [
-                                          Shadow(
-                                            color: const Color(0xFFEAB749).withValues(alpha: 0.3),
-                                            blurRadius: 10,
-                                          ),
-                                        ],
+                      // Main timer centered + next break info on right
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  _formatTime(clockState.timeRemaining),
+                                  style: TextStyle(
+                                    color: const Color(0xFFEAB749),
+                                    fontSize: 200,
+                                    fontWeight: FontWeight.w800,
+                                    height: 1,
+                                    letterSpacing: 1,
+                                    shadows: [
+                                      Shadow(
+                                        color: const Color(0xFFEAB749).withValues(alpha: 0.3),
+                                        blurRadius: 10,
                                       ),
-                                    ),
+                                    ],
                                   ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    'УРОВЕНЬ ${currentLevel.level}',
-                                    style: TextStyle(
-                                      color: Colors.white.withValues(alpha: 0.62),
-                                      fontSize: 22,
-                                      letterSpacing: 3,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 24),
-                                  Center(
-                                    child: _BlindStatsRow(
-                                      level: currentLevel,
-                                      isNext: false,
-                                      isCurrent: true,
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
-                            ),
-                            if (nextBreakLabel != null) ...[
-                              const SizedBox(width: 60),
-                              Column(
+                              const SizedBox(height: 16),
+                              Text(
+                                'УРОВЕНЬ ${currentLevel?.level ?? 1}',
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.62),
+                                  fontSize: 22,
+                                  letterSpacing: 3,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              if (currentLevel != null && !currentLevel.isBreak)
+                                Center(
+                                  child: _BlindStatsRow(
+                                    level: currentLevel,
+                                    isNext: false,
+                                    isCurrent: true,
+                                  ),
+                                ),
+                            ],
+                          ),
+                          if (nextBreakLabel != null && currentLevel != null && !currentLevel.isBreak)
+                            Positioned(
+                              right: 0,
+                              child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text(
@@ -722,10 +721,9 @@ class _TournamentClockTVScreenState extends ConsumerState<TournamentClockTVScree
                                   ),
                                 ],
                               ),
-                            ],
-                          ],
-                        ),
-                      ],
+                            ),
+                        ],
+                      ),
                       const Spacer(),
                     ],
                   ),
