@@ -470,6 +470,24 @@ class _TournamentClockTVScreenState extends ConsumerState<TournamentClockTVScree
     final currentLevel = blindLevels.isEmpty
         ? null
         : blindLevels.elementAtOrNull(clockState.currentLevel.clamp(0, blindLevels.length - 1));
+
+    // Вычисляем время до следующего перерыва
+    String? nextBreakLabel;
+    if (currentLevel != null && !currentLevel.isBreak) {
+      int totalSecondsToBreak = 0;
+      for (int i = clockState.currentLevel + 1; i < blindLevels.length; i++) {
+        final level = blindLevels[i];
+        if (level.isBreak) {
+          nextBreakLabel = totalSecondsToBreak ~/ 60 == 1
+              ? '1 минута до перерыва'
+              : '${totalSecondsToBreak ~/ 60} минут до перерыва';
+          break;
+        } else {
+          totalSecondsToBreak += level.durationMinutes * 60;
+        }
+      }
+    }
+
     final theme = clockState.backgroundTheme;
     final backgroundColors = clockState.customBackgroundColor != null
         ? [
