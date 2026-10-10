@@ -470,6 +470,9 @@ class _TournamentClockTVScreenState extends ConsumerState<TournamentClockTVScree
     final currentLevel = blindLevels.isEmpty
         ? null
         : blindLevels.elementAtOrNull(clockState.currentLevel.clamp(0, blindLevels.length - 1));
+    final nextLevel = blindLevels.isEmpty
+        ? null
+        : blindLevels.elementAtOrNull((clockState.currentLevel + 1).clamp(0, blindLevels.length - 1));
 
     // Вычисляем время до следующего перерыва
     String? nextBreakLabel;
@@ -724,6 +727,29 @@ class _TournamentClockTVScreenState extends ConsumerState<TournamentClockTVScree
                             ),
                         ],
                       ),
+                      const SizedBox(height: 100),
+                      // Next level section
+                      if (nextLevel != null && !nextLevel.isBreak) ...[
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'СЛЕДУЮЩИЙ',
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.5),
+                                fontSize: 14,
+                                letterSpacing: 3,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            _BlindStatsRow(
+                              level: nextLevel,
+                              isNext: true,
+                            ),
+                          ],
+                        ),
+                      ],
                       const Spacer(),
                     ],
                   ),
