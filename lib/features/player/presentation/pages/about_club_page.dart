@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_card.dart';
+import '../../../../core/widgets/club_logo.dart';
+import '../../../dashboard/domain/admin_workspace_state.dart';
 import '../widgets/screen_widgets.dart';
 
-class AboutClubPage extends StatelessWidget {
+class AboutClubPage extends ConsumerWidget {
   const AboutClubPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final workspace = ref.watch(adminWorkspaceProvider);
+    final description = workspace.clubDescription.trim().isNotEmpty
+        ? workspace.clubDescription
+        : 'Место для честной игры, ярких турниров и сильного сообщества.';
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: CustomScrollView(
@@ -19,10 +27,16 @@ class AboutClubPage extends StatelessWidget {
             padding: const EdgeInsets.all(AppSpacing.pageHorizontal),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                Icon(Icons.casino_rounded, size: 72, color: AppColors.accent),
+                ClubLogo(
+                  logoUrl: workspace.logoUrl.isNotEmpty ? workspace.logoUrl : null,
+                  size: 72,
+                  borderRadius: 22,
+                  borderWidth: 1,
+                  borderColor: AppColors.accent,
+                ),
                 SizedBox(height: AppSpacing.lg),
                 Text(
-                  'Poker Club',
+                  workspace.clubName.trim().isNotEmpty ? workspace.clubName : 'Poker Club',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 28,
@@ -32,7 +46,7 @@ class AboutClubPage extends StatelessWidget {
                 ),
                 SizedBox(height: AppSpacing.sm),
                 Text(
-                  'Место для честной игры, ярких турниров и сильного сообщества.',
+                  description,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 15,
@@ -55,7 +69,7 @@ class AboutClubPage extends StatelessWidget {
                       ),
                       SizedBox(height: AppSpacing.sm),
                       Text(
-                        'Создавать комфортную и безопасную среду для игроков любого уровня.',
+                        description,
                         style: TextStyle(
                           fontSize: 14,
                           height: 1.5,
@@ -71,7 +85,9 @@ class AboutClubPage extends StatelessWidget {
                     children: [
                       _InfoRow(
                         icon: Icons.location_on_outlined,
-                        text: 'Москва, центр города',
+                        text: workspace.address?.trim().isNotEmpty == true
+                            ? workspace.address!
+                            : 'Москва, центр города',
                       ),
                       Divider(height: 24),
                       _InfoRow(

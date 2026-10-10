@@ -110,6 +110,7 @@ router.post('/tournaments/:id/distribute', requireAuth, requireAdmin, async (req
     await query('BEGIN');
 
     const distributed = [];
+    const hasWinner = results.some((item) => Number(item.position) === 1);
 
     for (const item of results) {
       const { userId, position, ratingEarned } = item;
@@ -158,6 +159,14 @@ router.post('/tournaments/:id/distribute', requireAuth, requireAdmin, async (req
         newRank: newRank.rank,
         newCode: newRank.code,
       });
+    }
+
+    if (hasWinner) {
+      await query(`
+        UPDATE tournaments
+        SET status = 'completed'
+        WHERE id = $1
+      `, [id]);
     }
 
     await query('COMMIT');

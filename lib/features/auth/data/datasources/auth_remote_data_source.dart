@@ -25,6 +25,8 @@ abstract class AuthRemoteDataSource {
 
   Future<AuthResponse> refreshToken({required String refreshToken});
 
+  Future<void> requestPasswordReset({required String contact});
+
   Future<void> logout();
 
   Future<User?> getCurrentUser();
@@ -36,7 +38,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final SharedPrefsService _sharedPrefs;
   final ClubApiClient _apiClient;
 
-  const AuthRemoteDataSourceImpl({
+  AuthRemoteDataSourceImpl({
     required ApiService apiService,
     required SecureStorageService secureStorage,
     required SharedPrefsService sharedPrefs,
@@ -144,6 +146,17 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return auth;
     } on AuthException {
       throw const TokenException();
+    } catch (_) {
+      throw const NetworkException();
+    }
+  }
+
+  @override
+  Future<void> requestPasswordReset({required String contact}) async {
+    try {
+      await _apiClient.requestPasswordReset(contact: contact);
+    } on AuthException {
+      rethrow;
     } catch (_) {
       throw const NetworkException();
     }

@@ -5,6 +5,40 @@ const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
+function normalizeLoginBase(name, email) {
+  const source = (name || email || 'player').trim();
+  const cleaned = source
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .slice(0, 32);
+
+  if (cleaned && cleaned !== '_') return cleaned;
+
+  const emailBase = (email || 'player').split('@')[0].trim().toLowerCase();
+  return (emailBase || 'player').replace(/[^a-z0-9._-]+/g, '_').slice(0, 32) || 'player';
+}
+
+async function buildUniqueLogin(name, email) {
+  let login = normalizeLoginBase(name, email);
+  let candidate = login;
+  let counter = 2;
+
+  while (true) {
+    const existing = await query(
+      `SELECT id FROM users WHERE login = $1 LIMIT 1`,
+      [candidate]
+    );
+
+    if (existing.rows.length === 0) {
+      return candidate;
+    }
+
+    candidate = `${login}_${counter}`;
+    counter += 1;
+  }
+}
+
 router.post('/login', async (req, res) => {
   try {
     const { login, password } = req.body || {};
@@ -66,21 +100,38 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'name, email and password are required' });
     }
 
+    const normalizedName = String(name).trim();
+    const normalizedEmail = String(email).trim().toLowerCase();
     const existing = await query(
-      `SELECT id FROM users WHERE email = $1 OR login = $2 LIMIT 1`,
-      [email, name]
+      `SELECT id, login, email FROM users WHERE lower(email) = lower($1) OR lower(login) = lower($2) LIMIT 1`,
+      [normalizedEmail, normalizeLoginBase(normalizedName, normalizedEmail)]
     );
 
     if (existing.rows.length > 0) {
-      return res.status(409).json({ message: 'User already exists' });
+      const existingUser = existing.rows[0];
+      const sameEmail = existingUser.email && existingUser.email.toLowerCase() === normalizedEmail;
+      const sameLogin = existingUser.login && existingUser.login.toLowerCase() === normalizeLoginBase(normalizedName, normalizedEmail).toLowerCase();
+
+      const friendlyMessage = sameEmail && sameLogin
+        ? 'Аккаунт с таким email и логином уже зарегистрирован. Попробуйте другой email или имя.'
+        : sameEmail
+          ? 'Пользователь с таким email уже зарегистрирован. Войдите в аккаунт или используйте другой email.'
+          : sameLogin
+            ? 'Такое имя уже занято. Пожалуйста, выберите другое имя пользователя.'
+            : 'Аккаунт с такими данными уже существует. Попробуйте другой email или имя.';
+
+      return res.status(409).json({
+        message: friendlyMessage,
+        conflict: sameEmail ? 'email' : sameLogin ? 'login' : 'account',
+      });
     }
 
     const passwordHash = await hashPassword(password);
-    const login = name.trim();
+    const login = await buildUniqueLogin(normalizedName, normalizedEmail);
     const result = await query(
       `INSERT INTO users (login, email, password_hash, first_name, role)
        VALUES ($1, $2, $3, $4, 'player') RETURNING *`,
-      [login, email, passwordHash, name]
+      [login, normalizedEmail, passwordHash, normalizedName]
     );
 
     const user = result.rows[0];

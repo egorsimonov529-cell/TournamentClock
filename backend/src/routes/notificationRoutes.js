@@ -95,6 +95,64 @@ router.post('/', requireAuth, async (req, res) => {
   }
 });
 
+router.post('/broadcast', requireAuth, async (req, res) => {
+  try {
+    const currentRole = req.user.role;
+    if (currentRole !== 'admin') {
+      return res.status(403).json({ message: 'Only admins can broadcast notifications' });
+    }
+
+    const { title, message, tournament_id } = req.body || {};
+    if (!title || !message) {
+      return res.status(400).json({ message: 'title and message are required' });
+    }
+
+    const { sendPushNotificationToMany } = require('../services/notificationService');
+
+    let usersQuery = 'SELECT id FROM users WHERE is_active = true';
+    let params = [];
+
+    if (tournament_id) {
+      const tournamentPlayers = await query(
+        `SELECT DISTINCT user_id FROM tournament_players WHERE tournament_id = $1`,
+        [tournament_id]
+      );
+
+      if (tournamentPlayers.rows.length === 0) {
+        return res.status(404).json({ message: 'No players registered for this tournament' });
+      }
+
+      usersQuery = 'SELECT DISTINCT user_id AS id FROM tournament_players WHERE tournament_id = $1';
+      params = [tournament_id];
+    }
+
+    const usersResult = await query(usersQuery, params);
+    const userIds = usersResult.rows.map((row) => row.id).filter(Boolean);
+
+    if (userIds.length === 0) {
+      return res.status(400).json({ message: 'No recipients found' });
+    }
+
+    for (const userId of userIds) {
+      await query(
+        `INSERT INTO notifications (user_id, title, message)
+         VALUES ($1, $2, $3)`,
+        [userId, title, message]
+      );
+    }
+
+    await sendPushNotificationToMany(userIds, title, message, {
+      type: 'broadcast',
+      tournament_id: tournament_id || null,
+    });
+
+    res.json({ ok: true, sentTo: userIds.length, target: tournament_id || 'all_users' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to broadcast notification' });
+  }
+});
+
 // PATCH /api/v1/notifications/:id/read - Mark notification as read
 router.patch('/:id/read', requireAuth, async (req, res) => {
   try {

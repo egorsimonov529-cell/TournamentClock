@@ -122,6 +122,32 @@ class TournamentCard extends StatelessWidget {
 
             const SizedBox(height: 16),
 
+            if (tournament.hasLateRegistration && tournament.isRegistrationOpen)
+              Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFC857).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFFFC857).withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.access_time_rounded, color: Color(0xFFFFC857), size: 14),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Поздняя регистрация: ${_remainingLateRegistrationMinutes()} мин',
+                      style: const TextStyle(
+                        color: Color(0xFFFFC857),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
             // Description
             Text(
               tournament.description,
@@ -133,67 +159,72 @@ class TournamentCard extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Stats row
-            Row(
-              children: [
-                _buildStatItem(
-                  icon: Icons.people_rounded,
-                  value:
-                      '${tournament.currentPlayers}/${tournament.maxPlayers}',
-                  label: 'Игроки',
-                ),
-                const SizedBox(width: 24),
-                _buildStatItem(
-                  icon: Icons.payment_rounded,
-                  value: '₽${tournament.buyIn.toInt()}',
-                  label: 'Взнос',
-                ),
-                const SizedBox(width: 24),
-                _buildStatItem(
-                  icon: Icons.format_list_bulleted_rounded,
-                  value: tournament.format,
-                  label: 'Формат',
-                ),
-                const Spacer(),
-                // Progress bar
-                Expanded(
-                  flex: 2,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      LinearProgressIndicator(
-                        value: tournament.maxPlayers > 0
-                            ? tournament.currentPlayers / tournament.maxPlayers
-                            : 0,
-                        minHeight: 6,
-                        borderRadius: BorderRadius.circular(3),
-                        backgroundColor: const Color(0xff2A2D35),
-                        valueColor: const AlwaysStoppedAnimation<Color>(
-                          Color(0xFF1ABC9C),
-                        ),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isNarrow = constraints.maxWidth < 540;
+
+                return Wrap(
+                  spacing: 16,
+                  runSpacing: 12,
+                  children: [
+                    _buildStatItem(
+                      icon: Icons.people_rounded,
+                      value: '${tournament.currentPlayers}/${tournament.maxPlayers}',
+                      label: 'Игроки',
+                    ),
+                    _buildStatItem(
+                      icon: Icons.payment_rounded,
+                      value: '₽${tournament.buyIn.toInt()}',
+                      label: 'Взнос',
+                    ),
+                    _buildStatItem(
+                      icon: Icons.format_list_bulleted_rounded,
+                      value: tournament.format,
+                      label: 'Формат',
+                    ),
+                    SizedBox(
+                      width: isNarrow ? constraints.maxWidth : 180,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          LinearProgressIndicator(
+                            value: tournament.maxPlayers > 0
+                                ? tournament.currentPlayers / tournament.maxPlayers
+                                : 0,
+                            minHeight: 6,
+                            borderRadius: BorderRadius.circular(3),
+                            backgroundColor: const Color(0xff2A2D35),
+                            valueColor: const AlwaysStoppedAnimation<Color>(
+                              Color(0xFF1ABC9C),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            tournament.isFull
+                                ? 'Мест нет'
+                                : '${tournament.maxPlayers - tournament.currentPlayers} мест свободно',
+                            style: TextStyle(
+                              color: tournament.isFull
+                                  ? Colors.redAccent
+                                  : Colors.white54,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        tournament.isFull
-                            ? 'Мест нет'
-                            : '${tournament.maxPlayers - tournament.currentPlayers} мест свободно',
-                        style: TextStyle(
-                          color: tournament.isFull
-                              ? Colors.redAccent
-                              : Colors.white54,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                    ),
+                  ],
+                );
+              },
             ),
 
             const SizedBox(height: 20),
 
             // Actions
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+            Wrap(
+              alignment: WrapAlignment.end,
+              spacing: 8,
+              runSpacing: 8,
               children: [
                 TextButton.icon(
                   onPressed: onRpsSettings,
@@ -203,7 +234,6 @@ class TournamentCard extends StatelessWidget {
                     foregroundColor: const Color(0xFFFFD700),
                   ),
                 ),
-                const SizedBox(width: 8),
                 TextButton.icon(
                   onPressed: onResults,
                   icon: const Icon(Icons.emoji_events, size: 18),
@@ -212,7 +242,6 @@ class TournamentCard extends StatelessWidget {
                     foregroundColor: const Color(0xFF1ABC9C),
                   ),
                 ),
-                const SizedBox(width: 8),
                 TextButton.icon(
                   onPressed: onSeating,
                   icon: const Icon(Icons.event_seat, size: 18),
@@ -221,7 +250,6 @@ class TournamentCard extends StatelessWidget {
                     foregroundColor: const Color(0xFFC9A84E),
                   ),
                 ),
-                const SizedBox(width: 8),
                 if (tournament.currentPlayers > 0)
                   TextButton.icon(
                     onPressed: onViewPlayers,
@@ -231,10 +259,7 @@ class TournamentCard extends StatelessWidget {
                       foregroundColor: const Color(0xFF1ABC9C),
                     ),
                   ),
-                if (tournament.currentPlayers > 0 &&
-                    tournament.status == 'upcoming')
-                  const SizedBox(width: 8),
-                if (tournament.status == 'upcoming')
+                if (tournament.effectiveStatus == 'upcoming')
                   TextButton.icon(
                     onPressed: onRegister,
                     icon: const Icon(Icons.person_add, size: 18),
@@ -243,27 +268,21 @@ class TournamentCard extends StatelessWidget {
                       foregroundColor: const Color(0xFF3498DB),
                     ),
                   ),
-                if (tournament.status != 'completed')
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: TextButton.icon(
-                      onPressed: onEdit,
-                      icon: const Icon(Icons.edit, size: 18),
-                      label: const Text('Редактировать'),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.white70,
-                      ),
+                if (tournament.effectiveStatus != 'completed')
+                  TextButton.icon(
+                    onPressed: onEdit,
+                    icon: const Icon(Icons.edit, size: 18),
+                    label: const Text('Редактировать'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.white70,
                     ),
                   ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: TextButton.icon(
-                    onPressed: onDelete,
-                    icon: const Icon(Icons.delete, size: 18),
-                    label: const Text('Удалить'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.redAccent,
-                    ),
+                TextButton.icon(
+                  onPressed: onDelete,
+                  icon: const Icon(Icons.delete, size: 18),
+                  label: const Text('Удалить'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.redAccent,
                   ),
                 ),
               ],
@@ -272,6 +291,17 @@ class TournamentCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  int _remainingLateRegistrationMinutes() {
+    final now = DateTime.now();
+    final deadline = tournament.lateRegistrationDeadline;
+
+    if (!tournament.hasLateRegistration || !tournament.isRegistrationOpen || deadline.isBefore(now)) {
+      return 0;
+    }
+
+    return deadline.difference(now).inMinutes;
   }
 
   Widget _buildStatItem({

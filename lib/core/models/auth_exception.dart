@@ -38,6 +38,14 @@ class ServerException extends AuthException {
   });
 }
 
+/// Конфликт данных (например, уже зарегистрированный email / логин)
+class ConflictException extends AuthException {
+  const ConflictException({
+    super.message = 'Такой аккаунт уже существует. Попробуйте другой email или имя.',
+    super.code = 'CONFLICT',
+  });
+}
+
 /// Ошибка валидации данных
 class ValidationException extends AuthException {
   const ValidationException({

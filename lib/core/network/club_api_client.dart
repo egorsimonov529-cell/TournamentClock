@@ -53,6 +53,13 @@ class ClubApiClient {
     await _apiService.postLogout(ApiEndpoints.authLogout);
   }
 
+  Future<void> requestPasswordReset({required String contact}) async {
+    await _apiService.post(
+      ApiEndpoints.authPasswordReset,
+      data: {'contact': contact},
+    );
+  }
+
   Future<User> getCurrentUser() async {
     final response = await _apiService.get(ApiEndpoints.usersMe);
     return User.fromJson(response.data as Map<String, dynamic>);

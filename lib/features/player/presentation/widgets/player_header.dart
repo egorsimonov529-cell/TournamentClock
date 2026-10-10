@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../../../core/models/rps_rank.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/club_logo.dart';
+import '../../../dashboard/domain/admin_workspace_state.dart';
 import '../../domain/models/player_model.dart';
 
 class PlayerHeader extends ConsumerWidget {
@@ -18,61 +20,82 @@ class PlayerHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final compact = MediaQuery.sizeOf(context).width < 700;
-    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    final compact = MediaQuery.sizeOf(context).width < 420;
     final name = _displayName(player);
     final hasAvatar = player.avatarUrl != null && player.avatarUrl!.isNotEmpty;
+    final workspace = ref.watch(adminWorkspaceProvider);
+    final clubName = workspace.clubName.trim().isNotEmpty ? workspace.clubName : 'Poker Club';
+    final logoUrl = workspace.logoUrl.trim().isNotEmpty ? workspace.logoUrl : null;
 
     return Container(
-      constraints: const BoxConstraints(minHeight: 88),
-      padding: EdgeInsets.symmetric(
-        horizontal: compact ? 14 : 26,
-        vertical: 12,
-      ),
-      decoration: BoxDecoration(
-        color: isIOS ? const Color(0xff121A22) : AppColors.background,
+      padding: EdgeInsets.symmetric(horizontal: compact ? 14 : 20, vertical: 14),
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
         border: Border(
-          bottom: BorderSide(
-            color: AppColors.border.withValues(alpha: 0.24),
-          ),
+          bottom: BorderSide(color: Color(0xff1F2A31), width: 1),
         ),
       ),
       child: Row(
         children: [
+          ClubLogo(
+            logoUrl: logoUrl,
+            size: compact ? 38 : 44,
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: AppColors.primary,
+          ),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Личный кабинет',
+                  clubName,
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: .6),
-                    fontSize: 12.5,
+                    color: AppColors.white,
+                    fontSize: compact ? 16 : 18,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
-                  'Добро пожаловать, $name!',
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
+                  workspace.city != null && workspace.city!.trim().isNotEmpty
+                      ? 'Покер не на деньги • ${workspace.city}'
+                      : 'Покер не на деньги',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 10,
+                    letterSpacing: 0.4,
                   ),
                 ),
               ],
             ),
           ),
-          if (!compact) ...[
-            _badge('RPS ${player.rpsRank.label}', Icons.military_tech_rounded),
-            const SizedBox(width: 12),
-            _badge(player.rankPoints > 0 ? '${player.rankPoints} rating' : '—', Icons.insights_rounded),
-            const SizedBox(width: 16),
-          ],
+          InkWell(
+            onTap: () => context.push('/about'),
+            borderRadius: BorderRadius.circular(999),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.card,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(color: AppColors.primary.withValues(alpha: 0.18), width: 1),
+              ),
+              child: Text(
+                'О клубе',
+                style: TextStyle(
+                  color: AppColors.primaryLight,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
           CircleAvatar(
-            radius: 24,
-            backgroundColor: AppColors.primary.withValues(alpha: .2),
+            radius: compact ? 17 : 19,
+            backgroundColor: AppColors.primary.withValues(alpha: 0.2),
             backgroundImage: hasAvatar ? NetworkImage(player.avatarUrl!) : null,
             child: hasAvatar
                 ? null
@@ -81,7 +104,7 @@ class PlayerHeader extends ConsumerWidget {
                     style: const TextStyle(
                       color: AppColors.primary,
                       fontWeight: FontWeight.w700,
-                      fontSize: 18,
+                      fontSize: 16,
                     ),
                   ),
           ),
@@ -89,28 +112,4 @@ class PlayerHeader extends ConsumerWidget {
       ),
     );
   }
-
-  Widget _badge(String text, IconData icon) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    decoration: BoxDecoration(
-      color: const Color(0xff12171A).withOpacity(0.28),
-      borderRadius: BorderRadius.circular(999),
-      border: Border.all(color: AppColors.primary.withValues(alpha: .36)),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: AppColors.primaryLight, size: 16),
-        const SizedBox(width: 8),
-        Text(
-          text,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 13,
-          ),
-        ),
-      ],
-    ),
-  );
 }

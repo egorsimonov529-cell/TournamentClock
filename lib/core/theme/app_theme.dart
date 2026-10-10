@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 import 'app_spacing.dart';
@@ -19,7 +18,19 @@ class AppTheme {
         surface: AppColors.surface,
         error: AppColors.error,
       ),
-      textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
+      textTheme: const TextTheme(
+        displayLarge: TextStyle(fontSize: 57, fontWeight: FontWeight.w400, fontFamily: 'Roboto'),
+        displayMedium: TextStyle(fontSize: 45, fontWeight: FontWeight.w400, fontFamily: 'Roboto'),
+        displaySmall: TextStyle(fontSize: 36, fontWeight: FontWeight.w400, fontFamily: 'Roboto'),
+        headlineMedium: TextStyle(fontSize: 32, fontWeight: FontWeight.w400, fontFamily: 'Roboto'),
+        headlineSmall: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, fontFamily: 'Roboto'),
+        titleLarge: TextStyle(fontSize: 22, fontWeight: FontWeight.w500, fontFamily: 'Roboto'),
+        bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, fontFamily: 'Roboto'),
+        bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, fontFamily: 'Roboto'),
+        bodySmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, fontFamily: 'Roboto'),
+        labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, fontFamily: 'Roboto'),
+        labelSmall: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, fontFamily: 'Roboto'),
+      ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.input,

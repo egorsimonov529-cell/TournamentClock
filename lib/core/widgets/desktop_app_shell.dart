@@ -69,20 +69,24 @@ class DesktopAppShell extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  Row(
-                    children: [
-                      _WindowControl(
-                        icon: Icons.remove_rounded,
-                        onPressed: () => WindowManagerService.minimizeWindow(),
-                      ),
-                      const SizedBox(width: 10),
-                      _WindowControl(
-                        icon: Icons.close_rounded,
-                        onPressed: () => WindowManagerService.closeApplication(),
-                        accent: true,
-                      ),
-                    ],
-                  ),
+                  // Кнопки управления окном — только для десктопа
+                  if (MediaQuery.of(context).size.width >= 900) ...[
+                    const Spacer(),
+                    Row(
+                      children: [
+                        _WindowControl(
+                          icon: Icons.remove_rounded,
+                          onPressed: () => WindowManagerService.minimizeWindow(),
+                        ),
+                        const SizedBox(width: 10),
+                        _WindowControl(
+                          icon: Icons.close_rounded,
+                          onPressed: () => WindowManagerService.closeApplication(),
+                          accent: true,
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),

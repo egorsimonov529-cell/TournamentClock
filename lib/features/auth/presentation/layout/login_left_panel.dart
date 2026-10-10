@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 
 import '../../../../core/providers/theme_provider.dart';
+import '../../../../core/widgets/club_logo.dart';
+import '../../../dashboard/domain/admin_workspace_state.dart';
 
 class LoginLeftPanel extends ConsumerWidget {
   const LoginLeftPanel({super.key});
@@ -11,6 +13,10 @@ class LoginLeftPanel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeType = ref.watch(themeProvider);
+    final workspace = ref.watch(adminWorkspaceProvider);
+    final clubName = workspace.clubName.trim().isNotEmpty ? workspace.clubName : 'Poker Club ERM';
+    final logoUrl = workspace.logoUrl.isNotEmpty ? workspace.logoUrl : null;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         return Stack(
@@ -34,19 +40,20 @@ class LoginLeftPanel extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            // Логотип
+                            // Логотип + название клуба
                             Row(
                               children: [
-                                Icon(
-                                  Icons.casino_rounded,
-                                  color: themeType.accent,
-                                  size: 44,
+                                ClubLogo(
+                                  logoUrl: logoUrl,
+                                  size: 52,
+                                  borderRadius: 14.0,
+                                  borderColor: themeType.accent,
                                 ),
                                 const Gap(16),
-                                const Text(
-                                  "Poker Club\nERM",
-                                  style: TextStyle(
-                                    fontSize: 38,
+                                Text(
+                                  clubName,
+                                  style: const TextStyle(
+                                    fontSize: 32,
                                     fontWeight: FontWeight.bold,
                                     height: 1.1,
                                     color: Color(0xffF2F5F3),

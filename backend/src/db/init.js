@@ -11,6 +11,8 @@ async function init() {
     await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS rps_rank VARCHAR(50) NOT NULL DEFAULT 'FISH';`);
     await client.query(`ALTER TABLE admin_workspace ADD COLUMN IF NOT EXISTS address TEXT;`);
     await client.query(`ALTER TABLE admin_workspace ADD COLUMN IF NOT EXISTS city VARCHAR(100);`);
+    await client.query(`ALTER TABLE admin_workspace ADD COLUMN IF NOT EXISTS club_description TEXT;`);
+    await client.query(`ALTER TABLE tournament_grids ADD COLUMN IF NOT EXISTS tv_logo TEXT;`);
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
@@ -41,8 +43,14 @@ async function init() {
         buy_in NUMERIC(12,2) DEFAULT 0,
         format VARCHAR(100) DEFAULT 'TT No-Limit',
         status VARCHAR(50) DEFAULT 'upcoming',
+        late_registration_minutes INTEGER NOT NULL DEFAULT 0,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
+    `);
+
+    await client.query(`
+      ALTER TABLE tournaments
+      ADD COLUMN IF NOT EXISTS late_registration_minutes INTEGER NOT NULL DEFAULT 0;
     `);
 
     await client.query(`
@@ -102,6 +110,7 @@ async function init() {
         notifications_enabled BOOLEAN DEFAULT true,
         address TEXT,
         city VARCHAR(100),
+        club_description TEXT,
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
     `);
@@ -207,6 +216,17 @@ async function init() {
     `);
 
     await client.query(`
+      CREATE TABLE IF NOT EXISTS tournament_grids (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        name VARCHAR(255) NOT NULL,
+        blind_levels JSONB NOT NULL DEFAULT '[]'::jsonb,
+        tv_background VARCHAR(50) NOT NULL DEFAULT 'dark',
+        tv_logo TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+
+    await client.query(`
       CREATE TABLE IF NOT EXISTS transactions (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         user_id UUID REFERENCES users(id) ON DELETE SET NULL,
@@ -225,6 +245,16 @@ async function init() {
         message TEXT NOT NULL,
         is_read BOOLEAN NOT NULL DEFAULT false,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS user_fcm_tokens (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        fcm_token TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        UNIQUE (user_id, fcm_token)
       );
     `);
 
@@ -324,11 +354,21 @@ async function init() {
     console.log('Database initialized successfully');
   } catch (error) {
     console.error('DB init failed:', error);
-    process.exit(1);
+    throw error;
   } finally {
     client.release();
-    await pool.end();
   }
 }
 
-init();
+if (require.main === module) {
+  init()
+    .then(() => {
+      pool.end();
+    })
+    .catch((error) => {
+      console.error(error);
+      process.exit(1);
+    });
+}
+
+module.exports = { init };

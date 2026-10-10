@@ -31,8 +31,8 @@ class SectionHeader extends StatelessWidget {
           Text(
             title,
             style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
               color: AppColors.white,
             ),
           ),
@@ -42,8 +42,8 @@ class SectionHeader extends StatelessWidget {
               child: Text(
                 action!,
                 style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.accent,
                 ),
               ),
@@ -133,14 +133,16 @@ class ScreenTitle extends StatelessWidget {
                 color: AppColors.textSecondary,
               ),
             ),
-            const SizedBox(width: AppSpacing.sm),
+            const SizedBox(width: AppSpacing.xs),
           ],
           Expanded(
             child: Text(
               title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
                 color: AppColors.white,
               ),
             ),

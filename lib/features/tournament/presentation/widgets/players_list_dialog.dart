@@ -27,14 +27,26 @@ class _PlayersListDialogState extends ConsumerState<PlayersListDialog> {
     super.dispose();
   }
 
-  void _removePlayer(String playerId, List<AdminPlayer> players) {
+  void _confirmPlayer(String playerId, List<AdminPlayer> players) {
+    ref.read(tournamentProvider.notifier).confirmPlayer(widget.tournament.id, playerId);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${_getPlayerName(playerId, players)} подтверждён'),
+          backgroundColor: const Color(0xFF1ABC9C),
+        ),
+      );
+    }
+  }
+
+  void _markPlayerEliminated(String playerId, List<AdminPlayer> players) {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
         backgroundColor: const Color(0xff1D232C),
-        title: const Text('Удалить игрока?'),
+        title: const Text('Перевести в выбывшие?'),
         content: Text(
-          'Вы уверены, что хотите удалить игрока "${_getPlayerName(playerId, players)}" из турнира?',
+          'Вы уверены, что хотите отметить "${_getPlayerName(playerId, players)}" как выбывшего?',
           style: const TextStyle(color: Colors.white70),
         ),
         actions: [
@@ -46,11 +58,10 @@ class _PlayersListDialogState extends ConsumerState<PlayersListDialog> {
             onPressed: () {
               ref
                   .read(tournamentProvider.notifier)
-                  .removePlayer(widget.tournament.id, playerId);
+                  .markPlayerEliminated(widget.tournament.id, playerId);
               Navigator.pop(dialogContext);
-              Navigator.pop(context); // Close players list dialog
             },
-            child: const Text('Удалить', style: TextStyle(color: Colors.red)),
+            child: const Text('Выбыл', style: TextStyle(color: Colors.orange)),
           ),
         ],
       ),
@@ -229,6 +240,8 @@ class _PlayersListDialogState extends ConsumerState<PlayersListDialog> {
                         .tournament
                         .registeredPlayerIds
                         .indexOf(player.id);
+                    final isConfirmed = widget.tournament.isPlayerConfirmed(player.id);
+                    final isEliminated = widget.tournament.isPlayerEliminated(player.id);
                     final initial = player.login.isNotEmpty
                         ? player.login[0].toUpperCase()
                         : '?';
@@ -236,7 +249,9 @@ class _PlayersListDialogState extends ConsumerState<PlayersListDialog> {
                     return ListTile(
                       dense: true,
                       leading: CircleAvatar(
-                        backgroundColor: const Color(0xFF1ABC9C),
+                        backgroundColor: isEliminated
+                            ? Colors.redAccent
+                            : (isConfirmed ? const Color(0xFF1ABC9C) : const Color(0xFFD4A017)),
                         child: Text(
                           initial,
                           style: const TextStyle(
@@ -287,20 +302,44 @@ class _PlayersListDialogState extends ConsumerState<PlayersListDialog> {
                               ),
                             ),
                           const SizedBox(width: 8),
-                          IconButton(
-                            onPressed: () => _removePlayer(player.id, players),
-                            icon: const Icon(
-                              Icons.delete_outline,
-                              color: Colors.redAccent,
-                              size: 20,
-                            ),
-                            tooltip: 'Удалить из турнира',
-                            style: IconButton.styleFrom(
-                              backgroundColor: Colors.redAccent.withValues(
-                                alpha: 0.1,
+                          if (!isEliminated)
+                            IconButton(
+                              onPressed: () => _markPlayerEliminated(player.id, players),
+                              icon: const Icon(
+                                Icons.person_off_outlined,
+                                color: Colors.orange,
+                                size: 20,
+                              ),
+                              tooltip: 'Выбыл',
+                              style: IconButton.styleFrom(
+                                backgroundColor: Colors.orange.withValues(alpha: 0.1),
                               ),
                             ),
-                          ),
+                          if (!isConfirmed && !isEliminated)
+                            IconButton(
+                              onPressed: () => _confirmPlayer(player.id, players),
+                              icon: const Icon(
+                                Icons.check_circle_outline,
+                                color: Color(0xFF1ABC9C),
+                                size: 20,
+                              ),
+                              tooltip: 'Подтвердить гостя',
+                              style: IconButton.styleFrom(
+                                backgroundColor: const Color(0xFF1ABC9C).withValues(alpha: 0.1),
+                              ),
+                            ),
+                          if (isEliminated)
+                            const Icon(
+                              Icons.flag_rounded,
+                              color: Colors.redAccent,
+                              size: 18,
+                            ),
+                          if (isConfirmed && !isEliminated)
+                            const Icon(
+                              Icons.verified_rounded,
+                              color: Color(0xFF1ABC9C),
+                              size: 18,
+                            ),
                         ],
                       ),
                     );

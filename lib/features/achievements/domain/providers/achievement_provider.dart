@@ -30,7 +30,7 @@ class AchievementNotifier extends StateNotifier<List<Achievement>> {
         .where((t) => t.registeredPlayerIds.contains(userId))
         .toList();
     final completedTournaments = playedTournaments
-        .where((t) => t.status == 'completed')
+        .where((t) => t.effectiveStatus == 'completed')
         .toList();
     final nightTournaments = playedTournaments
         .where((t) => t.startDate.hour >= 23)

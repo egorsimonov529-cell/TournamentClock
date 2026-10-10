@@ -1,5 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tournament_clock/core/constants/app_constants.dart';
 import 'package:tournament_clock/core/services/api_service.dart';
+import 'package:tournament_clock/core/services/secure_storage_service.dart';
 
 class AdminTransaction {
   final String id;
@@ -73,6 +76,8 @@ class AdminWorkspaceState {
   final String clubName;
   final String clubShortName;
   final String logoAssetPath;
+  final String logoUrl;
+  final String clubDescription;
   final String currency;
   final bool notificationsEnabled;
   final String? address;
@@ -84,6 +89,8 @@ class AdminWorkspaceState {
     required this.clubName,
     required this.clubShortName,
     required this.logoAssetPath,
+    required this.logoUrl,
+    required this.clubDescription,
     required this.currency,
     required this.notificationsEnabled,
     this.address,
@@ -101,6 +108,8 @@ class AdminWorkspaceState {
         clubName: json['club_name'] as String? ?? '',
         clubShortName: json['club_short_name'] as String? ?? '',
         logoAssetPath: json['logo_asset_path'] as String? ?? '',
+        logoUrl: json['logo_url'] as String? ?? '',
+        clubDescription: (json['club_description'] ?? json['about_text'] ?? json['aboutText'] ?? 'Место для честной игры, ярких турниров и сильного сообщества.') as String,
         currency: json['currency'] as String? ?? 'RUB',
         notificationsEnabled: json['notifications_enabled'] as bool? ?? true,
         address: json['address'] as String?,
@@ -111,6 +120,8 @@ class AdminWorkspaceState {
     'club_name': clubName,
     'club_short_name': clubShortName,
     'logo_asset_path': logoAssetPath,
+    'logo_url': logoUrl,
+    'club_description': clubDescription,
     'currency': currency,
     'notifications_enabled': notificationsEnabled,
     'transactions': transactions.map((item) => item.toJson()).toList(),
@@ -125,6 +136,8 @@ class AdminWorkspaceState {
     String? clubName,
     String? clubShortName,
     String? logoAssetPath,
+    String? logoUrl,
+    String? clubDescription,
     String? currency,
     bool? notificationsEnabled,
     String? address,
@@ -135,6 +148,8 @@ class AdminWorkspaceState {
     clubName: clubName ?? this.clubName,
     clubShortName: clubShortName ?? this.clubShortName,
     logoAssetPath: logoAssetPath ?? this.logoAssetPath,
+    logoUrl: logoUrl ?? this.logoUrl,
+    clubDescription: clubDescription ?? this.clubDescription,
     currency: currency ?? this.currency,
     notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
     address: address ?? this.address,
@@ -146,41 +161,71 @@ class AdminWorkspaceNotifier extends StateNotifier<AdminWorkspaceState> {
   AdminWorkspaceNotifier()
     : super(
         AdminWorkspaceState(
-          transactions: [
-            AdminTransaction(
-              id: 'tx-1',
-              description: 'Взносы за турниры',
-              amount: 185000,
-              createdAt: DateTime.now().subtract(const Duration(hours: 2)),
-            ),
-            AdminTransaction(
-              id: 'tx-2',
-              description: 'Выплата призового фонда',
-              amount: -120000,
-              createdAt: DateTime.now().subtract(const Duration(days: 1)),
-            ),
-          ],
-          campaigns: const [
-            LoyaltyCampaign(
-              id: 'welcome',
-              title: 'Приветственный бонус',
-              description: '500 бонусных баллов новым игрокам',
-              active: true,
-            ),
-            LoyaltyCampaign(
-              id: 'weekly',
-              title: 'Еженедельный кэшбэк',
-              description: '5% от турнирных взносов',
-              active: false,
-            ),
-          ],
+          transactions: [],
+          campaigns: [],
           clubName: 'Poker Club ERM',
           clubShortName: 'ERM',
-          logoAssetPath: 'assets/logos/logo_white.svg',
+          logoAssetPath: 'assets/logos/club_logo.svg',
+          logoUrl: '',
+          clubDescription: 'Место для честной игры, ярких турниров и сильного сообщества.',
           currency: 'RUB',
           notificationsEnabled: true,
         ),
-      );
+      ) {
+    _fetchWorkspace();
+  }
+
+  Future<void> _fetchWorkspace() async {
+    try {
+      final response = await ApiService().get('/admin/workspace');
+      if (response.data != null) {
+        state = AdminWorkspaceState.fromJson(response.data as Map<String, dynamic>);
+      }
+    } catch (e) {
+      print('Ошибка загрузки workspace: $e');
+      // Оставляем дефолтные значения
+    }
+  }
+
+  /// Загрузка логотипа клуба
+  Future<String?> uploadLogo({required String filePath}) async {
+    try {
+      final dio = Dio(BaseOptions(baseUrl: AppConstants.apiBaseUrl));
+      final token = await _getAccessToken();
+      if (token != null) {
+        dio.options.headers['Authorization'] = 'Bearer $token';
+      }
+
+      final formData = FormData.fromMap({
+        'logo': await MultipartFile.fromFile(filePath),
+      });
+
+      final response = await dio.post('/admin/logo', data: formData);
+
+      if (response.data != null && response.data['logo_url'] != null) {
+        final logoUrl = response.data['logo_url'] as String;
+        // Обновляем workspace с новым логотипом
+        state = state.copyWith(
+          logoAssetPath: logoUrl,
+          logoUrl: logoUrl.startsWith('http') ? logoUrl : '${AppConstants.apiBaseUrl.replaceAll('/api/v1', '')}$logoUrl',
+        );
+        return logoUrl;
+      }
+      return null;
+    } catch (e) {
+      print('Ошибка загрузки логотипа: $e');
+      rethrow;
+    }
+  }
+
+  Future<String?> _getAccessToken() async {
+    try {
+      final storage = SecureStorageService();
+      return await storage.read(AppConstants.accessTokenKey);
+    } catch (e) {
+      return null;
+    }
+  }
 
   Future<void> addTransaction(String description, double amount) async {
     final newTx = AdminTransaction(
@@ -228,12 +273,21 @@ class AdminWorkspaceNotifier extends StateNotifier<AdminWorkspaceState> {
     );
   }
 
+  /// Обновление логотипа после загрузки
+  void updateLogo({required String logoUrl}) {
+    state = state.copyWith(
+      logoAssetPath: logoUrl,
+      logoUrl: logoUrl,
+    );
+  }
+
   Future<void> saveSettings({
     required String clubName,
     required String clubShortName,
     required String logoAssetPath,
     required String currency,
     required bool notificationsEnabled,
+    String? clubDescription,
     String? address,
     String? city,
   }) async {
@@ -243,6 +297,9 @@ class AdminWorkspaceNotifier extends StateNotifier<AdminWorkspaceState> {
       clubName: clubName.trim(),
       clubShortName: clubShortName.trim(),
       logoAssetPath: logoAssetPath.trim(),
+      clubDescription: (clubDescription ?? state.clubDescription).trim().isNotEmpty
+          ? (clubDescription ?? state.clubDescription).trim()
+          : state.clubDescription,
       currency: currency,
       notificationsEnabled: notificationsEnabled,
       address: address,
@@ -255,6 +312,7 @@ class AdminWorkspaceNotifier extends StateNotifier<AdminWorkspaceState> {
         'club_name': clubName.trim(),
         'club_short_name': clubShortName.trim(),
         'logo_asset_path': logoAssetPath.trim(),
+        'club_description': state.clubDescription,
         'currency': currency,
         'notifications_enabled': notificationsEnabled,
         'address': address,

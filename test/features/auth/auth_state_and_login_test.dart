@@ -52,6 +52,9 @@ class FakeAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> requestPasswordReset({required String contact}) async {}
+
+  @override
   Future<AuthResponse> login({
     required String login,
     required String password,
@@ -106,13 +109,24 @@ void main() {
   });
 
   group('AuthStateNotifier', () {
-    test('startup does not auto-authenticate from a saved session', () async {
+    test('startup restores a saved session and keeps the user role', () async {
       final repo = FakeAuthRepository()
         ..restoredSession = DemoSession.authenticated(repoUser);
       final notifier = AuthStateNotifier(repository: repo);
 
       await notifier.checkInitialSession();
+      expect(notifier.state.status, AuthStatus.authenticated);
+      expect(notifier.state.userRole, 'player');
+      expect(notifier.state.user?.login, 'player@example.com');
+    });
+
+    test('startup stays anonymous when there is no remembered session', () async {
+      final repo = FakeAuthRepository();
+      final notifier = AuthStateNotifier(repository: repo);
+
+      await notifier.checkInitialSession();
       expect(notifier.state.status, AuthStatus.anonymous);
+      expect(notifier.state.user, isNull);
     });
 
     test('restore, login, and logout update state', () async {
@@ -121,7 +135,8 @@ void main() {
       final notifier = AuthStateNotifier(repository: repo);
 
       await notifier.checkInitialSession();
-      expect(notifier.state.status, AuthStatus.anonymous);
+      expect(notifier.state.status, AuthStatus.authenticated);
+      expect(notifier.state.userRole, 'player');
 
       expect(
         await notifier.login(login: 'player', password: 'secret123'),
@@ -132,6 +147,17 @@ void main() {
       await notifier.logout();
       expect(repo.didLogout, isTrue);
       expect(notifier.state.status, AuthStatus.anonymous);
+    });
+
+    test('password reset request succeeds for a valid contact', () async {
+      final notifier = AuthStateNotifier(repository: FakeAuthRepository());
+
+      final success = await notifier.requestPasswordReset(
+        'player@example.com',
+      );
+
+      expect(success, isTrue);
+      expect(notifier.state.status, AuthStatus.passwordResetSent);
     });
 
     test('register sets player authenticated state', () async {
@@ -190,6 +216,7 @@ void main() {
       ),
     );
     expect(find.byType(GhostButton), findsOneWidget);
-    expect(find.byType(TextButton), findsOneWidget);
+    expect(find.text('Забыли пароль?'), findsOneWidget);
+    expect(find.text('Нет аккаунта? Зарегистрироваться'), findsOneWidget);
   });
 }

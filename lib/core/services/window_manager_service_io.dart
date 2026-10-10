@@ -26,15 +26,6 @@ class WindowManagerService {
     await WindowManagerPlus.current.focus();
   }
 
-  // Multi-window is disabled until state can be shared safely.
-  static Future<void> openClockWindow() async {
-    debugPrint(
-      'Separate clock window is disabled in this stabilization stage.',
-    );
-  }
-
-  static Future<void> closeClockWindow() async {}
-
   static Future<void> minimizeWindow() async {
     if (_isDesktop) {
       await WindowManagerPlus.current.minimize();

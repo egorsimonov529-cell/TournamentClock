@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/services/api_service.dart';
@@ -60,41 +62,68 @@ class TournamentStats {
 }
 
 class TournamentNotifier extends StateNotifier<List<Tournament>> {
-  TournamentNotifier() : super(const []) {
-    load();
+  final bool autoLoad;
+
+  TournamentNotifier({this.autoLoad = true}) : super(const []) {
+    if (autoLoad) {
+      load();
+    }
   }
 
   Future<void> load() async {
+    final previousState = List<Tournament>.from(state);
+
     try {
-      final response = await ApiService().get('/tournaments');
+      final response = await ApiService()
+          .get('/tournaments')
+          .timeout(const Duration(seconds: 3));
       final data = response.data as List<dynamic>;
       state = data
           .map((item) => Tournament.fromJson(item as Map<String, dynamic>))
           .toList();
     } catch (_) {
-      state = const [];
+      if (previousState.isNotEmpty) {
+        state = previousState;
+      } else {
+        state = const [];
+      }
     }
   }
 
   Future<void> addTournament(Tournament tournament) async {
+    final optimistic = tournament.copyWith();
+    state = [optimistic, ...state];
+
     try {
-      final response = await ApiService().post('/tournaments', data: {
-        'name': tournament.name,
-        'description': tournament.description,
-        'start_date': tournament.startDate.toIso8601String(),
-        'end_date': tournament.endDate.toIso8601String(),
-        'max_players': tournament.maxPlayers,
-        'buy_in': tournament.buyIn,
-        'format': tournament.format,
-        'status': tournament.status,
-      });
+      final response = await ApiService()
+          .post('/tournaments', data: {
+            'name': tournament.name,
+            'description': tournament.description,
+            'start_date': tournament.startDate.toIso8601String(),
+            'end_date': tournament.endDate.toIso8601String(),
+            'max_players': tournament.maxPlayers,
+            'buy_in': tournament.buyIn,
+            'format': tournament.format,
+            'status': tournament.status,
+            'late_registration_minutes': tournament.lateRegistrationMinutes,
+          })
+          .timeout(const Duration(seconds: 3));
+
       if (response.data != null) {
-        final created = Tournament.fromJson(response.data as Map<String, dynamic>);
-        state = [created, ...state];
+        final raw = response.data;
+        final created = raw is Map<String, dynamic>
+            ? Tournament.fromJson(raw)
+            : raw is Map
+                ? Tournament.fromJson(Map<String, dynamic>.from(raw))
+                : null;
+
+        if (created != null) {
+          state = [created, ...state.where((item) => item.id != created.id)];
+        }
       }
     } catch (e) {
       print('Ошибка создания турнира: $e');
-      // Не добавляем в стейт при ошибке
+      // Оставляем оптимистичное обновление, чтобы список обновлялся сразу
     }
   }
 
@@ -109,6 +138,7 @@ class TournamentNotifier extends StateNotifier<List<Tournament>> {
         'buy_in': tournament.buyIn,
         'format': tournament.format,
         'status': tournament.status,
+        'late_registration_minutes': tournament.lateRegistrationMinutes,
       });
       // Обновляем локально
       state = [...state.map((t) => t.id == tournament.id ? tournament : t)];
@@ -130,30 +160,43 @@ class TournamentNotifier extends StateNotifier<List<Tournament>> {
     String tournamentId,
     String playerId,
   ) async {
+    final index = state.indexWhere((t) => t.id == tournamentId);
+    if (index < 0) return TournamentRegistrationResult.notFound;
+
+    final tournament = state[index];
+    if (tournament.registeredPlayerIds.contains(playerId)) {
+      return TournamentRegistrationResult.duplicate;
+    }
+    if (!tournament.isRegistrationOpen) {
+      return TournamentRegistrationResult.registrationClosed;
+    }
+    if (tournament.isFull) return TournamentRegistrationResult.full;
+
     try {
       final response = await ApiService().post('/tournaments/$tournamentId/players', data: {
         'player_id': playerId,
       });
-      
+
       if (response.data != null) {
         final updated = Tournament.fromJson(response.data as Map<String, dynamic>);
         state = [
           for (final item in state)
             if (item.id == tournamentId) updated else item,
         ];
+      } else {
+        state = [
+          for (final item in state)
+            if (item.id == tournamentId)
+              item.copyWith(
+                registeredPlayerIds: [
+                  ...item.registeredPlayerIds,
+                  playerId,
+                ],
+              )
+            else
+              item,
+        ];
       }
-      
-      final index = state.indexWhere((t) => t.id == tournamentId);
-      if (index < 0) return TournamentRegistrationResult.notFound;
-
-      final tournament = state[index];
-      if (tournament.registeredPlayerIds.contains(playerId)) {
-        return TournamentRegistrationResult.duplicate;
-      }
-      if (tournament.status != 'upcoming') {
-        return TournamentRegistrationResult.registrationClosed;
-      }
-      if (tournament.isFull) return TournamentRegistrationResult.full;
 
       return TournamentRegistrationResult.success;
     } catch (e) {
@@ -162,20 +205,86 @@ class TournamentNotifier extends StateNotifier<List<Tournament>> {
     }
   }
 
-  Future<bool> removePlayer(String tournamentId, String playerId) async {
+  Future<bool> confirmPlayer(String tournamentId, String playerId) async {
     try {
-      await ApiService().delete('/tournaments/$tournamentId/players/$playerId');
-      
       final index = state.indexWhere((t) => t.id == tournamentId);
       if (index < 0 || !state[index].registeredPlayerIds.contains(playerId)) {
         return false;
       }
+
       state = [
         for (final item in state)
           if (item.id == tournamentId)
             _copyTournament(
               item,
+              confirmedPlayerIds: {
+                ...item.confirmedPlayerIds,
+                playerId,
+              }.toList(),
+              eliminatedPlayerIds: item.eliminatedPlayerIds
+                  .where((id) => id != playerId)
+                  .toList(),
+            )
+          else
+            item,
+      ];
+      return true;
+    } catch (e) {
+      print('Ошибка подтверждения игрока: $e');
+      return false;
+    }
+  }
+
+  Future<bool> markPlayerEliminated(String tournamentId, String playerId) async {
+    try {
+      final index = state.indexWhere((t) => t.id == tournamentId);
+      if (index < 0 || !state[index].registeredPlayerIds.contains(playerId)) {
+        return false;
+      }
+
+      state = [
+        for (final item in state)
+          if (item.id == tournamentId)
+            _copyTournament(
+              item,
+              eliminatedPlayerIds: {
+                ...item.eliminatedPlayerIds,
+                playerId,
+              }.toList(),
+              confirmedPlayerIds: item.confirmedPlayerIds
+                  .where((id) => id != playerId)
+                  .toList(),
+            )
+          else
+            item,
+      ];
+      return true;
+    } catch (e) {
+      print('Ошибка смены статуса игрока: $e');
+      return false;
+    }
+  }
+
+  Future<bool> removePlayer(String tournamentId, String playerId) async {
+    try {
+      final index = state.indexWhere((t) => t.id == tournamentId);
+      if (index < 0 || !state[index].canPlayerCancelRegistration(playerId)) {
+        return false;
+      }
+
+      await ApiService().delete('/tournaments/$tournamentId/players/$playerId');
+
+      state = [
+        for (final item in state)
+          if (item.id == tournamentId)
+            item.copyWith(
               registeredPlayerIds: item.registeredPlayerIds
+                  .where((id) => id != playerId)
+                  .toList(),
+              confirmedPlayerIds: item.confirmedPlayerIds
+                  .where((id) => id != playerId)
+                  .toList(),
+              eliminatedPlayerIds: item.eliminatedPlayerIds
                   .where((id) => id != playerId)
                   .toList(),
             )
@@ -192,19 +301,13 @@ class TournamentNotifier extends StateNotifier<List<Tournament>> {
   Tournament _copyTournament(
     Tournament tournament, {
     List<String>? registeredPlayerIds,
+    List<String>? confirmedPlayerIds,
+    List<String>? eliminatedPlayerIds,
   }) {
-    return Tournament(
-      id: tournament.id,
-      name: tournament.name,
-      description: tournament.description,
-      startDate: tournament.startDate,
-      endDate: tournament.endDate,
-      maxPlayers: tournament.maxPlayers,
-      buyIn: tournament.buyIn,
-      format: tournament.format,
-      status: tournament.status,
-      registeredPlayerIds:
-          registeredPlayerIds ?? tournament.registeredPlayerIds,
+    return tournament.copyWith(
+      registeredPlayerIds: registeredPlayerIds,
+      confirmedPlayerIds: confirmedPlayerIds,
+      eliminatedPlayerIds: eliminatedPlayerIds,
     );
   }
 
@@ -212,18 +315,7 @@ class TournamentNotifier extends StateNotifier<List<Tournament>> {
     state = [
       ...state.map((t) {
         if (t.id == tournamentId) {
-          return Tournament(
-            id: t.id,
-            name: t.name,
-            description: t.description,
-            startDate: t.startDate,
-            endDate: t.endDate,
-            maxPlayers: t.maxPlayers,
-            buyIn: t.buyIn,
-            format: t.format,
-            status: newStatus,
-            registeredPlayerIds: t.registeredPlayerIds,
-          );
+          return t.copyWith(status: newStatus);
         }
         return t;
       }),
@@ -233,9 +325,9 @@ class TournamentNotifier extends StateNotifier<List<Tournament>> {
   TournamentStats getStats() {
     return TournamentStats(
       total: state.length,
-      upcoming: state.where((t) => t.status == 'upcoming').length,
-      inProgress: state.where((t) => t.status == 'inProgress').length,
-      completed: state.where((t) => t.status == 'completed').length,
+      upcoming: state.where((t) => t.effectiveStatus == 'upcoming').length,
+      inProgress: state.where((t) => t.effectiveStatus == 'inProgress').length,
+      completed: state.where((t) => t.effectiveStatus == 'completed').length,
     );
   }
 }

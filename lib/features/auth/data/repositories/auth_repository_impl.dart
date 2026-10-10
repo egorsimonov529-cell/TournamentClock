@@ -28,6 +28,7 @@ class AuthRepositoryImpl implements AuthRepository, AuthRepositoryContract {
        _sharedPrefs = sharedPrefs;
 
   Future<void> _persistSession(User user, bool rememberMe) async {
+    await _sharedPrefs.init();
     await _secureStorage.write(
       key: AppConstants.demoSessionUserKey,
       value: jsonEncode(user.toJson()),
@@ -129,7 +130,37 @@ class AuthRepositoryImpl implements AuthRepository, AuthRepositoryContract {
   }
 
   @override
+  Future<void> requestPasswordReset({required String contact}) async {
+    final normalized = contact.trim();
+    if (normalized.isEmpty) {
+      throw const ValidationException(
+        message: 'Введите email или телефон',
+        fieldErrors: {'contact': 'Введите email или телефон'},
+      );
+    }
+
+    if (isDemoMode) return;
+
+    try {
+      await _apiService.post(
+        '/auth/password/reset',
+        data: {'contact': normalized},
+      );
+    } on AuthException {
+      rethrow;
+    } catch (_) {
+      throw const NetworkException();
+    }
+  }
+
+  @override
   Future<DemoSession> restoreSession() async {
+    await _sharedPrefs.init();
+    final rememberMe = _sharedPrefs.getBool(AppConstants.rememberMeKey) == true;
+    if (!rememberMe) {
+      return const DemoSession.anonymous();
+    }
+
     final user = await checkSession();
     return user == null
         ? const DemoSession.anonymous()
@@ -148,6 +179,14 @@ class AuthRepositoryImpl implements AuthRepository, AuthRepositoryContract {
 
   @override
   Future<User?> checkSession() async {
+    await _sharedPrefs.init();
+    final rememberMe = _sharedPrefs.getBool(AppConstants.rememberMeKey) == true;
+    if (!rememberMe) return null;
+
+    if (isDemoMode) {
+      return getCurrentUser();
+    }
+
     final token = await _secureStorage.read(AppConstants.accessTokenKey);
     return token == null || token.isEmpty ? null : getCurrentUser();
   }
@@ -194,6 +233,7 @@ class AuthRepositoryImpl implements AuthRepository, AuthRepositoryContract {
 
   @override
   Future<void> clearAll() async {
+    await _sharedPrefs.init();
     await _secureStorage.delete(AppConstants.accessTokenKey);
     await _secureStorage.delete(AppConstants.refreshTokenKey);
     await _secureStorage.delete(AppConstants.demoSessionUserKey);

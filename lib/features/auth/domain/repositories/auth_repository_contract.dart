@@ -18,6 +18,8 @@ abstract class AuthRepositoryContract {
 
   Future<AuthResponse> refreshToken({required String refreshToken});
 
+  Future<void> requestPasswordReset({required String contact});
+
   Future<void> logout();
 
   Future<DemoSession> restoreSession();

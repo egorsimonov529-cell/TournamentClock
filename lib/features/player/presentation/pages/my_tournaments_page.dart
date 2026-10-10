@@ -58,36 +58,80 @@ class MyTournamentsPage extends ConsumerWidget {
                                 const SizedBox(height: 12),
                             itemBuilder: (context, index) {
                               final tournament = registered[index];
+                              final canCancel = tournament.canPlayerCancelRegistration(user!.id);
+                              final isConfirmed = tournament.isPlayerConfirmed(user.id);
+                              final isEliminated = tournament.isPlayerEliminated(user.id);
+                              final guestStatus = isEliminated
+                                  ? 'Выбыл'
+                                  : (isConfirmed ? 'Подтверждён' : 'Ожидает подтверждения');
                               return IosCard(
                                 child: ListTile(
                                   leading: const Icon(
                                     Icons.emoji_events_outlined,
                                   ),
                                   title: Text(tournament.name),
-                                  subtitle: Text(
-                                    '${tournament.format} • '
-                                    '${tournament.registeredPlayerIds.length}/'
-                                    '${tournament.maxPlayers}',
-                                  ),
-                                  trailing: IosButton(
-                                    label: 'Отменить',
-                                    filled: false,
-                                    onPressed: () {
-                                      ref
-                                          .read(tournamentProvider.notifier)
-                                          .removePlayer(
-                                            tournament.id,
-                                            user!.id,
-                                          );
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Регистрация отменена'),
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        '${tournament.format} • '
+                                        '${tournament.registeredPlayerIds.length}/'
+                                        '${tournament.maxPlayers}',
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
                                         ),
-                                      );
-                                    },
+                                        decoration: BoxDecoration(
+                                          color: isEliminated
+                                              ? Colors.redAccent.withValues(alpha: 0.12)
+                                              : (isConfirmed
+                                                  ? AppColors.primary.withValues(alpha: 0.12)
+                                                  : AppColors.warning.withValues(alpha: 0.12)),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          guestStatus,
+                                          style: TextStyle(
+                                            color: isEliminated
+                                                ? Colors.redAccent
+                                                : (isConfirmed ? AppColors.primary : AppColors.warning),
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
+                                  trailing: canCancel
+                                      ? IosButton(
+                                          label: 'Отменить',
+                                          filled: false,
+                                          onPressed: () async {
+                                            final removed = await ref
+                                                .read(tournamentProvider.notifier)
+                                                .removePlayer(
+                                                  tournament.id,
+                                                  user.id,
+                                                );
+                                            if (context.mounted) {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    removed
+                                                        ? 'Регистрация отменена'
+                                                        : 'Отмена недоступна после подтверждения',
+                                                  ),
+                                                  backgroundColor: removed ? null : Colors.orange,
+                                                ),
+                                              );
+                                            }
+                                          },
+                                        )
+                                      : null,
                                 ),
                               );
                             },

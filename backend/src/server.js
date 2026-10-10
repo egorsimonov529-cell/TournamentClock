@@ -1,11 +1,26 @@
 const express = require('express');
 const cors = require('cors');
+const os = require('os');
 const path = require('path');
 const { query } = require('./config/database');
+const { init } = require('./db/init');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+const HOST = process.env.HOST || '0.0.0.0';
+
+const getLocalNetworkIp = () => {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name] || []) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        return iface.address;
+      }
+    }
+  }
+  return '127.0.0.1';
+};
 
 app.use(cors());
 app.use(express.json());
@@ -26,6 +41,7 @@ const bonusRoutes = require('./routes/bonusRoutes');
 const loyaltyRoutes = require('./routes/loyaltyRoutes');
 const faqRoutes = require('./routes/faqRoutes');
 const rpsRoutes = require('./routes/rpsRoutes');
+const { startTournamentLifecycleScheduler } = require('./services/tournamentLifecycleService');
 
 app.get('/health', (req, res) => {
   res.json({ ok: true, service: 'poker-club-backend' });
@@ -54,9 +70,15 @@ app.use((err, req, res, next) => {
 
 async function start() {
   try {
+    await init();
     await query('SELECT 1');
-    app.listen(PORT, () => {
-      console.log(`Backend running on http://localhost:${PORT}`);
+    startTournamentLifecycleScheduler();
+    app.listen(PORT, HOST, () => {
+      const lanIp = getLocalNetworkIp();
+      console.log(`Backend running on http://0.0.0.0:${PORT}`);
+      console.log(`Local access: http://localhost:${PORT}`);
+      console.log(`Network access: http://${lanIp}:${PORT}`);
+      console.log('Android emulator should use http://10.0.2.2:4000/api/v1');
     });
   } catch (error) {
     console.error('Postgres connection failed. Start PostgreSQL and rerun.');

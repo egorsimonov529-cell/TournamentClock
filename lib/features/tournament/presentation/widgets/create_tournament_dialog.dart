@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,6 +28,8 @@ class _CreateTournamentDialogState
   TimeOfDay _startTime = const TimeOfDay(hour: 19, minute: 0);
   TimeOfDay _endTime = const TimeOfDay(hour: 22, minute: 0);
   String _status = 'upcoming';
+  bool _lateRegistrationEnabled = false;
+  int _lateRegistrationMinutes = 30;
 
   @override
   void initState() {
@@ -46,6 +50,8 @@ class _CreateTournamentDialogState
       text: widget.tournament?.format ?? 'TT No-Limit',
     );
     _status = widget.tournament?.status ?? 'upcoming';
+    _lateRegistrationEnabled = (widget.tournament?.lateRegistrationMinutes ?? 0) > 0;
+    _lateRegistrationMinutes = widget.tournament?.lateRegistrationMinutes ?? 30;
   }
 
   @override
@@ -122,8 +128,7 @@ class _CreateTournamentDialogState
     }
   }
 
-  void _save() {
-    // Простая валидация без Form
+  Future<void> _save() async {
     final name = _nameController.text.trim();
     final maxPlayers = int.tryParse(_maxPlayersController.text);
 
@@ -153,18 +158,24 @@ class _CreateTournamentDialogState
       buyIn: double.tryParse(_buyInController.text) ?? 0,
       format: _formatController.text.trim(),
       status: _status,
+      lateRegistrationMinutes:
+          _lateRegistrationEnabled ? _lateRegistrationMinutes : 0,
       registeredPlayerIds: widget.tournament?.registeredPlayerIds ?? [],
     );
 
     if (widget.tournament != null) {
-      ref.read(tournamentProvider.notifier).updateTournament(tournament);
+      await ref.read(tournamentProvider.notifier).updateTournament(tournament);
     } else {
-      ref.read(tournamentProvider.notifier).addTournament(tournament);
+      unawaited(ref.read(tournamentProvider.notifier).addTournament(tournament));
     }
+
+    if (!mounted) return;
+
+    await ref.read(tournamentProvider.notifier).load();
+    if (!mounted) return;
 
     Navigator.pop(context);
 
-    // Показываем успех
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -342,6 +353,62 @@ class _CreateTournamentDialogState
                 border: OutlineInputBorder(),
               ),
               style: const TextStyle(color: Colors.white),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xff0A0E14),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xff2A2D35)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CheckboxListTile(
+                    value: _lateRegistrationEnabled,
+                    onChanged: (value) {
+                      setState(() {
+                        _lateRegistrationEnabled = value ?? false;
+                        if (_lateRegistrationEnabled && _lateRegistrationMinutes <= 0) {
+                          _lateRegistrationMinutes = 30;
+                        }
+                      });
+                    },
+                    title: const Text(
+                      'Поздняя регистрация',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    subtitle: const Text(
+                      'Разрешить запись после старта турнира в течение указанного времени',
+                      style: TextStyle(color: Colors.white54, fontSize: 12),
+                    ),
+                    controlAffinity: ListTileControlAffinity.leading,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  if (_lateRegistrationEnabled) ...[
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      initialValue: _lateRegistrationMinutes.toString(),
+                      decoration: const InputDecoration(
+                        labelText: 'Минут поздней регистрации',
+                        labelStyle: TextStyle(color: Colors.white70),
+                        filled: true,
+                        fillColor: Color(0xff101418),
+                        border: OutlineInputBorder(),
+                      ),
+                      style: const TextStyle(color: Colors.white),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        final parsed = int.tryParse(value);
+                        if (parsed != null) {
+                          setState(() => _lateRegistrationMinutes = parsed.clamp(1, 180));
+                        }
+                      },
+                    ),
+                  ],
+                ],
+              ),
             ),
             const SizedBox(height: 24),
 

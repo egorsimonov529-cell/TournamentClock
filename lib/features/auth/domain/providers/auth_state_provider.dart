@@ -62,15 +62,15 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     state = const AuthState(status: AuthStatus.initializing);
 
     try {
-      final user = await _repository.getCurrentUser();
-      if (user == null) {
+      final session = await _repository.restoreSession();
+      if (!session.isAuthenticated || session.user == null) {
         state = const AuthState(status: AuthStatus.anonymous);
         return;
       }
 
       state = AuthState(
         status: AuthStatus.authenticated,
-        user: user,
+        user: session.user,
       );
     } catch (_) {
       state = const AuthState(status: AuthStatus.anonymous);
@@ -105,6 +105,37 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
       state = const AuthState(
         status: AuthStatus.error,
         message: 'Неизвестная ошибка',
+      );
+      return false;
+    }
+  }
+
+  Future<bool> requestPasswordReset(String contact) async {
+    final normalized = contact.trim();
+    if (normalized.isEmpty) {
+      state = const AuthState(
+        status: AuthStatus.error,
+        message: 'Введите email или телефон',
+      );
+      return false;
+    }
+
+    state = const AuthState(status: AuthStatus.authenticating);
+    try {
+      await _repository.requestPasswordReset(contact: normalized);
+      state = AuthState(
+        status: AuthStatus.passwordResetSent,
+        user: state.user,
+        message: 'Инструкция отправлена на почту или телефон',
+      );
+      return true;
+    } on AuthException catch (error) {
+      state = AuthState(status: AuthStatus.error, message: error.message);
+      return false;
+    } catch (_) {
+      state = const AuthState(
+        status: AuthStatus.error,
+        message: 'Не удалось отправить инструкцию',
       );
       return false;
     }
@@ -167,7 +198,9 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
 
 final currentAuthUserProvider = FutureProvider<User?>((ref) async {
   final authState = ref.watch(authStateProvider);
-  // Use in-memory user first — avoids null when rememberMe=false
   if (authState.user != null) return authState.user;
-  return ref.read(authRepositoryProvider).getCurrentUser();
+
+  final session = await ref.read(authRepositoryProvider).restoreSession();
+  if (!session.isAuthenticated || session.user == null) return null;
+  return session.user;
 });

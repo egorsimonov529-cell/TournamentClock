@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/player_model.dart';
 import '../pages/leaderboard_page.dart';
 import '../pages/my_seating_page.dart';
@@ -41,11 +42,47 @@ class _PlayerCabinetLayoutState extends State<PlayerCabinetLayout> {
     });
   }
 
+  Widget _buildPhoneBody(
+    BuildContext context,
+    bool isIOS,
+    List<_MenuItem> items,
+  ) {
+    return SafeArea(
+      top: false,
+      bottom: false,
+      child: Container(
+        decoration: BoxDecoration(
+          color: isIOS
+              ? const Color(0xff121A22)
+              : const Color(0xff111821),
+        ),
+        child: Column(
+          children: [
+            PlayerHeader(player: widget.player),
+            Expanded(
+              child: IndexedStack(
+                index: _selectedIndex,
+                children: items
+                    .map(
+                      (item) => KeyedSubtree(
+                        key: PageStorageKey(item.title),
+                        child: item.page(),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    final desktop = width >= 900;
-    final phone = width < 700;
+    final desktop = width >= 960;
+    final phone = width < 560;
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     final items = () {
       // build menu items with platform-specific page variants
@@ -84,24 +121,7 @@ class _PlayerCabinetLayoutState extends State<PlayerCabinetLayout> {
           icon: Icons.person_rounded,
           title: 'Профиль',
           page: () => _showProfileSettings
-              ? Column(
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-                        child: TextButton.icon(
-                          onPressed: () {
-                            setState(() => _showProfileSettings = false);
-                          },
-                          icon: const Icon(Icons.arrow_back_rounded),
-                          label: const Text('Назад к профилю'),
-                        ),
-                      ),
-                    ),
-                    Expanded(child: ProfileSettingsPage(player: widget.player)),
-                  ],
-                )
+              ? ProfileSettingsPage(player: widget.player)
               : (useIosPages ? IosProfilePage(player: widget.player) : ProfilePage(
                   player: widget.player,
                   onEditProfile: () {
@@ -121,106 +141,82 @@ class _PlayerCabinetLayoutState extends State<PlayerCabinetLayout> {
       backgroundColor: isIOS
           ? const Color(0xff0E151A)
           : const Color(0xff0F1117),
-      body: SafeArea(
-        top: false,
-        bottom: phone,
-        child: phone
-            ? Container(
-                margin: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: isIOS
-                      ? const Color(0xff121A22)
-                      : const Color(0xff111821),
-                  borderRadius: BorderRadius.circular(isIOS ? 28 : 20),
-                  border: Border.all(
-                    color: const Color(0xff10B981).withValues(alpha: 0.28),
-                    width: 1,
+      body: phone
+          ? _buildPhoneBody(context, isIOS, items)
+          : Row(
+              children: [
+                if (desktop)
+                  PlayerNavigationRail(
+                    items: items
+                        .map((item) => PlayerNavigationItem(item.icon, item.title))
+                        .toList(),
+                    selectedIndex: _selectedIndex,
+                    onSelected: _select,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.22),
-                      blurRadius: 18,
-                      spreadRadius: 0,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: Column(
-                  children: [
-                    PlayerHeader(player: widget.player),
-                    Expanded(
-                      child: IndexedStack(
-                        index: _selectedIndex,
-                        children: items
-                            .map(
-                              (item) => KeyedSubtree(
-                                key: PageStorageKey(item.title),
-                                child: item.page(),
-                              ),
-                            )
-                            .toList(),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            : Row(
-                children: [
-                  if (desktop)
-                    PlayerNavigationRail(
-                      items: items
-                          .map((item) => PlayerNavigationItem(item.icon, item.title))
-                          .toList(),
-                      selectedIndex: _selectedIndex,
-                      onSelected: _select,
-                    ),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        PlayerHeader(player: widget.player),
-                        Expanded(
-                          child: IndexedStack(
-                            index: _selectedIndex,
-                            children: items
-                                .map(
-                                  (item) => KeyedSubtree(
-                                    key: PageStorageKey(item.title),
-                                    child: item.page(),
-                                  ),
-                                )
-                                .toList(),
-                          ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      PlayerHeader(player: widget.player),
+                      Expanded(
+                        child: IndexedStack(
+                          index: _selectedIndex,
+                          children: items
+                              .map(
+                                (item) => KeyedSubtree(
+                                  key: PageStorageKey(item.title),
+                                  child: item.page(),
+                                ),
+                              )
+                              .toList(),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-      ),
+                ),
+              ],
+            ),
       bottomNavigationBar: desktop
           ? null
           : NavigationBar(
-              selectedIndex: _selectedIndex,
-              onDestinationSelected: _select,
-              backgroundColor: isIOS
-                  ? const Color(0xff141D24)
-                  : const Color(0xff151921),
-              indicatorColor: const Color(0xffD4AF37).withValues(alpha: .18),
+              selectedIndex: () {
+                switch (_selectedIndex) {
+                  case 1:
+                    return 0;
+                  case 4:
+                    return 1;
+                  case 0:
+                  case 2:
+                  case 3:
+                  case 6:
+                    return 2;
+                  case 5:
+                    return 3;
+                  default:
+                    return 2;
+                }
+              }(),
+              onDestinationSelected: (index) {
+                final mapped = switch (index) {
+                  0 => 1,
+                  1 => 4,
+                  2 => 0,
+                  3 => 5,
+                  _ => 0,
+                };
+                _select(mapped);
+              },
+              backgroundColor: AppColors.surface,
+              indicatorColor: AppColors.primary.withValues(alpha: 0.2),
               shadowColor: Colors.black.withValues(alpha: 0.2),
               surfaceTintColor: Colors.transparent,
-              height: phone ? 64 : 72,
-              labelBehavior: width < 430
-                  ? NavigationDestinationLabelBehavior.onlyShowSelected
-                  : NavigationDestinationLabelBehavior.alwaysShow,
-              destinations: items
-                  .map(
-                    (item) => NavigationDestination(
-                      icon: Icon(item.icon),
-                      label: item.title,
-                    ),
-                  )
-                  .toList(),
+              height: phone ? 60 : 72,
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+              destinations: const [
+                NavigationDestination(icon: Icon(Icons.emoji_events_rounded), label: 'Турниры'),
+                NavigationDestination(icon: Icon(Icons.leaderboard_rounded), label: 'Рейтинг'),
+                NavigationDestination(icon: Icon(Icons.menu_rounded), label: 'Меню'),
+                NavigationDestination(icon: Icon(Icons.person_rounded), label: 'Профиль'),
+              ],
             ),
     );
   }

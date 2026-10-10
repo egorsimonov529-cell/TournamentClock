@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -107,22 +108,57 @@ class ProfilePage extends ConsumerWidget {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: IosButton(label: 'Редактировать профиль', onPressed: onEditProfile, filled: false),
-              ),
               const SizedBox(height: 16),
               const SectionHeader(title: 'Аккаунт'),
               const SizedBox(height: 8),
-              _buildMenuItem(context, CupertinoIcons.person, 'Личные данные', onTap: () => Navigator.of(context).push(CupertinoPageRoute(builder: (_) => ProfileSettingsPage(player: player)))),
-              _buildMenuItem(context, CupertinoIcons.clock, 'История посещений', onTap: () => context.push('/transactions')),
-              _buildMenuItem(context, CupertinoIcons.star, 'Мои достижения', onTap: () => context.push('/achievements')),
-              _buildMenuItem(context, CupertinoIcons.star_circle, 'Уровень лояльности', onTap: () => context.push('/loyalty')),
+              _buildMenuItem(
+                context,
+                CupertinoIcons.person,
+                'Личные данные',
+                onTap: onEditProfile ??
+                    () => Navigator.of(context).push(
+                          CupertinoPageRoute(
+                            builder: (_) => ProfileSettingsPage(player: player),
+                          ),
+                        ),
+              ),
+              _buildMenuItem(
+                context,
+                CupertinoIcons.clock,
+                'История посещений',
+                onTap: () => context.push('/transactions'),
+              ),
+              _buildMenuItem(
+                context,
+                CupertinoIcons.star,
+                'Мои достижения',
+                onTap: () => context.push('/achievements'),
+              ),
+              _buildMenuItem(
+                context,
+                CupertinoIcons.star_circle,
+                'Уровень лояльности',
+                onTap: () => context.push('/loyalty'),
+              ),
               const SizedBox(height: 12),
               const SectionHeader(title: 'Настройки'),
               const SizedBox(height: 8),
-              _buildMenuItem(context, CupertinoIcons.bell, 'Уведомления', onTap: () => context.push('/notifications')),
-              _buildMenuItem(context, CupertinoIcons.lock, 'Безопасность'),
+              _buildMenuItem(
+                context,
+                CupertinoIcons.bell,
+                'Уведомления',
+                onTap: () => context.push('/notifications'),
+              ),
+              _buildMenuItem(
+                context,
+                CupertinoIcons.lock,
+                'Безопасность',
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Раздел безопасности скоро будет доступен')),
+                  );
+                },
+              ),
               const SizedBox(height: 12),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -142,34 +178,40 @@ class ProfilePage extends ConsumerWidget {
     String title, {
     VoidCallback? onTap,
   }) {
+    final item = IosCard(
+      padding: const EdgeInsets.all(AppSpacing.card),
+      child: Row(
+        children: [
+          Icon(icon, size: 24, color: AppColors.textSecondary),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: AppColors.white,
+              ),
+            ),
+          ),
+          const Icon(
+            CupertinoIcons.right_chevron,
+            size: 20,
+            color: AppColors.textMuted,
+          ),
+        ],
+      ),
+    );
+
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.pageHorizontal,
         vertical: 4,
       ),
-      child: IosCard(
-        padding: const EdgeInsets.all(AppSpacing.card),
-        child: Row(
-          children: [
-            Icon(icon, size: 24, color: AppColors.textSecondary),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.white,
-                ),
-              ),
-            ),
-            const Icon(
-              CupertinoIcons.right_chevron,
-              size: 20,
-              color: AppColors.textMuted,
-            ),
-          ],
-        ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: item,
       ),
     );
   }

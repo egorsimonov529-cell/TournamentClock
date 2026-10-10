@@ -91,6 +91,55 @@ router.post('/profile', requireAuth, async (req, res) => {
 });
 
 // GET /api/v1/users/:id - Get profile by ID (with pagination for rating history)
+router.get('/:id/tournament-history', requireAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const currentUserId = req.user.sub;
+
+    if (req.user.role !== 'admin' && currentUserId !== id) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+
+    const result = await query(
+      `
+        SELECT
+          tp.tournament_id,
+          t.name AS tournament_name,
+          t.start_date,
+          t.end_date,
+          t.status,
+          tr.position,
+          tr.rating_earned,
+          tr.rps_earned,
+          tp.registered_at
+        FROM tournament_players tp
+        LEFT JOIN tournaments t ON t.id = tp.tournament_id
+        LEFT JOIN tournament_results tr ON tr.tournament_id = tp.tournament_id AND tr.user_id = tp.user_id
+        WHERE tp.user_id = $1
+        ORDER BY t.start_date DESC
+      `,
+      [id]
+    );
+
+    res.json({
+      data: result.rows.map((row) => ({
+        tournamentId: row.tournament_id,
+        tournamentName: row.tournament_name,
+        startDate: row.start_date,
+        endDate: row.end_date,
+        status: row.status,
+        position: row.position ? Number(row.position) : null,
+        ratingEarned: row.rating_earned ? Number(row.rating_earned) : 0,
+        rpsEarned: row.rps_earned ? Number(row.rps_earned) : 0,
+        registeredAt: row.registered_at,
+      })),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to fetch tournament history' });
+  }
+});
+
 router.get('/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;

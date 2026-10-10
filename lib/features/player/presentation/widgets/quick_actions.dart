@@ -14,7 +14,9 @@ class QuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final compact = MediaQuery.sizeOf(context).width < 650;
+    final width = MediaQuery.sizeOf(context).width;
+    final compact = width < 650;
+    final narrow = width < 420;
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     final cards = [
       _buildActionCard(
@@ -34,7 +36,7 @@ class QuickActions extends StatelessWidget {
     ];
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: compact ? 14 : 32),
+      padding: EdgeInsets.symmetric(horizontal: narrow ? 12 : compact ? 14 : 32),
       child: compact
           ? Column(
               children: [cards.first, const SizedBox(height: 12), cards.last],

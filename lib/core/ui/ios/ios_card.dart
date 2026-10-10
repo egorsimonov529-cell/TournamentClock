@@ -8,12 +8,22 @@ class IosCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isAndroid = Theme.of(context).platform == TargetPlatform.android;
+
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF0E1113),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.06)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.35), blurRadius: 12, offset: Offset(0,6))],
+        color: isAndroid ? const Color(0xFF171B22) : const Color(0xFF0E1113),
+        borderRadius: BorderRadius.circular(isAndroid ? 18 : 16),
+        border: Border.all(
+          color: Colors.white.withOpacity(isAndroid ? 0.08 : 0.06),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isAndroid ? 0.18 : 0.35),
+            blurRadius: isAndroid ? 8 : 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       padding: padding,
       child: child,

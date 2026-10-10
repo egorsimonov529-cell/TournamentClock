@@ -1,7 +1,181 @@
 const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const { query } = require('../config/database');
 
 const router = express.Router();
+
+// ── Multer config for file uploads ─────────────────────────────────────────
+
+const UPLOAD_DIR = path.join(__dirname, '../../uploads/tv-logos');
+if (!fs.existsSync(UPLOAD_DIR)) {
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'tv-logo-' + uniqueSuffix + path.extname(file.originalname));
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  const allowed = /jpeg|jpg|png|gif|svg|webp/;
+  const ext = allowed.test(path.extname(file.originalname).toLowerCase());
+  const mime = allowed.test(file.mimetype.replace('image/', ''));
+  if (ext || mime) cb(null, true);
+  else cb(new Error('Недопустимый тип файла'));
+};
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter,
+});
+
+// ── Tournament Grids ────────────────────────────────────────────────────────
+
+router.get('/grids', async (req, res) => {
+  try {
+    const result = await query(
+      `SELECT id, name, blind_levels, tv_background, tv_logo
+       FROM tournament_grids
+       ORDER BY created_at ASC`
+    );
+
+    res.json(
+      result.rows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        blindLevels: row.blind_levels || [],
+        tvBackground: row.tv_background || 'dark',
+        tvLogoUrl: row.tv_logo,
+      }))
+    );
+  } catch (error) {
+    console.error('Error fetching grids:', error);
+    // Table may not exist yet — return empty
+    res.json([]);
+  }
+});
+
+router.post('/grids', async (req, res) => {
+  try {
+    const { name, blindLevels, tvBackground, tvLogoUrl } = req.body || {};
+
+    if (!name) {
+      return res.status(400).json({ message: 'Name is required' });
+    }
+
+    const result = await query(
+      `INSERT INTO tournament_grids (name, blind_levels, tv_background, tv_logo)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, name, blind_levels, tv_background, tv_logo, created_at`,
+      [name, JSON.stringify(blindLevels || []), tvBackground || 'dark', tvLogoUrl || null]
+    );
+
+    const row = result.rows[0];
+    res.status(201).json({
+      id: row.id,
+      name: row.name,
+      blindLevels: row.blind_levels || [],
+      tvBackground: row.tv_background || 'dark',
+      tvLogoUrl: row.tv_logo,
+    });
+  } catch (error) {
+    console.error('Error creating grid:', error);
+    res.status(500).json({ message: 'Failed to create grid', error: error.message });
+  }
+});
+
+router.put('/grids/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, blindLevels, tvBackground, tvLogoUrl } = req.body || {};
+
+    const result = await query(
+      `UPDATE tournament_grids
+       SET name = $1, blind_levels = $2, tv_background = $3, tv_logo = $4
+       WHERE id = $5
+       RETURNING id, name, blind_levels, tv_background, tv_logo`,
+      [name, JSON.stringify(blindLevels || []), tvBackground || 'dark', tvLogoUrl || null, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Grid not found' });
+    }
+
+    const row = result.rows[0];
+    res.json({
+      id: row.id,
+      name: row.name,
+      blindLevels: row.blind_levels || [],
+      tvBackground: row.tv_background || 'dark',
+      tvLogoUrl: row.tv_logo,
+    });
+  } catch (error) {
+    console.error('Error updating grid:', error);
+    res.status(500).json({ message: 'Failed to update grid', error: error.message });
+  }
+});
+
+router.patch('/grids/:id', async (req, res) => {
+  // Alias for PUT
+  const { id } = req.params;
+  const { name, blindLevels, tvBackground, tvLogoUrl } = req.body || {};
+
+  try {
+    const result = await query(
+      `UPDATE tournament_grids
+       SET name = $1, blind_levels = $2, tv_background = $3, tv_logo = $4
+       WHERE id = $5
+       RETURNING id, name, blind_levels, tv_background, tv_logo`,
+      [name, JSON.stringify(blindLevels || []), tvBackground || 'dark', tvLogoUrl || null, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Grid not found' });
+    }
+
+    const row = result.rows[0];
+    res.json({
+      id: row.id,
+      name: row.name,
+      blindLevels: row.blind_levels || [],
+      tvBackground: row.tv_background || 'dark',
+      tvLogoUrl: row.tv_logo,
+    });
+  } catch (error) {
+    console.error('Error updating grid:', error);
+    res.status(500).json({ message: 'Failed to update grid', error: error.message });
+  }
+});
+
+// ── Blind Levels (existing) ────────────────────────────────────────────────
+
+router.delete('/grids/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await query(
+      `DELETE FROM tournament_grids WHERE id = $1 RETURNING id`,
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Grid not found' });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting grid:', error);
+    res.status(500).json({ message: 'Failed to delete grid', error: error.message });
+  }
+});
+
+// ── Blind Levels (existing) ────────────────────────────────────────────────
 
 router.get('/blind-levels', async (req, res) => {
   try {
@@ -72,6 +246,26 @@ router.post('/', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to create blind level' });
+  }
+});
+
+// ── TV Logo Upload ─────────────────────────────────────────────────────────
+
+router.post('/tv-logo', upload.single('logo'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'Файл не загружен' });
+    }
+
+    const logoUrl = `/uploads/tv-logos/${req.file.filename}`;
+    
+    res.status(201).json({
+      message: 'Логотип загружен',
+      logoUrl,
+    });
+  } catch (error) {
+    console.error('Error uploading TV logo:', error);
+    res.status(500).json({ message: 'Ошибка загрузки логотипа', error: error.message });
   }
 });
 

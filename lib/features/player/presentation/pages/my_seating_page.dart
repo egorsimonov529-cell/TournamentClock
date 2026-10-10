@@ -275,7 +275,7 @@ class _TournamentSeatingCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      _getTournamentStatus(tournament.status),
+                      _getTournamentStatus(tournament.effectiveStatus),
                       style: const TextStyle(
                         color: AppColors.accent,
                         fontSize: 12,

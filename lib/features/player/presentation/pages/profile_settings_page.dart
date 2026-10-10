@@ -61,6 +61,30 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
   }
 
   Future<void> _changePassword() async {
+    final current = _currentPassword.text.trim();
+    final next = _newPassword.text.trim();
+    final confirm = _confirmPassword.text.trim();
+
+    if (current.isEmpty || next.isEmpty || confirm.isEmpty) {
+      _message('Заполните все поля безопасности');
+      return;
+    }
+
+    if (next.length < 6) {
+      _message('Новый пароль должен содержать минимум 6 символов');
+      return;
+    }
+
+    if (current == next) {
+      _message('Новый пароль должен отличаться от текущего');
+      return;
+    }
+
+    if (next != confirm) {
+      _message('Подтверждение пароля не совпадает');
+      return;
+    }
+
     if (!_passwordKey.currentState!.validate()) return;
     setState(() => _savingPassword = true);
     await Future<void>.delayed(const Duration(milliseconds: 350));

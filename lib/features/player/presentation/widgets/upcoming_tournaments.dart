@@ -21,15 +21,20 @@ class UpcomingTournaments extends StatelessWidget {
       tournaments = [];
     }
 
+    final width = MediaQuery.sizeOf(context).width;
+    final compact = width < 420;
+
     return Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: MediaQuery.sizeOf(context).width < 650 ? 16 : 32,
+        horizontal: compact ? 12 : width < 650 ? 16 : 32,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            runSpacing: 8,
             children: [
               const Text(
                 "Ближайшие турниры",

@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 import '../../../../core/models/rps_rank.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -12,11 +12,12 @@ class StatsOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPhone = MediaQuery.sizeOf(context).width < 700;
-    final isIOS = defaultTargetPlatform == TargetPlatform.iOS;
+    final width = MediaQuery.sizeOf(context).width;
+    final isPhone = width < 700;
+    final compactPhone = width < 420;
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: isPhone ? 14 : 32),
+      padding: EdgeInsets.symmetric(horizontal: compactPhone ? 12 : isPhone ? 14 : 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -25,11 +26,20 @@ class StatsOverview extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  'Ваша статистика',
+                  'Расписание игр',
                   style: const TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.w700,
-                  ).merge(const TextStyle(color: AppColors.white)),
+                    color: AppColors.white,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  '${player.totalTournaments} игр',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),
@@ -37,44 +47,40 @@ class StatsOverview extends StatelessWidget {
           const SizedBox(height: 12),
           LayoutBuilder(
             builder: (context, constraints) {
-              final width = constraints.maxWidth < 700
+              final cardWidth = constraints.maxWidth < 420
                   ? (constraints.maxWidth - 12) / 2
-                  : (constraints.maxWidth - 48) / 4;
+                  : (constraints.maxWidth - 12) / 2;
               return Wrap(
                 spacing: 12,
                 runSpacing: 12,
                 children: [
-                    _buildStatCard(
-                      icon: CupertinoIcons.flag,
-                    title: 'Турниров',
+                  _buildStatCard(
+                    icon: CupertinoIcons.flag,
+                    title: 'Игры',
                     value: '${player.totalTournaments}',
                     color: AppColors.primary,
-                    width: width,
-                    isIOS: isIOS,
+                    width: cardWidth,
                   ),
-                    _buildStatCard(
-                      icon: CupertinoIcons.check_mark_circled_solid,
-                    title: 'Побед',
+                  _buildStatCard(
+                    icon: CupertinoIcons.check_mark_circled_solid,
+                    title: 'Победы',
                     value: '${player.totalWins}',
-                    color: AppColors.warning,
-                    width: width,
-                    isIOS: isIOS,
+                    color: AppColors.gold,
+                    width: cardWidth,
                   ),
-                    _buildStatCard(
-                      icon: CupertinoIcons.chart_bar,
-                    title: 'Рейтинг',
-                    value: '${player.rankPoints > 0 ? player.rankPoints.toString() : '—'}',
-                    color: AppColors.success,
-                    width: width,
-                    isIOS: isIOS,
+                  _buildStatCard(
+                    icon: CupertinoIcons.chart_bar,
+                    title: 'Топ-3',
+                    value: '${player.totalPodiums}',
+                    color: AppColors.primaryLight,
+                    width: cardWidth,
                   ),
-                    _buildStatCard(
-                      icon: CupertinoIcons.arrow_up_right,
+                  _buildStatCard(
+                    icon: CupertinoIcons.arrow_up_right,
                     title: 'RPS',
                     value: '${player.rpsPoints}',
                     color: AppColors.info,
-                    width: width,
-                    isIOS: isIOS,
+                    width: cardWidth,
                   ),
                 ],
               );
@@ -100,15 +106,12 @@ class StatsOverview extends StatelessWidget {
         : ((player.rpsPoints - start) / (target - start)).clamp(0.0, 1.0);
     final remaining = next == null ? 0 : (target - player.rpsPoints).clamp(0, 999999);
 
-        return Container(
+    return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xff1D232C),
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.22),
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.border.withValues(alpha: 0.25), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,7 +120,11 @@ class StatsOverview extends StatelessWidget {
             next == null
                 ? 'Максимальный ранг достигнут'
                 : 'До ранга ${next.label}: $remaining RPS',
-            style: const TextStyle(fontWeight: FontWeight.w600).merge(const TextStyle(color: AppColors.white)),
+            style: const TextStyle(
+              color: AppColors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
           ),
           const SizedBox(height: 12),
           Container(
@@ -142,7 +149,7 @@ class StatsOverview extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             'Победы: ${player.totalWins} • Подиумы: ${player.totalPodiums} • Win rate: ${player.winRate.toStringAsFixed(1)}%',
-            style: TextStyle(color: AppColors.white.withValues(alpha: .65)),
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
           ),
         ],
       ),
@@ -155,30 +162,33 @@ class StatsOverview extends StatelessWidget {
     required String value,
     required Color color,
     required double width,
-    required bool isIOS,
   }) {
     return SizedBox(
       width: width,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xff1D232C),
-          borderRadius: BorderRadius.circular(isIOS ? 18 : 14),
+          color: AppColors.card,
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: color.withValues(alpha: 0.24), width: 1),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: color, size: 24),
+            Icon(icon, color: color, size: 22),
             const SizedBox(height: 12),
             Text(
               value,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700).merge(const TextStyle(color: AppColors.white)),
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: AppColors.white,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               title,
-              style: TextStyle(color: AppColors.white.withValues(alpha: 0.6), fontSize: 12.5),
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
             ),
           ],
         ),

@@ -88,6 +88,18 @@ class ApiService {
     }
   }
 
+  /// PUT запрос
+  Future<Response> put(String path, {Map<String, dynamic>? data}) async {
+    try {
+      return await _dio.put(path, data: data);
+    } catch (e) {
+      if (e is DioException) {
+        throw _mapDioError(e);
+      }
+      throw const NetworkException();
+    }
+  }
+
   /// PUT multipart/form-data
   Future<Response> putMultipart(String path, dynamic data) async {
     try {
@@ -163,6 +175,12 @@ class ApiService {
         if (statusCode == 403) {
           return const AccountLockedException();
         }
+        if (statusCode == 409) {
+          final message = _extractServerMessage(error.response?.data);
+          return ConflictException(
+            message: message ?? 'Такой аккаунт уже существует. Попробуйте другой email или имя.',
+          );
+        }
         if (statusCode == 422) {
           // Пытаемся распарсить ошибки валидации
           try {
@@ -200,6 +218,20 @@ class ApiService {
           message: error.message ?? 'Неизвестная ошибка',
         );
     }
+  }
+
+  String? _extractServerMessage(dynamic data) {
+    if (data is Map<String, dynamic>) {
+      final message = data['message'];
+      if (message is String && message.trim().isNotEmpty) return message;
+    }
+
+    if (data is Map) {
+      final message = data['message'];
+      if (message is String && message.trim().isNotEmpty) return message;
+    }
+
+    return null;
   }
 
   /// Установка токена авторизации

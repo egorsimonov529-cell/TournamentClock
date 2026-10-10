@@ -27,9 +27,10 @@ class Sidebar extends ConsumerWidget {
     final initial = login != null && login.isNotEmpty
         ? login[0].toUpperCase()
         : '?';
-    final role = user?.role == 'admin'
-        ? 'Super Admin'
-        : (user?.role ?? 'Admin');
+    final normalizedRole = (user?.role ?? '').trim().toLowerCase();
+    final isAdmin = const {'admin', 'super_admin', 'superadmin', 'administrator'}
+        .contains(normalizedRole);
+    final role = isAdmin ? 'Super Admin' : (user?.role ?? 'Admin');
 
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
@@ -110,8 +111,8 @@ class Sidebar extends ConsumerWidget {
     _MenuItem(icon: Icons.card_giftcard_rounded, title: 'Лояльность'),
     _MenuItem(icon: Icons.article_rounded, title: 'Новости'),
     _MenuItem(icon: Icons.emoji_events_rounded, title: 'Достижения'),
+    _MenuItem(icon: Icons.timer_rounded, title: 'Часы'),
     _MenuItem(icon: Icons.settings_rounded, title: 'Настройки'),
-    _MenuItem(icon: Icons.timer_rounded, title: 'Tournament Clock'),
   ];
 }
 

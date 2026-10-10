@@ -42,13 +42,20 @@ class AchievementCard extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.card),
       decoration: BoxDecoration(
         color: achieved ? AppColors.cardGold : AppColors.card,
-        borderRadius: BorderRadius.circular(AppRadius.md),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: achieved
-              ? (accentColor ?? AppColors.gold).withValues(alpha: 0.4)
-              : AppColors.border,
+              ? (accentColor ?? AppColors.gold).withValues(alpha: 0.38)
+              : AppColors.border.withValues(alpha: 0.7),
           width: 1,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.18),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

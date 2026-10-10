@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -6,15 +7,16 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../domain/providers/auth_state_provider.dart';
 
-class RecoveryPage extends StatefulWidget {
+class RecoveryPage extends ConsumerStatefulWidget {
   const RecoveryPage({super.key});
 
   @override
-  State<RecoveryPage> createState() => _RecoveryPageState();
+  ConsumerState<RecoveryPage> createState() => _RecoveryPageState();
 }
 
-class _RecoveryPageState extends State<RecoveryPage> {
+class _RecoveryPageState extends ConsumerState<RecoveryPage> {
   final _formKey = GlobalKey<FormState>();
   final _controller = TextEditingController();
   bool _sent = false;
@@ -29,12 +31,24 @@ class _RecoveryPageState extends State<RecoveryPage> {
   Future<void> _handleSend() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _sending = true);
-    await Future<void>.delayed(const Duration(milliseconds: 350));
+
+    final success = await ref
+        .read(authStateProvider.notifier)
+        .requestPasswordReset(_controller.text.trim());
+
     if (!mounted) return;
-    setState(() {
-      _sending = false;
-      _sent = true;
-    });
+    setState(() => _sending = false);
+
+    if (success) {
+      setState(() => _sent = true);
+      return;
+    }
+
+    final message = ref.read(authStateProvider).message ??
+        'Не удалось отправить инструкцию';
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override

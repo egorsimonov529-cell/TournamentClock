@@ -1,5 +1,7 @@
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,6 +27,8 @@ class _AchievementFormDialogState extends ConsumerState<AchievementFormDialog> {
   late final TextEditingController _currentController;
   late final TextEditingController _targetController;
 
+  String? _pickedImagePath;
+
   @override
   void initState() {
     super.initState();
@@ -44,8 +48,6 @@ class _AchievementFormDialogState extends ConsumerState<AchievementFormDialog> {
     _targetController.dispose();
     super.dispose();
   }
-
-  File? _pickedImage;
 
   @override
   Widget build(BuildContext context) {
@@ -73,17 +75,26 @@ class _AchievementFormDialogState extends ConsumerState<AchievementFormDialog> {
                 controller: _imageUrlController,
                 decoration: const InputDecoration(labelText: 'Путь к картинке (assets/...)'),
               ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  FilledButton(
-                    onPressed: _pickImage,
-                    child: const Text('Выбрать файл'),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(child: Text(_pickedImage == null ? 'Файл не выбран' : _pickedImage!.path.split(Platform.pathSeparator).last)),
-                ],
-              ),
+              if (!kIsWeb) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    FilledButton(
+                      onPressed: _pickImage,
+                      child: const Text('Выбрать файл'),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        _pickedImagePath == null
+                            ? 'Файл не выбран'
+                            : _pickedImagePath!.split(Platform.pathSeparator).last,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -144,7 +155,7 @@ class _AchievementFormDialogState extends ConsumerState<AchievementFormDialog> {
       targetValue: target,
       achieved: widget.achievement?.achieved ?? current >= target,
     );
-    // Save remotely if backend available
+
     try {
       if (widget.remoteId != null) {
         final updateUc = ref.read(updateAchievementUsecaseProvider);
@@ -154,7 +165,7 @@ class _AchievementFormDialogState extends ConsumerState<AchievementFormDialog> {
           'current_value': current,
           'target_value': target,
           'achieved': item.achieved,
-        }, image: _pickedImage);
+        }, imagePath: _pickedImagePath);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Достижение обновлено')));
       } else {
         final saveUc = ref.read(saveAchievementUsecaseProvider);
@@ -164,7 +175,7 @@ class _AchievementFormDialogState extends ConsumerState<AchievementFormDialog> {
           'current_value': current,
           'target_value': target,
           'achieved': item.achieved,
-        }, image: _pickedImage);
+        }, imagePath: _pickedImagePath);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Достижение создано')));
       }
     } catch (e) {
@@ -179,7 +190,7 @@ class _AchievementFormDialogState extends ConsumerState<AchievementFormDialog> {
     final res = await FilePicker.platform.pickFiles(type: FileType.image);
     if (res != null && res.files.isNotEmpty) {
       setState(() {
-        _pickedImage = File(res.files.single.path!);
+        _pickedImagePath = res.files.single.path;
       });
     }
   }

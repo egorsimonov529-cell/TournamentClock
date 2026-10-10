@@ -15,36 +15,47 @@ class AdminFinanceScreen extends ConsumerWidget {
     final expenses = state.transactions
         .where((item) => item.amount < 0)
         .fold<double>(0, (sum, item) => sum + item.amount.abs());
+    final isCompact = MediaQuery.sizeOf(context).width < 680;
 
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: _Metric(
-                title: 'Доходы',
-                value: income,
-                color: Colors.greenAccent,
+        isCompact
+            ? Column(
+                children: [
+                  _Metric(title: 'Доходы', value: income, color: Colors.greenAccent),
+                  const SizedBox(height: 12),
+                  _Metric(title: 'Расходы', value: expenses, color: Colors.orangeAccent),
+                  const SizedBox(height: 12),
+                  _Metric(title: 'Баланс', value: income - expenses, color: const Color(0xff00C875)),
+                ],
+              )
+            : Row(
+                children: [
+                  Expanded(
+                    child: _Metric(
+                      title: 'Доходы',
+                      value: income,
+                      color: Colors.greenAccent,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _Metric(
+                      title: 'Расходы',
+                      value: expenses,
+                      color: Colors.orangeAccent,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _Metric(
+                      title: 'Баланс',
+                      value: income - expenses,
+                      color: const Color(0xff00C875),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _Metric(
-                title: 'Расходы',
-                value: expenses,
-                color: Colors.orangeAccent,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _Metric(
-                title: 'Баланс',
-                value: income - expenses,
-                color: const Color(0xff00C875),
-              ),
-            ),
-          ],
-        ),
         const SizedBox(height: 20),
         Expanded(
           child: Container(

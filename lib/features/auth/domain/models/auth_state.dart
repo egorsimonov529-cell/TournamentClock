@@ -7,6 +7,7 @@ enum AuthStatus {
   authenticated,
   error,
   loggingOut,
+  passwordResetSent,
 }
 
 class AuthState {
@@ -24,6 +25,6 @@ class AuthState {
     this.message,
   });
 
-  String? get userRole => user?.role;
+  String? get userRole => user == null ? null : user!.role.trim().toLowerCase();
   bool get isAuthenticated => status == AuthStatus.authenticated;
 }

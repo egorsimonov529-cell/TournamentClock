@@ -89,6 +89,21 @@ class AuthRepositoryImplV2 implements AuthRepositoryContract {
   }
 
   @override
+  Future<void> requestPasswordReset({required String contact}) async {
+    final normalized = contact.trim();
+    if (normalized.isEmpty) {
+      throw const ValidationException(
+        message: 'Введите email или телефон',
+        fieldErrors: {'contact': 'Введите email или телефон'},
+      );
+    }
+
+    if (isDemoMode) return;
+
+    await _remoteDataSource.requestPasswordReset(contact: normalized);
+  }
+
+  @override
   Future<void> logout() async {
     if (isDemoMode) {
       await _localDataSource.clearSession();

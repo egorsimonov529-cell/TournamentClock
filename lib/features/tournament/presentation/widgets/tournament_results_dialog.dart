@@ -88,6 +88,11 @@ class _TournamentResultsDialogState extends ConsumerState<TournamentResultsDialo
 
     if (mounted) {
       if (success) {
+        final hasWinner = results.any((item) => item['position'] == 1);
+        if (hasWinner) {
+          ref.read(tournamentProvider.notifier).updateStatus(widget.tournament.id, 'completed');
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Рейтинг и RPS распределены'),

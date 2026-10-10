@@ -155,7 +155,9 @@ class _SeatingScreenState extends ConsumerState<SeatingScreen> {
         .where((item) => item.id == tournamentId)
         .firstOrNull;
     final authUser = ref.watch(currentAuthUserProvider).valueOrNull;
-    final isAdmin = authUser?.role == 'admin';
+    final normalizedRole = (authUser?.role ?? '').trim().toLowerCase();
+    final isAdmin = const {'admin', 'super_admin', 'superadmin', 'administrator'}
+        .contains(normalizedRole);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -327,21 +329,18 @@ class _RoundTableCanvas extends ConsumerStatefulWidget {
 class _RoundTableCanvasState extends ConsumerState<_RoundTableCanvas> {
   Offset? _selectedSeat;
 
-  void _handleTap(TapDownDetails details) {
+  void _handleTap(TapDownDetails details, Size size) {
     final table = widget.table;
-    final size = MediaQuery.of(context).size;
-    final diagonal = math.sqrt(size.width * size.width + size.height * size.height);
-    final tableRadius = math.min(diagonal * 0.15, 120.0);
-    final tableWidth = tableRadius * 4 * 2;
-    final tableHeight = tableRadius * 3 * 1.5;
-    final seatMarginX = tableWidth * 0.12;
-    final seatMarginY = tableHeight * 0.15;
-    final seatRadiusX = tableWidth / 2 + seatMarginX;
-    final seatRadiusY = tableHeight / 2 + seatMarginY;
-    final seatWidth = math.min(130.0, size.width * 0.2);
-    final seatHeight = 60.0;
+    final usableWidth = size.width * 0.9;
+    final usableHeight = size.height * 0.72;
+    final tableWidth = math.min(usableWidth, usableHeight * 1.3);
+    final tableHeight = tableWidth * 0.68;
+    final seatWidth = math.min(size.width * 0.18, 92.0);
+    final seatHeight = 52.0;
     final centerX = size.width / 2;
-    final centerY = size.height / 2;
+    final centerY = size.height * 0.52;
+    final seatRadiusX = tableWidth / 2 + seatWidth * 0.7;
+    final seatRadiusY = tableHeight / 2 + seatHeight * 0.8;
     final numSeats = table.seats.length;
 
     for (var i = 0; i < numSeats; i++) {
@@ -349,19 +348,24 @@ class _RoundTableCanvasState extends ConsumerState<_RoundTableCanvas> {
       final seatX = centerX + math.cos(angle) * seatRadiusX;
       final seatY = centerY + math.sin(angle) * seatRadiusY;
 
-      if (details.localPosition.dx >= seatX - seatWidth / 2 &&
-          details.localPosition.dx <= seatX + seatWidth / 2 &&
-          details.localPosition.dy >= seatY - seatHeight / 2 &&
-          details.localPosition.dy <= seatY + seatHeight / 2) {
+      final localX = details.localPosition.dx;
+      final localY = details.localPosition.dy;
+
+      if (localX >= seatX - seatWidth / 2 &&
+          localX <= seatX + seatWidth / 2 &&
+          localY >= seatY - seatHeight / 2 &&
+          localY <= seatY + seatHeight / 2) {
         _handleSeatTap(table.seats[i]);
-        break;
+        return;
       }
     }
   }
 
   void _handleSeatTap(TableSeat seat) async {
     final authUser = ref.read(currentAuthUserProvider).valueOrNull;
-    final isAdmin = authUser?.role == 'admin';
+    final normalizedRole = (authUser?.role ?? '').trim().toLowerCase();
+    final isAdmin = const {'admin', 'super_admin', 'superadmin', 'administrator'}
+        .contains(normalizedRole);
     
     final isBookedByMe = seat.isBookedByMe;
     final isOccupied = seat.status == SeatStatus.occupied;
@@ -465,17 +469,86 @@ class _RoundTableCanvasState extends ConsumerState<_RoundTableCanvas> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: _handleTap,
-      child: CustomPaint(
-        size: Size.infinite,
-        painter: _TablePainter(
-          table: widget.table,
-          size: MediaQuery.of(context).size,
-        ),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final size = Size(constraints.maxWidth, constraints.maxHeight);
+        final geometry = _resolveSeatGeometry(size);
+
+        return Stack(
+          children: [
+            CustomPaint(
+              size: size,
+              painter: _TablePainter(
+                table: widget.table,
+                size: size,
+              ),
+            ),
+            ...List.generate(widget.table.seats.length, (index) {
+              final seat = widget.table.seats[index];
+              final seatX = geometry.centerX + math.cos(-math.pi / 2 + (2 * math.pi * index / widget.table.seats.length)) * geometry.seatRadiusX;
+              final seatY = geometry.centerY + math.sin(-math.pi / 2 + (2 * math.pi * index / widget.table.seats.length)) * geometry.seatRadiusY;
+
+              return Positioned(
+                left: seatX - geometry.seatWidth / 2,
+                top: seatY - geometry.seatHeight / 2,
+                width: geometry.seatWidth,
+                height: geometry.seatHeight,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => _handleSeatTap(seat),
+                  child: const SizedBox.expand(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ],
+        );
+      },
     );
   }
+
+  _SeatGeometry _resolveSeatGeometry(Size size) {
+    final tableWidth = math.min(size.width * 0.62, 260.0);
+    final tableHeight = math.min(size.height * 0.72, 420.0);
+    final seatWidth = math.min(math.max(size.width * 0.16, 58.0), 94.0);
+    final seatHeight = math.min(math.max(size.height * 0.09, 54.0), 72.0);
+    final centerX = size.width / 2;
+    final centerY = size.height * 0.52;
+    final seatRadiusX = tableWidth / 2 + seatWidth * 0.74;
+    final seatRadiusY = tableHeight / 2 + seatHeight * 0.9;
+
+    return _SeatGeometry(
+      centerX: centerX,
+      centerY: centerY,
+      seatWidth: seatWidth,
+      seatHeight: seatHeight,
+      seatRadiusX: seatRadiusX,
+      seatRadiusY: seatRadiusY,
+    );
+  }
+}
+
+class _SeatGeometry {
+  final double centerX;
+  final double centerY;
+  final double seatWidth;
+  final double seatHeight;
+  final double seatRadiusX;
+  final double seatRadiusY;
+
+  const _SeatGeometry({
+    required this.centerX,
+    required this.centerY,
+    required this.seatWidth,
+    required this.seatHeight,
+    required this.seatRadiusX,
+    required this.seatRadiusY,
+  });
 }
 
 class _TablePainter extends CustomPainter {
@@ -487,17 +560,13 @@ class _TablePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final centerX = size.width / 2;
-    final centerY = size.height / 2;
-    final diagonal = math.sqrt(centerX * centerX + centerY * centerY);
-    final tableRadius = math.min(diagonal * 0.15, 120.0);
-    final tableWidth = tableRadius * 4 * 2;
-    final tableHeight = tableRadius * 3 * 1.5;
-    final seatMarginX = tableWidth * 0.12;
-    final seatMarginY = tableHeight * 0.15;
-    final seatRadiusX = tableWidth / 2 + seatMarginX;
-    final seatRadiusY = tableHeight / 2 + seatMarginY;
-    final seatWidth = math.min(130.0, size.width * 0.2);
-    final seatHeight = 60.0;
+    final centerY = size.height * 0.52;
+    final tableWidth = math.min(size.width * 0.62, 260.0);
+    final tableHeight = math.min(size.height * 0.72, 420.0);
+    final seatWidth = math.min(math.max(size.width * 0.16, 58.0), 94.0);
+    final seatHeight = math.min(math.max(size.height * 0.09, 54.0), 72.0);
+    final seatRadiusX = tableWidth / 2 + seatWidth * 0.74;
+    final seatRadiusY = tableHeight / 2 + seatHeight * 0.9;
     final numSeats = table.seats.length;
 
     // Draw legend
@@ -521,13 +590,11 @@ class _TablePainter extends CustomPainter {
       legendX += 12 + 12 + textPainter.width + 12;
     }
 
-    // Draw table as wide oval
     final ovalRect = RRect.fromRectAndRadius(
       Rect.fromCenter(center: Offset(centerX, centerY), width: tableWidth, height: tableHeight),
       const Radius.circular(80),
     );
-    
-    // Table shadow
+
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromCenter(center: Offset(centerX, centerY + 10), width: tableWidth, height: tableHeight),
@@ -535,43 +602,30 @@ class _TablePainter extends CustomPainter {
       ),
       Paint()..color = Colors.black.withValues(alpha: 0.6)..style = PaintingStyle.fill..maskFilter = const MaskFilter.blur(BlurStyle.normal, 20),
     );
-    
-    // Table felt with gradient
+
     final tableGradient = LinearGradient(
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
       colors: [
-        const Color(0xff12613B),
+        const Color(0xff1b7d57),
         const Color(0xff0d4f2f),
-        const Color(0xff12613B),
+        const Color(0xff0f5a37),
       ],
     );
     canvas.drawRRect(ovalRect, Paint()..shader = tableGradient.createShader(ovalRect.outerRect));
-    
-    // Outer border - dark blue
-    canvas.drawRRect(ovalRect, Paint()..color = const Color(0xFF1a237e)..style = PaintingStyle.stroke..strokeWidth = 8);
-    
-    // Brighter gold border
+    canvas.drawRRect(ovalRect, Paint()..color = const Color(0xff203A3B)..style = PaintingStyle.stroke..strokeWidth = 8);
+
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(
-          center: Offset(centerX, centerY),
-          width: tableWidth - 12,
-          height: tableHeight - 12,
-        ),
+        Rect.fromCenter(center: Offset(centerX, centerY), width: tableWidth - 12, height: tableHeight - 12),
         const Radius.circular(74),
       ),
       Paint()..color = const Color(0xFFFFD700)..style = PaintingStyle.stroke..strokeWidth = 3,
     );
-    
-    // Inner border
+
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(
-          center: Offset(centerX, centerY),
-          width: tableWidth - 24,
-          height: tableHeight - 24,
-        ),
+        Rect.fromCenter(center: Offset(centerX, centerY), width: tableWidth - 24, height: tableHeight - 24),
         const Radius.circular(68),
       ),
       Paint()..color = const Color(0xFFFFD700).withValues(alpha: 0.4)..style = PaintingStyle.stroke..strokeWidth = 1.5,
@@ -619,34 +673,30 @@ class _TablePainter extends CustomPainter {
       }
 
       // Seat background
-      final seatRect = RRect.fromRectAndRadius(
-        Rect.fromCenter(center: Offset(seatX, seatY), width: seatWidth, height: seatHeight),
-        const Radius.circular(12),
-      );
-      canvas.drawRRect(seatRect, Paint()..color = bgColor..style = PaintingStyle.fill);
-      canvas.drawRRect(seatRect, Paint()..color = borderColor..style = PaintingStyle.stroke..strokeWidth = 2);
+      final chipRadius = seatWidth * 0.52;
+      canvas.drawCircle(Offset(seatX, seatY), chipRadius, Paint()..color = bgColor..style = PaintingStyle.fill);
+      canvas.drawCircle(Offset(seatX, seatY), chipRadius, Paint()..color = borderColor..style = PaintingStyle.stroke..strokeWidth = 2);
+      canvas.drawCircle(Offset(seatX, seatY), chipRadius * 0.6, Paint()..color = bgColor.withValues(alpha: 0.82)..style = PaintingStyle.fill);
 
-      // Seat number
       final numText = TextPainter(
-        text: TextSpan(text: '${seat.number}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: isBookedByMe ? AppColors.accent : AppColors.white)),
+        text: TextSpan(text: '${seat.number}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: isBookedByMe ? AppColors.accent : AppColors.white)),
         textDirection: TextDirection.ltr,
       );
       numText.layout();
-      numText.paint(canvas, Offset(seatX - numText.width / 2, seatY - seatHeight / 2 + 4));
+      numText.paint(canvas, Offset(seatX - numText.width / 2, seatY - 12));
 
-      // Player name
+      final playerLabel = seat.player?.name ?? (isFree ? 'Свободно' : 'Занято');
       final nameText = TextPainter(
-        text: TextSpan(text: seat.player?.name ?? (isFree ? 'Свободно' : 'Занято'), style: TextStyle(fontSize: 11, fontWeight: isBookedByMe ? FontWeight.w600 : FontWeight.normal, color: textColor)),
+        text: TextSpan(text: playerLabel, style: TextStyle(fontSize: 9.5, fontWeight: isBookedByMe ? FontWeight.w600 : FontWeight.normal, color: textColor)),
         textDirection: TextDirection.ltr,
       );
       nameText.layout();
-      nameText.paint(canvas, Offset(seatX - nameText.width / 2, seatY - 4));
+      nameText.paint(canvas, Offset(seatX - nameText.width / 2, seatY + 2));
 
-      // Rank badge or status
       if (isOccupied && seat.player != null) {
-        _drawRankBadge(canvas, seat.player!.rpsRank, seatX, seatY + seatHeight / 2 - 8);
+        _drawRankBadge(canvas, seat.player!.rpsRank, seatX, seatY + chipRadius * 0.9);
       } else if (isBookedByMe) {
-        canvas.drawCircle(Offset(seatX, seatY + seatHeight / 2 - 8), 5, Paint()..color = AppColors.accent..style = PaintingStyle.fill);
+        canvas.drawCircle(Offset(seatX, seatY + chipRadius * 0.92), 5, Paint()..color = AppColors.accent..style = PaintingStyle.fill);
       }
     }
   }

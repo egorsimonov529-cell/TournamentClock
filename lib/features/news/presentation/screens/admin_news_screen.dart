@@ -1,8 +1,10 @@
-import 'dart:io';
+import 'dart:io' show Platform;
+
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/material.dart';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:tournament_clock/core/services/api_service.dart';
@@ -32,7 +34,7 @@ class AdminNewsScreen extends ConsumerStatefulWidget {
 class _AdminNewsScreenState extends ConsumerState<AdminNewsScreen> {
   final _title = TextEditingController();
   final _body = TextEditingController();
-  File? _picked;
+  String? _pickedPath;
   bool _isPosting = false;
   List<dynamic> _posts = [];
   bool _loadingPosts = true;
@@ -45,9 +47,38 @@ class _AdminNewsScreenState extends ConsumerState<AdminNewsScreen> {
   }
 
   Future<void> _pickImage() async {
+    if (kIsWeb) {
+      // On web, show dialog to paste URL
+      final controller = TextEditingController();
+      final url = await showDialog<String>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('URL изображения'),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(hintText: 'https://example.com/image.jpg'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Отмена'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, controller.text),
+              child: const Text('Выбрать'),
+            ),
+          ],
+        ),
+      );
+      if (url != null && url.isNotEmpty) {
+        setState(() => _pickedPath = url);
+      }
+      return;
+    }
+
     final res = await FilePicker.platform.pickFiles(type: FileType.image);
     if (res != null && res.files.isNotEmpty) {
-      setState(() { _picked = File(res.files.single.path!); });
+      setState(() => _pickedPath = res.files.single.path);
     }
   }
 
@@ -76,13 +107,31 @@ class _AdminNewsScreenState extends ConsumerState<AdminNewsScreen> {
     setState(() { _isPosting = true; });
     try {
       final api = ApiService();
-      final form = FormData.fromMap({'title': title, 'body': body, 'is_published': true});
-      if (_picked != null) {
-        form.files.add(MapEntry('image', MultipartFile.fromFileSync(_picked!.path, filename: _picked!.path.split(Platform.pathSeparator).last)));
+      final form = FormData.fromMap({
+        'title': title,
+        'body': body,
+        'is_published': true,
+      });
+
+      if (_pickedPath != null && !kIsWeb) {
+        try {
+          form.files.add(MapEntry(
+            'image',
+            MultipartFile.fromFileSync(
+              _pickedPath!,
+              filename: _pickedPath!.split(Platform.pathSeparator).last,
+            ),
+          ));
+        } catch (e) {
+          // Ignored if file not accessible
+        }
       }
+
       await api.postMultipart('/posts', form);
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Пост опубликован')));
-      _title.clear(); _body.clear(); setState(() => _picked = null);
+      _title.clear();
+      _body.clear();
+      setState(() => _pickedPath = null);
       await _loadPosts();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ошибка: ${e.toString()}')));
@@ -101,13 +150,31 @@ class _AdminNewsScreenState extends ConsumerState<AdminNewsScreen> {
           const SizedBox(height: 8),
           IosInput(controller: _body, label: 'Текст', maxLines: 4),
           const SizedBox(height: 8),
-          Row(children: [
-            IosButton(onPressed: _pickImage, label: 'Выбрать фото', filled: false),
-            const SizedBox(width: 12),
-            Expanded(child: Text(_picked == null ? 'Файл не выбран' : _picked!.path.split(Platform.pathSeparator).last)),
-            const SizedBox(width: 12),
-            _isPosting ? const SizedBox(width: 120, height: 40, child: Center(child: CircularProgressIndicator())) : IosButton(onPressed: _post, label: 'Опубликовать'),
-          ]),
+          Row(
+            children: [
+              if (!kIsWeb)
+                IosButton(onPressed: _pickImage, label: 'Выбрать фото', filled: false)
+              else
+                TextButton.icon(
+                  onPressed: _pickImage,
+                  icon: const Icon(Icons.link, size: 18),
+                  label: const Text('Вставить URL'),
+                ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  _pickedPath == null
+                      ? 'Файл не выбран'
+                      : _pickedPath!.split(Platform.pathSeparator).last,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 12),
+              _isPosting
+                  ? const SizedBox(width: 120, height: 40, child: Center(child: CircularProgressIndicator()))
+                  : IosButton(onPressed: _post, label: 'Опубликовать'),
+            ],
+          ),
           const SizedBox(height: 16),
           const Divider(),
           const SizedBox(height: 8),
@@ -115,60 +182,45 @@ class _AdminNewsScreenState extends ConsumerState<AdminNewsScreen> {
           if (!_loadingPosts)
             Expanded(
               child: _posts.isEmpty
-                  ? Center(
-                      child: IosCard(
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: const Text('Постов нет'),
-                        ),
-                      ),
-                    )
-                  : ListView.separated(
+                  ? const Center(child: Text('Нет постов'))
+                  : ListView.builder(
                       itemCount: _posts.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 8),
-                      itemBuilder: (context, index) {
-                        final p = _posts[index] as Map<String, dynamic>;
-                        final imageUrl = _getFullImageUrl(p['image_url'] as String?);
+                      itemBuilder: (_, i) {
+                        final post = _posts[i] as Map<String, dynamic>;
+                        final imageUrl = _getFullImageUrl(post['image_url'] as String?);
                         return IosCard(
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            leading: imageUrl != null
-                                ? ClipRRect(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  post['title'] as String? ?? 'Без заголовка',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                if (imageUrl != null)
+                                  ClipRRect(
                                     borderRadius: BorderRadius.circular(8),
                                     child: Image.network(
                                       imageUrl,
-                                      width: 56,
-                                      height: 56,
+                                      width: double.infinity,
+                                      height: 200,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, color: Colors.white54),
+                                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                                     ),
-                                  )
-                                : const Icon(Icons.newspaper, color: Colors.white54),
-                            title: Text(p['title'] ?? ''),
-                            subtitle: Text(p['body'] ?? ''),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.redAccent),
-                              onPressed: () async {
-                                final ok = await showDialog<bool>(
-                                  context: context,
-                                  builder: (ctx) => AlertDialog(
-                                    title: const Text('Удалить пост'),
-                                    content: const Text('Вы уверены, что хотите удалить этот пост?'),
-                                    actions: [
-                                      TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Отмена')),
-                                      IosButton(onPressed: () => Navigator.pop(ctx, true), label: 'Удалить'),
-                                    ],
                                   ),
-                                );
-                                if (ok != true) return;
-                                try {
-                                  await ApiService().delete('/posts/${p['id']}');
-                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Пост удалён')));
-                                  await _loadPosts();
-                                } catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ошибка удаления: ${e.toString()}')));
-                                }
-                              },
+                                const SizedBox(height: 8),
+                                Text(
+                                  post['body'] as String? ?? '',
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ],
                             ),
                           ),
                         );

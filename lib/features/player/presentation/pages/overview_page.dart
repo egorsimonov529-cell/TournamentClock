@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'dart:io' show Platform;
+import 'package:flutter/material.dart';
 
+import '../../../../core/models/rps_rank.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/player_model.dart';
 import '../widgets/stats_overview.dart';
@@ -22,9 +23,11 @@ class OverviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPhone = MediaQuery.sizeOf(context).width < 700;
-    final isIOS = Platform.isIOS;
-    final horizontalPadding = isPhone ? 14.0 : 32.0;
+    final width = MediaQuery.sizeOf(context).width;
+    final isPhone = width < 700;
+    final compactPhone = width < 420;
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    final horizontalPadding = compactPhone ? 12.0 : isPhone ? 14.0 : 32.0;
 
     return SingleChildScrollView(
       padding: EdgeInsets.only(bottom: isPhone ? 16 : 24),
@@ -35,9 +38,9 @@ class OverviewPage extends StatelessWidget {
             horizontalPadding: horizontalPadding,
             isIOS: isIOS,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           StatsOverview(player: player),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           QuickActions(
             onOpenTournaments: onOpenTournaments,
             onOpenLeaderboard: onOpenLeaderboard,
@@ -64,52 +67,59 @@ class _GreetingBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final name = player.firstName ?? player.lastName ?? player.login;
-    final subtitle = player.email;
+    final initials = name.isNotEmpty ? name[0].toUpperCase() : 'W';
+    final rating = player.rpsPoints;
+    final rankLabel = player.rpsRank.name.toUpperCase();
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(
-        horizontalPadding,
-        18,
-        horizontalPadding,
-        12,
-      ),
-            child: Container(
+      padding: EdgeInsets.fromLTRB(horizontalPadding, 18, horizontalPadding, 12),
+      child: Container(
         width: double.infinity,
+        padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppColors.primary.withValues(alpha: 0.22),
+              const Color(0xff1A232A),
               const Color(0xff111821),
             ],
           ),
-          borderRadius: BorderRadius.circular(isIOS ? 24 : 18),
-          border: Border.all(
-            color: AppColors.primary.withValues(alpha: 0.24),
-            width: 1,
-          ),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.2), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
-        padding: EdgeInsets.all(isIOS ? 18 : 20),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              width: 52,
-              height: 52,
+              width: 72,
+              height: 72,
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.18),
-                borderRadius: BorderRadius.circular(isIOS ? 16 : 12),
-                border: Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.35),
-                  width: 1,
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primary.withValues(alpha: 0.5),
+                    AppColors.gold.withValues(alpha: 0.5),
+                  ],
+                ),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1.5),
+              ),
+              child: Center(
+                child: Text(
+                  initials,
+                  style: const TextStyle(
+                    color: AppColors.white,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
-                     child: Icon(
-                       CupertinoIcons.hand_raised,
-                       color: AppColors.primary,
-                       size: 27,
-                     ),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -117,15 +127,54 @@ class _GreetingBanner extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Добро пожаловать, $name!',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700).merge(const TextStyle(color: AppColors.white)),
+                    name,
+                    style: const TextStyle(
+                      color: AppColors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                   const SizedBox(height: 6),
-                  Text(
-                    subtitle,
-                    style: TextStyle(fontSize: 12.5, color: AppColors.white.withValues(alpha: 0.6)),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.14),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          rankLabel,
+                          style: const TextStyle(
+                            color: AppColors.primaryLight,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Text(
+                        '$rating',
+                        style: const TextStyle(
+                          color: AppColors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'очков',
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

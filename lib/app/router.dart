@@ -18,8 +18,9 @@ import '../features/player/presentation/pages/achievements_page.dart';
 import '../features/player/presentation/pages/notifications_page.dart';
 import '../features/player/presentation/pages/support_page.dart';
 import '../features/player/presentation/pages/about_club_page.dart';
-import '../features/tournament_clock/presentation/screens/tournament_clock_fullscreen.dart';
 import '../features/tables/presentation/screens/seating_screen.dart';
+import '../features/tournament_clock/presentation/screens/tournament_clock_screen.dart';
+import '../features/tournament_clock/presentation/screens/tournament_clock_tv_screen.dart';
 
 String? authRedirect(AuthState auth, String location) {
   if (auth.status == AuthStatus.initializing) return null;
@@ -37,6 +38,7 @@ String? authRedirect(AuthState auth, String location) {
   final adminRoute =
       location == '/dashboard' ||
       location == '/clock' ||
+      location == '/tv' ||
       (location.endsWith('/seating') && !seatingRoute);
   final playerRoute =
       location == '/user' ||
@@ -80,6 +82,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: "/dashboard",
         builder: (context, state) => const DashboardPage(),
+      ),
+
+      // TV mode
+      GoRoute(
+        path: "/clock",
+        builder: (context, state) => const TournamentClockScreen(),
+      ),
+      GoRoute(
+        path: "/tv",
+        builder: (context, state) => const TournamentClockTVScreen(),
       ),
 
       // Player App
@@ -134,11 +146,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const AboutClubPage(),
       ),
 
-      // Tournament Clock
-      GoRoute(
-        path: "/clock",
-        builder: (context, state) => const TournamentClockFullscreenScreen(),
-      ),
     ],
   );
   ref.listen(authStateProvider, (_, _) => router.refresh());
