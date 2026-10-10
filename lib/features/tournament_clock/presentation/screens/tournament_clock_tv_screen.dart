@@ -670,7 +670,9 @@ class _TournamentClockTVScreenState extends ConsumerState<TournamentClockTVScree
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'УРОВЕНЬ ${currentLevel?.level ?? 1}',
+                                currentLevel?.isBreak == true
+                                    ? 'ПЕРЕРЫВ'
+                                    : 'УРОВЕНЬ ${currentLevel?.level ?? 1}',
                                 style: TextStyle(
                                   color: Colors.white.withValues(alpha: 0.62),
                                   fontSize: 22,
