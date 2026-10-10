@@ -679,54 +679,53 @@ class _TournamentClockTVScreenState extends ConsumerState<TournamentClockTVScree
                             ),
                           ),
                           const SizedBox(height: 40),
-                          // Current level centered + next break info on right
+                          // Current level centered
                           if (currentLevel != null && !currentLevel.isBreak) ...[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                _BlindStatsRow(
-                                  level: currentLevel,
-                                  isNext: false,
-                                  isCurrent: true,
-                                ),
-                                const Spacer(),
-                                if (nextBreakLabel != null) ...[
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        'СЛЕДУЮЩИЙ',
-                                        style: TextStyle(
-                                          color: Colors.white.withValues(alpha: 0.5),
-                                          fontSize: 12,
-                                          letterSpacing: 2,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      Text(
-                                        'ПЕРЕРЫВ',
-                                        style: TextStyle(
-                                          color: Colors.white.withValues(alpha: 0.5),
-                                          fontSize: 12,
-                                          letterSpacing: 2,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        nextBreakLabel,
-                                        style: const TextStyle(
-                                          color: Color(0xFFEAB749),
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(width: 40),
-                                ],
-                              ],
+                            Center(
+                              child: _BlindStatsRow(
+                                level: currentLevel,
+                                isNext: false,
+                                isCurrent: true,
+                              ),
                             ),
+                            if (nextBreakLabel != null) ...[
+                              const SizedBox(height: 12),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      'СЛЕДУЮЩИЙ',
+                                      style: TextStyle(
+                                        color: Colors.white.withValues(alpha: 0.5),
+                                        fontSize: 12,
+                                        letterSpacing: 2,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Text(
+                                      'ПЕРЕРЫВ',
+                                      style: TextStyle(
+                                        color: Colors.white.withValues(alpha: 0.5),
+                                        fontSize: 12,
+                                        letterSpacing: 2,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      nextBreakLabel,
+                                      style: const TextStyle(
+                                        color: Color(0xFFEAB749),
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ],
                           const SizedBox(height: 100),
                           // Next level section
