@@ -477,7 +477,7 @@ class _TournamentClockTVScreenState extends ConsumerState<TournamentClockTVScree
     // Вычисляем время до следующего перерыва
     String? nextBreakLabel;
     if (currentLevel != null && !currentLevel.isBreak) {
-      int totalSecondsToBreak = 0;
+      int totalSecondsToBreak = currentLevel.durationMinutes * 60;
       for (int i = clockState.currentLevel + 1; i < blindLevels.length; i++) {
         final level = blindLevels[i];
         if (level.isBreak) {
