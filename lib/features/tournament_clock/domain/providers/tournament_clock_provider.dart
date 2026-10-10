@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/config/app_config.dart';
@@ -17,11 +18,9 @@ final tournamentBlindLevelsProvider =
     });
 
 class TournamentBlindLevelsNotifier extends StateNotifier<List<BlindLevel>> {
-  TournamentBlindLevelsNotifier() : super([]) {
+  TournamentBlindLevelsNotifier() : super(_defaultBlindLevels) {
     if (AppConfig.backendMode != BackendMode.demo) {
       loadBlindLevels();
-    } else {
-      state = _defaultBlindLevels;
     }
   }
 
@@ -35,6 +34,18 @@ class TournamentBlindLevelsNotifier extends StateNotifier<List<BlindLevel>> {
     BlindLevel(level: 7, durationMinutes: 15, smallBlind: 400, bigBlind: 800, ante: 80),
     BlindLevel(level: 8, durationMinutes: 15, smallBlind: 500, bigBlind: 1000, ante: 100),
   ];
+
+  void setLevels(List<BlindLevel> levels) {
+    state = levels
+        .asMap()
+        .entries
+        .map(
+          (entry) => entry.value.copyWith(
+            level: entry.key + 1,
+          ),
+        )
+        .toList();
+  }
 
   Future<void> loadBlindLevels() async {
     try {
@@ -53,7 +64,7 @@ class TournamentBlindLevelsNotifier extends StateNotifier<List<BlindLevel>> {
         state = _defaultBlindLevels;
       }
     } catch (e) {
-      print('Ошибка загрузки blind levels: $e');
+      print('Ошибка загрузки blind levels: ');
       state = _defaultBlindLevels;
     }
   }
@@ -61,27 +72,49 @@ class TournamentBlindLevelsNotifier extends StateNotifier<List<BlindLevel>> {
 
 class TournamentClockNotifier extends StateNotifier<TournamentClockState> {
   Timer? _timer;
+  List<BlindLevel>? _currentLevels;
 
   TournamentClockNotifier() : super(TournamentClockState.initial()) {
-    // При создании — запускаем проверку таймера
+    // При создании -- запускаем проверку таймера
+  }
+
+  void updateTournamentName(String name) {
+    state = state.copyWith(tournamentName: name);
+  }
+
+  void updateBackgroundTheme(BackgroundTheme theme) {
+    state = state.copyWith(backgroundTheme: theme);
+  }
+
+  void updateCustomBackgroundColor(Color? color) {
+    state = state.copyWith(customBackgroundColor: color);
+  }
+
+  void updateAverageStack(int value) {
+    state = state.copyWith(averageStack: value.clamp(0, 500000));
+  }
+
+  void updateTvLogoUrl(String? url) {
+    state = state.copyWith(tvLogoUrl: url);
   }
 
   void start(List<BlindLevel> levels, int initialLevel) {
-    if (state.isRunning) return;
-
     if (levels.isEmpty) return;
 
-    // Защита от выхода за границы массива
+    _currentLevels = levels;
     final safeLevel = initialLevel.clamp(0, levels.length - 1);
     final level = levels[safeLevel];
     final timeInMinutes = level.durationMinutes;
+
+    final shouldResume = state.isRunning && state.isPaused;
+    if (state.isRunning && !shouldResume) return;
 
     state = state.copyWith(
       isRunning: true,
       isPaused: false,
       currentLevel: safeLevel,
-      timeRemaining: timeInMinutes * 60,
-      startedAt: DateTime.now(),
+      timeRemaining: shouldResume ? state.timeRemaining : timeInMinutes * 60,
+      startedAt: shouldResume ? state.startedAt : DateTime.now(),
     );
 
     _startTimer();
@@ -102,6 +135,7 @@ class TournamentClockNotifier extends StateNotifier<TournamentClockState> {
   void stop() {
     _stopTimer();
     state = TournamentClockState.initial();
+    _currentLevels = null;
   }
 
   void nextLevel(List<BlindLevel> levels) {
@@ -136,15 +170,37 @@ class TournamentClockNotifier extends StateNotifier<TournamentClockState> {
     );
   }
 
+  void _advanceToNextLevel() {
+    final levels = _currentLevels;
+    if (levels == null || levels.isEmpty) return;
+
+    final safeCurrent = state.currentLevel.clamp(0, levels.length - 1);
+    if (safeCurrent >= levels.length - 1) {
+      // Все уровни пройдены
+      _stopTimer();
+      state = state.copyWith(isRunning: false);
+      return;
+    }
+
+    final nextIndex = safeCurrent + 1;
+    final nextLevel = levels[nextIndex];
+
+    state = state.copyWith(
+      currentLevel: nextIndex,
+      timeRemaining: nextLevel.durationMinutes * 60,
+    );
+
+    // Продолжаем таймер с нового уровня
+    _startTimer();
+  }
+
   void _startTimer() {
     _stopTimer();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      // Читаем актуальное состояние из провайдера
       final currentState = state;
       if (currentState.timeRemaining <= 0) {
-        // Время вышло — можно автоматически перейти на следующий уровень
-        state = currentState.copyWith(isRunning: false);
-        _stopTimer();
+        // Автопереход на следующий уровень
+        _advanceToNextLevel();
         return;
       }
 
@@ -165,7 +221,6 @@ class TournamentClockNotifier extends StateNotifier<TournamentClockState> {
     super.dispose();
   }
 
-  // Форматирование времени
   String get formattedTime {
     final minutes = (state.timeRemaining / 60).floor();
     final seconds = state.timeRemaining % 60;
