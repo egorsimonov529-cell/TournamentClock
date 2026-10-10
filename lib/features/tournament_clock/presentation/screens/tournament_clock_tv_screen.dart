@@ -470,30 +470,6 @@ class _TournamentClockTVScreenState extends ConsumerState<TournamentClockTVScree
     final currentLevel = blindLevels.isEmpty
         ? null
         : blindLevels.elementAtOrNull(clockState.currentLevel.clamp(0, blindLevels.length - 1));
-    final nextLevel = blindLevels.isEmpty
-        ? null
-        : blindLevels.elementAtOrNull((clockState.currentLevel + 1).clamp(0, blindLevels.length - 1));
-
-    // Вычисляем время до следующего перерыва
-    int? nextBreakMinutes;
-    String? nextBreakLabel;
-    if (currentLevel != null && !currentLevel.isBreak) {
-      int totalSecondsToBreak = 0;
-      for (int i = clockState.currentLevel + 1; i < blindLevels.length; i++) {
-        final level = blindLevels[i];
-        if (level.isBreak) {
-          // Время до перерыва = время всех уровней между текущим и перерывом
-          nextBreakMinutes = totalSecondsToBreak ~/ 60;
-          nextBreakLabel = nextBreakMinutes == 1
-              ? '1 минута до перерыва'
-              : '$nextBreakMinutes минут до перерыва';
-          break;
-        } else {
-          totalSecondsToBreak += level.durationMinutes * 60;
-        }
-      }
-    }
-
     final theme = clockState.backgroundTheme;
     final backgroundColors = clockState.customBackgroundColor != null
         ? [
@@ -645,113 +621,93 @@ class _TournamentClockTVScreenState extends ConsumerState<TournamentClockTVScree
                         ],
                       ),
                       const SizedBox(height: 20),
-                      // Main timer - central visual element
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              _formatTime(clockState.timeRemaining),
-                              style: TextStyle(
-                                color: const Color(0xFFEAB749),
-                                fontSize: 200,
-                                fontWeight: FontWeight.w800,
-                                height: 1,
-                                letterSpacing: 1,
-                                shadows: [
-                                  Shadow(
-                                    color: const Color(0xFFEAB749).withValues(alpha: 0.3),
-                                    blurRadius: 10,
+                      // Main timer + next break info side by side
+                      if (currentLevel != null && !currentLevel.isBreak) ...[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      _formatTime(clockState.timeRemaining),
+                                      style: TextStyle(
+                                        color: const Color(0xFFEAB749),
+                                        fontSize: 200,
+                                        fontWeight: FontWeight.w800,
+                                        height: 1,
+                                        letterSpacing: 1,
+                                        shadows: [
+                                          Shadow(
+                                            color: const Color(0xFFEAB749).withValues(alpha: 0.3),
+                                            blurRadius: 10,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'УРОВЕНЬ ${currentLevel.level}',
+                                    style: TextStyle(
+                                      color: Colors.white.withValues(alpha: 0.62),
+                                      fontSize: 22,
+                                      letterSpacing: 3,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  Center(
+                                    child: _BlindStatsRow(
+                                      level: currentLevel,
+                                      isNext: false,
+                                      isCurrent: true,
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 40),
-                          Text(
-                            currentLevel?.isBreak == true ? 'ПЕРЕРЫВ' : 'УРОВЕНЬ ${currentLevel?.level ?? 1}',
-                            style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.62),
-                              fontSize: 22,
-                              letterSpacing: 3,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 40),
-                          // Current level centered
-                          if (currentLevel != null && !currentLevel.isBreak) ...[
-                            Center(
-                              child: _BlindStatsRow(
-                                level: currentLevel,
-                                isNext: false,
-                                isCurrent: true,
-                              ),
-                            ),
                             if (nextBreakLabel != null) ...[
-                              const SizedBox(height: 12),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      'СЛЕДУЮЩИЙ',
-                                      style: TextStyle(
-                                        color: Colors.white.withValues(alpha: 0.5),
-                                        fontSize: 12,
-                                        letterSpacing: 2,
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                              const SizedBox(width: 60),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    'СЛЕДУЮЩИЙ',
+                                    style: TextStyle(
+                                      color: Colors.white.withValues(alpha: 0.5),
+                                      fontSize: 12,
+                                      letterSpacing: 2,
+                                      fontWeight: FontWeight.w600,
                                     ),
-                                    Text(
-                                      'ПЕРЕРЫВ',
-                                      style: TextStyle(
-                                        color: Colors.white.withValues(alpha: 0.5),
-                                        fontSize: 12,
-                                        letterSpacing: 2,
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                  ),
+                                  Text(
+                                    'ПЕРЕРЫВ',
+                                    style: TextStyle(
+                                      color: Colors.white.withValues(alpha: 0.5),
+                                      fontSize: 12,
+                                      letterSpacing: 2,
+                                      fontWeight: FontWeight.w600,
                                     ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      nextBreakLabel,
-                                      style: const TextStyle(
-                                        color: Color(0xFFEAB749),
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    nextBreakLabel,
+                                    style: const TextStyle(
+                                      color: Color(0xFFEAB749),
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ],
                           ],
-                          const SizedBox(height: 100),
-                          // Next level section
-                          if (nextLevel != null && !nextLevel.isBreak) ...[
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'СЛЕДУЮЩИЙ',
-                                  style: TextStyle(
-                                    color: Colors.white.withValues(alpha: 0.5),
-                                    fontSize: 14,
-                                    letterSpacing: 3,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                _BlindStatsRow(
-                                  level: nextLevel,
-                                  isNext: true,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ],
-                      ),
+                        ),
+                      ],
                       const Spacer(),
                     ],
                   ),
