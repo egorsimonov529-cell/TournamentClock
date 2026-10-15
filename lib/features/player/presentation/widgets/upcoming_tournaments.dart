@@ -92,9 +92,12 @@ class UpcomingTournaments extends StatelessWidget {
             crossAxisAlignment:
                 isNarrow ? CrossAxisAlignment.start : CrossAxisAlignment.center,
             children: [
-              Expanded(
+              Flexible(
+                flex: 1,
+                fit: FlexFit.loose,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       name,

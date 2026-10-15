@@ -20,9 +20,10 @@ class AppConfig {
     return 'http://localhost:4000/api/v1';
   }
 
+  static const String _envBaseUrl = String.fromEnvironment('API_BASE_URL');
+
   static String get apiBaseUrl {
-    final envUrl = String.fromEnvironment('API_BASE_URL');
-    if (envUrl.isNotEmpty) return envUrl;
+    if (_envBaseUrl.isNotEmpty) return _envBaseUrl;
     return _defaultBaseUrl;
   }
 
