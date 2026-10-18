@@ -100,17 +100,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
           rememberMe: _rememberMe,
         );
 
-    // Если успешно — переходим на нужную страницу по роли
-    if (success && mounted) {
-      final authState = ref.read(authStateProvider);
-      final role = authState.userRole ?? "player";
-
-      if (role == "player") {
-        context.go("/user");
-      } else {
-        context.go("/dashboard");
-      }
-    }
+    // Редирект сработает автоматически через router redirect
     // Ошибка уже отображена через authStateProvider
   }
 

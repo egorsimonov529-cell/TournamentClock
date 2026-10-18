@@ -148,7 +148,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
     ],
   );
-  ref.listen(authStateProvider, (_, _) => router.refresh());
+  
+  // Обновляем роутер только при смене статуса авторизации
+  ref.listen<AuthState?>(authStateProvider, (previous, next) {
+    if (next == null) return;
+    if (previous?.status != next.status) {
+      router.refresh();
+    }
+  });
+  
   ref.onDispose(router.dispose);
   return router;
 });
