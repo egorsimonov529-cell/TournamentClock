@@ -118,7 +118,7 @@ router.get('/players', async (req, res) => {
         u.rps_points,
         u.rps_rank
       FROM users u
-      ORDER BY u.rps_points DESC, u.rating DESC
+      ORDER BY u.rating DESC, u.rps_points DESC
       LIMIT 50
     `);
     

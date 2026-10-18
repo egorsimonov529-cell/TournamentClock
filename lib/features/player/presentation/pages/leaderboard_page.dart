@@ -13,7 +13,7 @@ class LeaderboardPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final players = [...ref.watch(adminPlayersProvider).players]
-      ..sort((a, b) => b.rpsPoints.compareTo(a.rpsPoints));
+      ..sort((a, b) => b.rankPoints.compareTo(a.rankPoints));
     final authUser = ref.watch(currentAuthUserProvider).valueOrNull;
 
     return SingleChildScrollView(
@@ -122,7 +122,7 @@ class LeaderboardPage extends ConsumerWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '${player.rpsPoints > 0 ? player.rpsPoints.toString() : '—'} очков',
+            '${player.rankPoints > 0 ? player.rankPoints.toString() : '—'} очков',
             style: TextStyle(
               color: color,
               fontSize: 18,
@@ -267,7 +267,7 @@ class LeaderboardPage extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      '${player.rpsPoints}',
+                      '${player.rankPoints}',
                       style: const TextStyle(
                         color: AppColors.primary,
                         fontSize: 16,
