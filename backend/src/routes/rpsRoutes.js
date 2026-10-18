@@ -245,19 +245,20 @@ router.patch('/players/:id', requireAuth, requireAdmin, async (req, res) => {
 
 // ===== Season Reset =====
 
-// POST /api/v1/rps/season-reset - Сброс RPS в конце сезона
+// POST /api/v1/rps/season-reset - Сброс RPS и рейтинга в конце сезона
 router.post('/season-reset', requireAuth, requireAdmin, async (req, res) => {
   try {
     const { reason } = req.body || {};
     
     // Получаем всех игроков
-    const usersRes = await query('SELECT id, rps_points, rps_rank FROM users');
+    const usersRes = await query('SELECT id, rps_points, rps_rank, rating FROM users');
     
     const results = [];
     
     for (const user of usersRes.rows) {
       const prevRps = Number(user.rps_points) || 0;
       const prevRank = user.rps_rank || 'FISH';
+      const prevRating = Number(user.rating) || 0;
       
       // Определяем текущий ранг и его базовое значение
       const currentRank = getRankFromPoints(prevRps);
@@ -266,13 +267,27 @@ router.post('/season-reset', requireAuth, requireAdmin, async (req, res) => {
       // Устанавливаем RPS на базовое значение ранга
       const newRps = baseScore;
       
-      if (newRps !== prevRps) {
-        await query('UPDATE users SET rps_points = $1 WHERE id = $2', [newRps, user.id]);
+      // Сбрасываем рейтинг на 0
+      const newRating = 0;
+      
+      if (newRps !== prevRps || newRating !== prevRating) {
+        await query('UPDATE users SET rps_points = $1, rating = $2 WHERE id = $3', [newRps, newRating, user.id]);
         
-        await query(
-          'INSERT INTO rating_history (user_id, delta, reason) VALUES ($1, $2, $3)',
-          [user.id, newRps - prevRps, `Сезонный сброс: ${prevRps} → ${newRps} (${prevRank} → ${currentRank.rank})${reason ? ': ' + reason : ''}`]
-        );
+        // Лог RPS
+        if (newRps !== prevRps) {
+          await query(
+            'INSERT INTO rating_history (user_id, delta, reason) VALUES ($1, $2, $3)',
+            [user.id, newRps - prevRps, `Сезонный сброс RPS: ${prevRps} → ${newRps} (${prevRank} → ${currentRank.rank})${reason ? ': ' + reason : ''}`]
+          );
+        }
+        
+        // Лог рейтинга
+        if (newRating !== prevRating) {
+          await query(
+            'INSERT INTO rating_history (user_id, delta, reason) VALUES ($1, $2, $3)',
+            [user.id, newRating - prevRating, `Сезонный сброс рейтинга: ${prevRating} → ${newRating}${reason ? ': ' + reason : ''}`]
+          );
+        }
         
         results.push({
           userId: user.id,
@@ -280,13 +295,15 @@ router.post('/season-reset', requireAuth, requireAdmin, async (req, res) => {
           newRps,
           prevRank,
           newRank: currentRank.rank,
+          prevRating,
+          newRating,
         });
       }
     }
     
     res.json({
       success: true,
-      message: `RPS сброшено для ${results.length} игроков`,
+      message: `Сброшено: RPS и рейтинг для ${results.length} игроков`,
       results,
     });
   } catch (error) {
