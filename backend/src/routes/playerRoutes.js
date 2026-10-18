@@ -89,7 +89,7 @@ router.post('/:id/rating', requireAuth, requireAdmin, async (req, res) => {
     
     // Определяем новый ранг
     let newRank = 'FISH';
-    if (nextRpsPoints >= 800) newRank = 'SHARK';
+    if (nextRpsPoints >= 800) newRank = 'PLATINUM';
     else if (nextRpsPoints >= 600) newRank = 'GOLD';
     else if (nextRpsPoints >= 400) newRank = 'SILVER';
     else if (nextRpsPoints >= 200) newRank = 'BRONZE';

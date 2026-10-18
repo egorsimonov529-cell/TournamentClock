@@ -45,16 +45,41 @@ router.get('/profile', requireAuth, async (req, res) => {
   try {
     const userId = req.user.sub;
     
-    const result = await query(
-      `SELECT * FROM users WHERE id = $1`,
-      [userId]
-    );
+    const result = await query(`
+      SELECT 
+        u.*,
+        COUNT(DISTINCT tr.id) as total_tournaments,
+        COUNT(DISTINCT CASE WHEN tr.position = 1 THEN tr.id END) as total_wins,
+        COUNT(DISTINCT CASE WHEN tr.position <= 3 THEN tr.id END) as total_podiums
+      FROM users u
+      LEFT JOIN tournament_results tr ON tr.user_id = u.id
+      WHERE u.id = $1
+      GROUP BY u.id
+    `, [userId]);
 
     if (!result.rows[0]) {
       return res.status(404).json({ message: 'Profile not found' });
     }
 
-    res.json(sanitizeUser(result.rows[0]));
+    const user = result.rows[0];
+    res.json({
+      id: user.id,
+      login: user.login,
+      email: user.email,
+      role: user.role,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      avatarUrl: user.avatar_url,
+      isActive: user.is_active,
+      createdAt: user.created_at,
+      lastLoginAt: user.last_login_at,
+      rating: Number(user.rating) || 0,
+      rps_points: Number(user.rps_points) || 0,
+      rps_rank: user.rps_rank || 'FISH',
+      total_tournaments: Number(user.total_tournaments) || 0,
+      total_wins: Number(user.total_wins) || 0,
+      total_podiums: Number(user.total_podiums) || 0,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to fetch profile' });
