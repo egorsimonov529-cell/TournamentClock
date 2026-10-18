@@ -107,14 +107,29 @@ router.get('/ranks', async (req, res) => {
 
 router.get('/players', async (req, res) => {
   try {
-    const result = await query(`SELECT * FROM users ORDER BY created_at DESC LIMIT 20`);
+    const result = await query(`
+      SELECT 
+        u.id,
+        u.login,
+        u.first_name,
+        u.last_name,
+        u.email,
+        u.rating,
+        u.rps_points,
+        u.rps_rank
+      FROM users u
+      ORDER BY u.rps_points DESC, u.rating DESC
+      LIMIT 50
+    `);
+    
     res.json(result.rows.map((row) => ({
       id: row.id,
       login: row.login,
       name: row.first_name || row.login,
       email: row.email,
-      rank: 'gold',
-      rankPoints: 1200,
+      rps_rank: row.rps_rank || 'FISH',
+      rps_points: Number(row.rps_points) || 0,
+      rank_points: Number(row.rating) || 0,
       tournaments: 0,
       wins: 0,
     })));
