@@ -90,6 +90,7 @@ class PlayerProfile {
 
   /// Create PlayerProfile from API response (snake_case format)
   factory PlayerProfile.fromApiJson(Map<String, dynamic> json, dynamic authUser) {
+    final rpsRankCode = json['rps_rank'] as String?;
     return PlayerProfile(
       userId: json['id'] as String? ?? authUser.id,
       login: json['login'] as String? ?? authUser.login,
@@ -98,26 +99,34 @@ class PlayerProfile {
       lastName: json['lastName'] as String? ?? json['last_name'] as String? ?? authUser.lastName,
       avatarUrl: json['avatarUrl'] as String? ?? json['avatar_url'] as String? ?? authUser.avatarUrl,
       role: json['role'] as String? ?? 'player',
-      level: 1,
-      xp: 0,
-      xpToNextLevel: 100,
-      rank: 0,
-      rankPoints: 0,
-      rpsPoints: 0,
-      rpsRank: RpsRank.fish,
-      winRate: 0.0,
-      totalTournaments: 0,
-      totalWins: 0,
-      totalPodiums: 0,
-      totalProfit: 0.0,
-      averageScore: 0.0,
-      balance: 0.0,
+      level: (json['level'] as num?)?.toInt() ?? 1,
+      xp: (json['xp'] as num?)?.toInt() ?? 0,
+      xpToNextLevel: (json['xp_to_next_level'] as num?)?.toInt() ?? 100,
+      rank: (json['rank'] as num?)?.toInt() ?? 0,
+      rankPoints: (json['rank_points'] ?? json['rating']) is num
+          ? ((json['rank_points'] ?? json['rating']) as num).toInt()
+          : 0,
+      rpsPoints: (json['rps_points'] ?? json['rpsPoints']) is num
+          ? ((json['rps_points'] ?? json['rpsPoints']) as num).toInt()
+          : 0,
+      rpsRank: rpsRankCode != null ? RpsRankX.fromCode(rpsRankCode) : RpsRank.fish,
+      winRate: (json['win_rate'] as num?)?.toDouble() ?? 0.0,
+      totalTournaments: json['total_tournaments'] as int? ?? 0,
+      totalWins: json['total_wins'] as int? ?? 0,
+      totalPodiums: json['total_podiums'] as int? ?? 0,
+      totalProfit: (json['total_profit'] as num?)?.toDouble() ?? 0.0,
+      averageScore: (json['average_score'] as num?)?.toDouble() ?? 0.0,
+      balance: (json['balance'] as num?)?.toDouble() ?? 0.0,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'] as String)
-          : authUser.createdAt ?? DateTime.now(),
+          : json['created_at'] != null
+              ? DateTime.parse(json['created_at'] as String)
+              : authUser.createdAt ?? DateTime.now(),
       lastLoginAt: json['lastLoginAt'] != null
           ? DateTime.parse(json['lastLoginAt'] as String)
-          : authUser.lastLoginAt ?? DateTime.now(),
+          : json['last_login_at'] != null
+              ? DateTime.parse(json['last_login_at'] as String)
+              : authUser.lastLoginAt ?? DateTime.now(),
     );
   }
 
