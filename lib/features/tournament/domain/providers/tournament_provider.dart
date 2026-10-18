@@ -105,6 +105,7 @@ class TournamentNotifier extends StateNotifier<List<Tournament>> {
             'buy_in': tournament.buyIn,
             'format': tournament.format,
             'status': tournament.status,
+            'is_manual_status': tournament.isManualStatus,
             'late_registration_minutes': tournament.lateRegistrationMinutes,
           })
           .timeout(const Duration(seconds: 3));
@@ -138,6 +139,7 @@ class TournamentNotifier extends StateNotifier<List<Tournament>> {
         'buy_in': tournament.buyIn,
         'format': tournament.format,
         'status': tournament.status,
+        'is_manual_status': tournament.isManualStatus,
         'late_registration_minutes': tournament.lateRegistrationMinutes,
       });
       // Обновляем локально
@@ -272,7 +274,7 @@ class TournamentNotifier extends StateNotifier<List<Tournament>> {
         return false;
       }
 
-      await ApiService().delete('/tournaments/$tournamentId/players/$playerId');
+      await ApiService().post('/tournaments/$tournamentId/players/$playerId/cancel');
 
       state = [
         for (final item in state)

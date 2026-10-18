@@ -132,6 +132,32 @@ class TournamentDetailPage extends ConsumerStatefulWidget {
 class _TournamentDetailPageState extends ConsumerState<TournamentDetailPage> {
   int _selected = 0;
 
+  Future<void> _cancelRegistration() async {
+    final authState = ref.read(currentAuthUserProvider);
+    return authState.when(
+      loading: () {},
+      error: (e, _) {},
+      data: (user) async {
+        if (user == null || !context.mounted) return;
+        try {
+          await ApiService().post('/tournaments/${widget.tournamentId}/players/${user.id}/cancel');
+          if (context.mounted) {
+            await ref.read(tournamentProvider.notifier).load();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Регистрация отменена'), backgroundColor: AppColors.accent),
+            );
+          }
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Ошибка: $e'), backgroundColor: Colors.red),
+            );
+          }
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final tournaments = ref.watch(tournamentProvider);
@@ -291,22 +317,61 @@ class _TournamentDetailPageState extends ConsumerState<TournamentDetailPage> {
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.pageHorizontal,
               ),
-              child: isRegistered
-                  ? IosButton(
-                      label: 'Перейти к рассадке',
-                      filled: false,
-                      onPressed: () {
-                        context.push('/tournament/${widget.tournamentId}/seating');
-                      },
-                    )
-                  : IosButton(
-                      label: 'Зарегистрироваться',
-                      onPressed: () => widget._registerAndGoToSeating(
-                        context,
-                        ref,
-                        widget.tournamentId,
+              child: authState.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Text('Ошибка: $e'),
+                data: (user) {
+                  if (user == null) {
+                    return const SizedBox.shrink();
+                  }
+                  final isPending = isRegistered && tournament != null && tournament!.isPlayerPending(user.id);
+                  return Column(mainAxisSize: MainAxisSize.min, children: [
+                    if (isPending)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.orange.withValues(alpha: 0.4)),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.hourglass_bottom, color: Colors.orange, size: 20),
+                              const SizedBox(width: 8),
+                              const Expanded(
+                                child: Text(
+                                  'Ожидает подтверждения администратора',
+                                  style: TextStyle(color: Colors.orange, fontSize: 14),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: _cancelRegistration,
+                                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                                child: const Text('Отменить'),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
+                    if (!isPending)
+                      IosButton(
+                        label: isRegistered ? 'Перейти к рассадке' : 'Зарегистрироваться',
+                        filled: !isRegistered,
+                        onPressed: isRegistered
+                            ? () {
+                                context.push('/tournament/${widget.tournamentId}/seating');
+                              }
+                            : () => widget._registerAndGoToSeating(
+                                  context,
+                                  ref,
+                                  widget.tournamentId,
+                                ),
+                      ),
+                  ]);
+                },
+              ),
             ),
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 100)),

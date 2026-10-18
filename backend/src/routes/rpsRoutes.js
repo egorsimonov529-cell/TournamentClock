@@ -52,11 +52,11 @@ router.post('/settings', requireAuth, requireAdmin, async (req, res) => {
 
 // ===== Helper: Get RPS rank from points =====
 function getRankFromPoints(points) {
-  if (points >= 800) return { rank: 'SHARK', code: 'SHARK' };
-  if (points >= 600) return { rank: 'PRO', code: 'GOLD' };
-  if (points >= 400) return { rank: 'GRINDER', code: 'SILVER' };
-  if (points >= 200) return { rank: 'REGULAR', code: 'BRONZE' };
-  return { rank: 'FISH', code: 'FISH' };
+  if (points >= 800) return { rank: 'Platinum', code: 'PLATINUM' };
+  if (points >= 600) return { rank: 'Gold', code: 'GOLD' };
+  if (points >= 400) return { rank: 'Silver', code: 'SILVER' };
+  if (points >= 200) return { rank: 'Bronze', code: 'BRONZE' };
+  return { rank: 'Fish', code: 'FISH' };
 }
 
 // ===== Tournament Results =====

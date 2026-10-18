@@ -14,6 +14,27 @@ async function init() {
     await client.query(`ALTER TABLE admin_workspace ADD COLUMN IF NOT EXISTS club_description TEXT;`);
     await client.query(`ALTER TABLE tournament_grids ADD COLUMN IF NOT EXISTS tv_logo TEXT;`);
 
+    // Миграция: обновляем старые коды рангов на новые
+    await client.query(`
+      UPDATE users SET rps_rank = 'PLATINUM' WHERE rps_rank = 'SHARK'
+    `);
+    await client.query(`
+      UPDATE users SET rps_rank = 'GOLD' WHERE rps_rank = 'PRO'
+    `);
+    await client.query(`
+      UPDATE users SET rps_rank = 'SILVER' WHERE rps_rank = 'GRINDER'
+    `);
+    await client.query(`
+      UPDATE users SET rps_rank = 'BRONZE' WHERE rps_rank = 'REGULAR'
+    `);
+
+    // Миграция: добавляем is_manual_status в tournaments
+    await client.query(`ALTER TABLE tournaments ADD COLUMN IF NOT EXISTS is_manual_status BOOLEAN NOT NULL DEFAULT false;`);
+
+    // Миграция: добавляем registration_status в tournament_players
+    await client.query(`ALTER TABLE tournament_players ADD COLUMN IF NOT EXISTS registration_status VARCHAR(50) NOT NULL DEFAULT 'pending';`);
+    await client.query(`UPDATE tournament_players SET registration_status = 'confirmed' WHERE registration_status IS NULL;`);
+
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -43,6 +64,7 @@ async function init() {
         buy_in NUMERIC(12,2) DEFAULT 0,
         format VARCHAR(100) DEFAULT 'TT No-Limit',
         status VARCHAR(50) DEFAULT 'upcoming',
+        is_manual_status BOOLEAN NOT NULL DEFAULT false,
         late_registration_minutes INTEGER NOT NULL DEFAULT 0,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
@@ -58,6 +80,7 @@ async function init() {
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tournament_id UUID NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
         user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        registration_status VARCHAR(50) NOT NULL DEFAULT 'pending',
         registered_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         UNIQUE (tournament_id, user_id)
       );
@@ -295,10 +318,10 @@ async function init() {
       INSERT INTO ranks (code, name, minimum_points, description)
       VALUES
         ('FISH', 'Fish', 0, 'Новичок'),
-        ('BRONZE', 'Bronze', 100, 'Бронзовый уровень'),
-        ('SILVER', 'Silver', 500, 'Серебряный уровень'),
-        ('GOLD', 'Gold', 1200, 'Золотой уровень'),
-        ('PLATINUM', 'Platinum', 2500, 'Платиновый уровень')
+        ('BRONZE', 'Bronze', 200, 'Бронзовый уровень'),
+        ('SILVER', 'Silver', 400, 'Серебряный уровень'),
+        ('GOLD', 'Gold', 600, 'Золотой уровень'),
+        ('PLATINUM', 'Platinum', 800, 'Платиновый уровень')
       ON CONFLICT (code) DO NOTHING;
     `);
 

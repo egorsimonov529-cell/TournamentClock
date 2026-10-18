@@ -40,4 +40,12 @@ class WindowManagerService {
     }
     await SystemNavigator.pop();
   }
+
+  static Future<void> closeClockWindow() async {
+    if (_isDesktop) {
+      await WindowManagerPlus.current.destroy();
+      return;
+    }
+    await SystemNavigator.pop();
+  }
 }

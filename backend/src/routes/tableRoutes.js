@@ -142,6 +142,15 @@ router.post('/:tableId/seats/save-all', requireAuth, async (req, res) => {
       return res.status(400).json({ message: 'Не переданы места' });
     }
 
+    // Проверяем, что ни один игрок не занят дважды
+    const userIds = seats
+      .map((s) => s.userId)
+      .filter((uid) => uid !== null && uid !== undefined);
+    const uniqueUserIds = new Set(userIds);
+    if (uniqueUserIds.size !== userIds.length) {
+      return res.status(400).json({ message: 'Один игрок не может занимать более одного места' });
+    }
+
     // Обновляем каждое место
     for (const seat of seats) {
       console.log('[TABLES] Updating seat', seat.number, 'to user:', seat.userId);
@@ -196,6 +205,17 @@ router.patch('/:tableId/seats/:seatNumber', requireAuth, async (req, res) => {
 
     // Обновляем место: либо сажаем игрока, либо освобождаем
     if (user_id) {
+      // Проверяем, нет ли уже игрока за другим столом
+      const existingSeat = await query(
+        `SELECT ts.table_id FROM table_seats ts
+         WHERE ts.user_id = $1 AND ts.table_id != $2`,
+        [user_id, tableId]
+      );
+
+      if (existingSeat.rows[0]) {
+        return res.status(400).json({ message: 'Игрок уже занят за другим столом' });
+      }
+
       await query(
         `UPDATE table_seats 
          SET user_id = $1 
@@ -248,6 +268,34 @@ router.post('/:tableId/seats/:seatNumber/book', requireAuth, async (req, res) =>
 
     if (seatCheck.rows[0].user_id) {
       return res.status(400).json({ message: 'Место уже занято' });
+    }
+
+    // Проверяем, зарегистрирован ли игрок на турнир
+    const tableInfo = await query('SELECT tournament_id FROM tables WHERE id = $1', [tableId]);
+    if (!tableInfo.rows[0]) {
+      return res.status(404).json({ message: 'Стол не найден' });
+    }
+
+    const tournamentPlayer = await query(
+      `SELECT registration_status FROM tournament_players 
+       WHERE tournament_id = $1 AND user_id = $2 
+       AND registration_status IN ('pending', 'confirmed')`,
+      [tableInfo.rows[0].tournament_id, userId]
+    );
+
+    if (!tournamentPlayer.rows[0]) {
+      return res.status(400).json({ message: 'Вы не зарегистрированы на этот турнир' });
+    }
+
+    // Проверяем, нет ли уже игрока за другим столом
+    const existingSeat = await query(
+      `SELECT ts.table_id FROM table_seats ts
+       WHERE ts.user_id = $1`,
+      [userId]
+    );
+
+    if (existingSeat.rows[0]) {
+      return res.status(400).json({ message: 'Вы уже заняли место за другим столом' });
     }
 
     // Бронируем место

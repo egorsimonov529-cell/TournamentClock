@@ -8,6 +8,7 @@ class Tournament {
   final double buyIn;
   final String format;
   final String status;
+  final bool isManualStatus;
   final int lateRegistrationMinutes;
   final List<String> registeredPlayerIds;
   final List<String> confirmedPlayerIds;
@@ -36,6 +37,7 @@ class Tournament {
     this.buyIn = 0,
     this.format = 'TT No-Limit',
     this.status = 'upcoming',
+    this.isManualStatus = false,
     this.lateRegistrationMinutes = 0,
     this.registeredPlayerIds = const [],
     this.confirmedPlayerIds = const [],
@@ -57,6 +59,7 @@ class Tournament {
       buyIn: (json['buy_in'] as num?)?.toDouble() ?? 0.0,
       format: json['format'] as String? ?? 'TT No-Limit',
       status: json['status'] as String? ?? 'upcoming',
+      isManualStatus: json['is_manual_status'] as bool? ?? false,
       lateRegistrationMinutes: (json['late_registration_minutes'] is int)
           ? json['late_registration_minutes'] as int
           : ((json['late_registration_minutes'] as num?)?.toInt() ??
@@ -77,6 +80,7 @@ class Tournament {
     double? buyIn,
     String? format,
     String? status,
+    bool? isManualStatus,
     int? lateRegistrationMinutes,
     List<String>? registeredPlayerIds,
     List<String>? confirmedPlayerIds,
@@ -92,6 +96,7 @@ class Tournament {
       buyIn: buyIn ?? this.buyIn,
       format: format ?? this.format,
       status: status ?? this.status,
+      isManualStatus: isManualStatus ?? this.isManualStatus,
       lateRegistrationMinutes: lateRegistrationMinutes ?? this.lateRegistrationMinutes,
       registeredPlayerIds: _normalizePlayerIds(registeredPlayerIds ?? this.registeredPlayerIds),
       confirmedPlayerIds: _normalizePlayerIds(confirmedPlayerIds ?? this.confirmedPlayerIds),
@@ -110,6 +115,7 @@ class Tournament {
       'buy_in': buyIn,
       'format': format,
       'status': status,
+      'is_manual_status': isManualStatus,
       'late_registration_minutes': lateRegistrationMinutes,
       'registered_players': registeredPlayerIds,
       'confirmed_players': confirmedPlayerIds,
@@ -124,6 +130,12 @@ class Tournament {
   bool isPlayerEliminated(String playerId) => eliminatedPlayerIds.contains(playerId);
 
   bool canPlayerCancelRegistration(String playerId) {
+    return registeredPlayerIds.contains(playerId) &&
+        !isPlayerConfirmed(playerId) &&
+        !isPlayerEliminated(playerId);
+  }
+
+  bool isPlayerPending(String playerId) {
     return registeredPlayerIds.contains(playerId) &&
         !isPlayerConfirmed(playerId) &&
         !isPlayerEliminated(playerId);

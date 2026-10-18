@@ -76,7 +76,7 @@ async function processTournamentLifecycle() {
     const previousStatus = tournament.status || 'upcoming';
     const nextStatus = resolveTournamentStatus(tournament);
 
-    if (previousStatus !== nextStatus) {
+    if (previousStatus !== nextStatus && !tournament.is_manual_status) {
       await query(
         `UPDATE tournaments SET status = $1 WHERE id = $2`,
         [nextStatus, tournament.id]

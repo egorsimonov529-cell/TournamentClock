@@ -4,4 +4,6 @@ class WindowManagerService {
   static Future<void> minimizeWindow() async {}
 
   static Future<void> closeApplication() => SystemNavigator.pop();
+
+  static Future<void> closeClockWindow() => SystemNavigator.pop();
 }

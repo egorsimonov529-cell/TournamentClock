@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/models/rps_rank.dart';
 import '../../../../core/services/api_service.dart';
+import '../../../auth/domain/providers/auth_state_provider.dart';
 import '../../../tournament/domain/providers/tournament_provider.dart';
 
 import '../models/seating_models.dart';
@@ -168,11 +169,42 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
   Future<bool> bookSeat(int seatNumber) async {
     final table = state.selectedTable;
     if (table == null) return false;
-    
+
     final seatIndex = table.seats.indexWhere(
       (seat) => seat.number == seatNumber && seat.status == SeatStatus.free,
     );
     if (seatIndex < 0) return false;
+
+    // Проверяем, зарегистрирован ли игрок на турнир
+    if (ref != null) {
+      try {
+        final tournaments = ref!.read(tournamentProvider);
+        final tournament = tournaments.firstWhere(
+          (t) => t.id == tournamentId,
+          orElse: () => throw Exception('Турнир не найден'),
+        );
+
+        final authState = ref!.read(currentAuthUserProvider);
+        final user = authState.valueOrNull;
+        if (user == null) {
+          print('Пользователь не авторизован');
+          return false;
+        }
+
+        if (!tournament.registeredPlayerIds.contains(user.id)) {
+          print('Игрок не зарегистрирован на турнир');
+          return false;
+        }
+
+        if (tournament.isPlayerEliminated(user.id)) {
+          print('Игрок выбыл из турнира');
+          return false;
+        }
+      } catch (e) {
+        print('Ошибка проверки регистрации: $e');
+        return false;
+      }
+    }
 
     // Отправляем на сервер
     try {
@@ -232,12 +264,16 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
 
   Future<void> assignPlayer(String playerId, int seatNumber) async {
     final candidates = state.unseatedPlayers.where((p) => p.id == playerId);
-    if (candidates.isEmpty ||
-        state.tables.any(
-          (table) => table.seats.any((seat) => seat.player?.id == playerId),
-        )) {
+    if (candidates.isEmpty) return;
+
+    // Проверяем, нет ли уже игрока за другим столом
+    if (state.tables.any(
+      (table) => table.seats.any((seat) => seat.player?.id == playerId),
+    )) {
+      print('Игрок уже занят за другим столом');
       return;
     }
+
     final table = state.selectedTable;
     if (table == null) return;
     final seatIndex = table.seats.indexWhere(
