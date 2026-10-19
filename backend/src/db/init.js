@@ -5,36 +5,6 @@ async function init() {
   const client = await pool.connect();
 
   try {
-    // Ensure legacy DBs get missing columns added safely
-    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS rating INTEGER NOT NULL DEFAULT 0;`);
-    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS rps_points INTEGER NOT NULL DEFAULT 0;`);
-    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS rps_rank VARCHAR(50) NOT NULL DEFAULT 'FISH';`);
-    await client.query(`ALTER TABLE admin_workspace ADD COLUMN IF NOT EXISTS address TEXT;`);
-    await client.query(`ALTER TABLE admin_workspace ADD COLUMN IF NOT EXISTS city VARCHAR(100);`);
-    await client.query(`ALTER TABLE admin_workspace ADD COLUMN IF NOT EXISTS club_description TEXT;`);
-    await client.query(`ALTER TABLE tournament_grids ADD COLUMN IF NOT EXISTS tv_logo TEXT;`);
-
-    // Миграция: обновляем старые коды рангов на новые
-    await client.query(`
-      UPDATE users SET rps_rank = 'PLATINUM' WHERE rps_rank = 'SHARK'
-    `);
-    await client.query(`
-      UPDATE users SET rps_rank = 'GOLD' WHERE rps_rank = 'PRO'
-    `);
-    await client.query(`
-      UPDATE users SET rps_rank = 'SILVER' WHERE rps_rank = 'GRINDER'
-    `);
-    await client.query(`
-      UPDATE users SET rps_rank = 'BRONZE' WHERE rps_rank = 'REGULAR'
-    `);
-
-    // Миграция: добавляем is_manual_status в tournaments
-    await client.query(`ALTER TABLE tournaments ADD COLUMN IF NOT EXISTS is_manual_status BOOLEAN NOT NULL DEFAULT false;`);
-
-    // Миграция: добавляем registration_status в tournament_players
-    await client.query(`ALTER TABLE tournament_players ADD COLUMN IF NOT EXISTS registration_status VARCHAR(50) NOT NULL DEFAULT 'pending';`);
-    await client.query(`UPDATE tournament_players SET registration_status = 'confirmed' WHERE registration_status IS NULL;`);
-
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -373,6 +343,25 @@ async function init() {
         ('Как связаться с поддержкой?', 'Вы можете написать нам в Telegram или на email, указанный в разделе контакты.', true)
       ON CONFLICT DO NOTHING;
     `);
+
+    // Миграции: добавляем missing columns в существующие таблицы
+    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS rating INTEGER NOT NULL DEFAULT 0;`);
+    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS rps_points INTEGER NOT NULL DEFAULT 0;`);
+    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS rps_rank VARCHAR(50) NOT NULL DEFAULT 'FISH';`);
+    await client.query(`ALTER TABLE admin_workspace ADD COLUMN IF NOT EXISTS address TEXT;`);
+    await client.query(`ALTER TABLE admin_workspace ADD COLUMN IF NOT EXISTS city VARCHAR(100);`);
+    await client.query(`ALTER TABLE admin_workspace ADD COLUMN IF NOT EXISTS club_description TEXT;`);
+    await client.query(`ALTER TABLE tournament_grids ADD COLUMN IF NOT EXISTS tv_logo TEXT;`);
+    await client.query(`ALTER TABLE tournaments ADD COLUMN IF NOT EXISTS is_manual_status BOOLEAN NOT NULL DEFAULT false;`);
+    await client.query(`ALTER TABLE tournament_players ADD COLUMN IF NOT EXISTS registration_status VARCHAR(50) NOT NULL DEFAULT 'pending';`);
+    await client.query(`ALTER TABLE tournaments ADD COLUMN IF NOT EXISTS late_registration_minutes INTEGER NOT NULL DEFAULT 0;`);
+
+    // Миграция: обновляем старые коды рангов на новые
+    await client.query(`UPDATE users SET rps_rank = 'PLATINUM' WHERE rps_rank = 'SHARK'`);
+    await client.query(`UPDATE users SET rps_rank = 'GOLD' WHERE rps_rank = 'PRO'`);
+    await client.query(`UPDATE users SET rps_rank = 'SILVER' WHERE rps_rank = 'GRINDER'`);
+    await client.query(`UPDATE users SET rps_rank = 'BRONZE' WHERE rps_rank = 'REGULAR'`);
+    await client.query(`UPDATE tournament_players SET registration_status = 'confirmed' WHERE registration_status IS NULL;`);
 
     console.log('Database initialized successfully');
   } catch (error) {
