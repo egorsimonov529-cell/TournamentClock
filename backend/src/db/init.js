@@ -125,8 +125,8 @@ async function init() {
     await client.query(`
       INSERT INTO achievements (title, description, image_url, current_value, target_value, achieved)
       VALUES
-        ('Первый турнир', 'Участвуй в первом турнире', 'assets/achievements/achievement_first_tournament.svg', 0, 1, false),
-        ('Регулярный игрок', 'Посети 10 турниров', 'assets/achievements/achievement_regular.svg', 0, 10, false)
+        ('Первый турнир', 'Участвуй в первом турнире', 'assets/images/achievement_first_tournament.svg', 0, 1, false),
+        ('Регулярный игрок', 'Посети 10 турниров', 'assets/images/achievement_regular.svg', 0, 10, false)
       ON CONFLICT DO NOTHING;
     `);
 
