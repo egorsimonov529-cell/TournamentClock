@@ -13,10 +13,10 @@ class AppConfig {
   static const bool useDemoAuth = false;
 
   static String get _defaultBaseUrl {
-    if (kIsWeb) return 'http://188.225.81.114:4000/api/v1';
-    if (defaultTargetPlatform == TargetPlatform.android) return 'http://188.225.81.114:4000/api/v1';
-    if (defaultTargetPlatform == TargetPlatform.iOS) return 'http://188.225.81.114:4000/api/v1';
-    return 'http://188.225.81.114:4000/api/v1';
+    if (kIsWeb) return 'http://188.225.81.114/api/v1';
+    if (defaultTargetPlatform == TargetPlatform.android) return 'http://188.225.81.114/api/v1';
+    if (defaultTargetPlatform == TargetPlatform.iOS) return 'http://188.225.81.114/api/v1';
+    return 'http://188.225.81.114/api/v1';
   }
 
   static const String _envBaseUrl = String.fromEnvironment('API_BASE_URL');
