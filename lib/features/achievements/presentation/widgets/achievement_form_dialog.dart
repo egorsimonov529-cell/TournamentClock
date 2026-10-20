@@ -1,5 +1,3 @@
-import 'dart:io' show Platform;
-
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
@@ -27,7 +25,8 @@ class _AchievementFormDialogState extends ConsumerState<AchievementFormDialog> {
   late final TextEditingController _currentController;
   late final TextEditingController _targetController;
 
-  String? _pickedImagePath;
+  String? _pickedImageName;
+  List<int>? _pickedImageBytes;
 
   @override
   void initState() {
@@ -86,9 +85,9 @@ class _AchievementFormDialogState extends ConsumerState<AchievementFormDialog> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        _pickedImagePath == null
+                        _pickedImageName == null
                             ? 'Файл не выбран'
-                            : _pickedImagePath!.split(Platform.pathSeparator).last,
+                            : _pickedImageName!,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -165,7 +164,7 @@ class _AchievementFormDialogState extends ConsumerState<AchievementFormDialog> {
           'current_value': current,
           'target_value': target,
           'achieved': item.achieved,
-        }, imagePath: _pickedImagePath);
+        }, imageBytes: _pickedImageBytes, imageName: _pickedImageName);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Достижение обновлено')));
       } else {
         final saveUc = ref.read(saveAchievementUsecaseProvider);
@@ -175,7 +174,7 @@ class _AchievementFormDialogState extends ConsumerState<AchievementFormDialog> {
           'current_value': current,
           'target_value': target,
           'achieved': item.achieved,
-        }, imagePath: _pickedImagePath);
+        }, imageBytes: _pickedImageBytes, imageName: _pickedImageName);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Достижение создано')));
       }
     } catch (e) {
@@ -190,7 +189,8 @@ class _AchievementFormDialogState extends ConsumerState<AchievementFormDialog> {
     final res = await FilePicker.platform.pickFiles(type: FileType.image);
     if (res != null && res.files.isNotEmpty) {
       setState(() {
-        _pickedImagePath = res.files.single.path;
+        _pickedImageName = res.files.single.name;
+        _pickedImageBytes = res.files.single.bytes;
       });
     }
   }

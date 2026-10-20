@@ -1,4 +1,7 @@
+import 'dart:io' if (dart.library.html) 'dart:html';
+
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
@@ -404,12 +407,12 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
         allowedExtensions: ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'],
       );
 
-      if (result == null || result.files.single.path == null) {
+      if (result == null || result.files.single.bytes == null) {
         setState(() => _uploadingLogo = false);
         return;
       }
 
-      final filePath = result.files.single.path!;
+      final bytes = result.files.single.bytes!;
       final fileName = result.files.single.name;
 
       final dio = Dio(BaseOptions(baseUrl: AppConstants.apiBaseUrl));
@@ -418,9 +421,8 @@ class _AdminSettingsScreenState extends ConsumerState<AdminSettingsScreen> {
         dio.options.headers['Authorization'] = 'Bearer $token';
       }
 
-      final formData = FormData.fromMap({
-        'logo': await MultipartFile.fromFile(filePath, filename: fileName),
-      });
+      final file = MultipartFile.fromBytes(bytes, filename: fileName);
+      final formData = FormData.fromMap({'logo': file});
 
       final response = await dio.post('/admin/logo', data: formData);
 

@@ -1,8 +1,5 @@
-import 'dart:io' if (dart.library.html) 'dart:html';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
@@ -35,11 +32,11 @@ class _IosProfilePageState extends ConsumerState<IosProfilePage> {
         allowedExtensions: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
       );
 
-      if (result == null || result.files.single.path == null) {
+      if (result == null || result.files.single.bytes == null) {
         return;
       }
 
-      final filePath = result.files.single.path!;
+      final bytes = result.files.single.bytes!;
       final fileName = result.files.single.name;
 
       final dio = Dio(BaseOptions(baseUrl: AppConstants.apiBaseUrl));
@@ -48,15 +45,7 @@ class _IosProfilePageState extends ConsumerState<IosProfilePage> {
         dio.options.headers['Authorization'] = 'Bearer $token';
       }
 
-      MultipartFile file;
-      if (kIsWeb) {
-        final file = File(filePath);
-        final bytes = await file.readAsBytes();
-        file = MultipartFile.fromBytes(bytes, filename: fileName);
-      } else {
-        file = await MultipartFile.fromFile(filePath, filename: fileName);
-      }
-
+      final file = MultipartFile.fromBytes(bytes, filename: fileName);
       final formData = FormData.fromMap({'avatar': file});
       final response = await dio.post('/users/avatar', data: formData);
 

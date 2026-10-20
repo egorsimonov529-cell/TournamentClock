@@ -26,7 +26,7 @@ class StatsOverview extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  'Расписание игр',
+                  'История игр',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,

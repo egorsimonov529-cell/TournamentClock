@@ -17,10 +17,10 @@ class AchievementsRepositoryImpl implements AchievementsRepository {
   }
 
   @override
-  Future<dynamic> createAchievement(Map<String, dynamic> data, {String? imagePath}) => remote.createAchievement(body: data, imagePath: imagePath);
+  Future<dynamic> createAchievement(Map<String, dynamic> data, {List<int>? imageBytes, String? imageName}) => remote.createAchievement(body: data, imageBytes: imageBytes, imageName: imageName);
 
   @override
-  Future<dynamic> updateAchievement(String id, Map<String, dynamic> data, {String? imagePath}) => remote.updateAchievement(id, body: data, imagePath: imagePath);
+  Future<dynamic> updateAchievement(String id, Map<String, dynamic> data, {List<int>? imageBytes, String? imageName}) => remote.updateAchievement(id, body: data, imageBytes: imageBytes, imageName: imageName);
 
   @override
   Future<void> deleteAchievement(String id) => remote.deleteAchievement(id);

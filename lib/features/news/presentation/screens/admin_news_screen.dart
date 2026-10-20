@@ -1,5 +1,3 @@
-import 'dart:io' show Platform;
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -35,6 +33,7 @@ class _AdminNewsScreenState extends ConsumerState<AdminNewsScreen> {
   final _title = TextEditingController();
   final _body = TextEditingController();
   String? _pickedPath;
+  List<int>? _pickedBytes;
   bool _isPosting = false;
   List<dynamic> _posts = [];
   bool _loadingPosts = true;
@@ -78,7 +77,10 @@ class _AdminNewsScreenState extends ConsumerState<AdminNewsScreen> {
 
     final res = await FilePicker.platform.pickFiles(type: FileType.image);
     if (res != null && res.files.isNotEmpty) {
-      setState(() => _pickedPath = res.files.single.path);
+      setState(() {
+        _pickedPath = res.files.single.name;
+        _pickedBytes = res.files.single.bytes;
+      });
     }
   }
 
@@ -113,13 +115,13 @@ class _AdminNewsScreenState extends ConsumerState<AdminNewsScreen> {
         'is_published': true,
       });
 
-      if (_pickedPath != null && !kIsWeb) {
+      if (_pickedPath != null && _pickedBytes != null && _pickedBytes!.isNotEmpty) {
         try {
           form.files.add(MapEntry(
             'image',
-            MultipartFile.fromFileSync(
-              _pickedPath!,
-              filename: _pickedPath!.split(Platform.pathSeparator).last,
+            MultipartFile.fromBytes(
+              _pickedBytes!,
+              filename: _pickedPath!.split('/').last,
             ),
           ));
         } catch (e) {
@@ -165,7 +167,7 @@ class _AdminNewsScreenState extends ConsumerState<AdminNewsScreen> {
                 child: Text(
                   _pickedPath == null
                       ? 'Файл не выбран'
-                      : _pickedPath!.split(Platform.pathSeparator).last,
+                      : _pickedPath!.split('/').last,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),

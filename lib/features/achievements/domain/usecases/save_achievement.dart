@@ -4,5 +4,5 @@ class SaveAchievement {
   final AchievementsRepository repo;
   SaveAchievement(this.repo);
 
-  Future<dynamic> call(Map<String, dynamic> data, {String? imagePath}) => repo.createAchievement(data, imagePath: imagePath);
+  Future<dynamic> call(Map<String, dynamic> data, {List<int>? imageBytes, String? imageName}) => repo.createAchievement(data, imageBytes: imageBytes, imageName: imageName);
 }

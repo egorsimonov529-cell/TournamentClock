@@ -21,7 +21,7 @@ class LoginHeader extends StatelessWidget {
         ),
         SizedBox(height: 8),
         Text(
-          "Добро пожаловать обратно!",
+          "Добро пожаловать",
           textAlign: TextAlign.center,
           style: TextStyle(color: Color(0xff8B9690), fontSize: 15),
         ),

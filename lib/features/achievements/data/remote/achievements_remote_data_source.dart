@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -16,18 +14,13 @@ class AchievementsRemoteDataSource {
 
   Future<dynamic> createAchievement({
     required Map<String, dynamic> body,
-    String? imagePath,
+    List<int>? imageBytes,
+    String? imageName,
   }) async {
     final form = FormData.fromMap(Map.of(body));
-    if (imagePath != null && imagePath.isNotEmpty) {
+    if (imageBytes != null && imageBytes.isNotEmpty && imageName != null) {
       try {
-        form.files.add(MapEntry(
-          'image',
-          await MultipartFile.fromFile(
-            imagePath,
-            filename: imagePath.split(Platform.pathSeparator).last,
-          ),
-        ));
+        form.files.add(MapEntry('image', MultipartFile.fromBytes(imageBytes, filename: imageName)));
       } catch (e) {
         // Ignored on web
       }
@@ -39,18 +32,13 @@ class AchievementsRemoteDataSource {
   Future<dynamic> updateAchievement(
     String id, {
     required Map<String, dynamic> body,
-    String? imagePath,
+    List<int>? imageBytes,
+    String? imageName,
   }) async {
     final form = FormData.fromMap(Map.of(body));
-    if (imagePath != null && imagePath.isNotEmpty) {
+    if (imageBytes != null && imageBytes.isNotEmpty && imageName != null) {
       try {
-        form.files.add(MapEntry(
-          'image',
-          await MultipartFile.fromFile(
-            imagePath,
-            filename: imagePath.split(Platform.pathSeparator).last,
-          ),
-        ));
+        form.files.add(MapEntry('image', MultipartFile.fromBytes(imageBytes, filename: imageName)));
       } catch (e) {
         // Ignored on web
       }

@@ -1,4 +1,7 @@
+import 'dart:io' if (dart.library.html) 'dart:html';
+
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tournament_clock/core/constants/app_constants.dart';
 import 'package:tournament_clock/core/services/api_service.dart';
@@ -188,7 +191,7 @@ class AdminWorkspaceNotifier extends StateNotifier<AdminWorkspaceState> {
   }
 
   /// Загрузка логотипа клуба
-  Future<String?> uploadLogo({required String filePath}) async {
+  Future<String?> uploadLogo({required List<int> bytes, required String fileName}) async {
     try {
       final dio = Dio(BaseOptions(baseUrl: AppConstants.apiBaseUrl));
       final token = await _getAccessToken();
@@ -196,9 +199,8 @@ class AdminWorkspaceNotifier extends StateNotifier<AdminWorkspaceState> {
         dio.options.headers['Authorization'] = 'Bearer $token';
       }
 
-      final formData = FormData.fromMap({
-        'logo': await MultipartFile.fromFile(filePath),
-      });
+      final file = MultipartFile.fromBytes(bytes, filename: fileName);
+      final formData = FormData.fromMap({'logo': file});
 
       final response = await dio.post('/admin/logo', data: formData);
 
