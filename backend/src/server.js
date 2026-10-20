@@ -28,6 +28,7 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const avatarRoutes = require('./routes/avatarRoutes');
 const tournamentRoutes = require('./routes/tournamentRoutes');
 const tableRoutes = require('./routes/tableRoutes');
 const playerRoutes = require('./routes/playerRoutes');
@@ -49,6 +50,7 @@ app.get('/health', (req, res) => {
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/users/avatar', avatarRoutes);
 app.use('/api/v1/tournaments', tournamentRoutes);
 app.use('/api/v1/tables', tableRoutes);
 app.use('/api/v1/players', playerRoutes);
