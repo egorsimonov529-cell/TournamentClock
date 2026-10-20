@@ -45,7 +45,7 @@ const upload = multer({
 });
 
 // POST /api/v1/users/avatar - Upload user avatar
-router.post('/avatar', requireAuth, upload.single('avatar'), async (req, res) => {
+router.post('/', requireAuth, upload.single('avatar'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'Файл не выбран' });
@@ -71,7 +71,7 @@ router.post('/avatar', requireAuth, upload.single('avatar'), async (req, res) =>
 });
 
 // DELETE /api/v1/users/avatar - Delete user avatar
-router.delete('/avatar', requireAuth, async (req, res) => {
+router.delete('/', requireAuth, async (req, res) => {
   try {
     const userId = req.user.sub;
 
