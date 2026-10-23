@@ -22,6 +22,7 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
   final _passwordKey = GlobalKey<FormState>();
   late final TextEditingController _firstName;
   late final TextEditingController _lastName;
+  late final TextEditingController _nickname;
   late final TextEditingController _email;
   late final TextEditingController _login;
   final _currentPassword = TextEditingController();
@@ -35,6 +36,7 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
     super.initState();
     _firstName = TextEditingController(text: widget.player.firstName);
     _lastName = TextEditingController(text: widget.player.lastName);
+    _nickname = TextEditingController(text: widget.player.nickname ?? '');
     _email = TextEditingController(text: widget.player.email);
     _login = TextEditingController(text: widget.player.login);
   }
@@ -43,6 +45,7 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
   void dispose() {
     _firstName.dispose();
     _lastName.dispose();
+    _nickname.dispose();
     _email.dispose();
     _login.dispose();
     _currentPassword.dispose();
@@ -174,6 +177,8 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
                     IosInput(controller: _email, placeholder: 'Email'),
                     const SizedBox(height: 12),
                     IosInput(controller: _login, placeholder: 'Логин'),
+                    const SizedBox(height: 12),
+                    IosInput(controller: _nickname, placeholder: 'Никнейм'),
                     const SizedBox(height: 18),
                     SizedBox(
                       width: 220,

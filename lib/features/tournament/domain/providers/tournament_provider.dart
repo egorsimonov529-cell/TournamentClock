@@ -77,10 +77,18 @@ class TournamentNotifier extends StateNotifier<List<Tournament>> {
       final response = await ApiService()
           .get('/tournaments')
           .timeout(const Duration(seconds: 3));
-      final data = response.data as List<dynamic>;
-      state = data
-          .map((item) => Tournament.fromJson(item as Map<String, dynamic>))
-          .toList();
+      
+      // Новый формат: { activeTournaments: [...], completedTournaments: [...] }
+      final data = response.data as Map<String, dynamic>;
+      final activeList = (data['activeTournaments'] as List<dynamic>? ?? []);
+      final completedList = (data['completedTournaments'] as List<dynamic>? ?? []);
+      
+      final allTournaments = [
+        ...activeList.map((item) => Tournament.fromJson(item as Map<String, dynamic>)),
+        ...completedList.map((item) => Tournament.fromJson(item as Map<String, dynamic>)),
+      ];
+      
+      state = allTournaments;
     } catch (_) {
       if (previousState.isNotEmpty) {
         state = previousState;
@@ -88,6 +96,10 @@ class TournamentNotifier extends StateNotifier<List<Tournament>> {
         state = const [];
       }
     }
+  }
+
+  List<Tournament> get completedTournaments {
+    return state.where((t) => t.status == 'completed' || t.status == 'cancelled').toList();
   }
 
   Future<void> addTournament(Tournament tournament) async {

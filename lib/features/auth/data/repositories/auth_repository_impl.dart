@@ -73,6 +73,7 @@ class AuthRepositoryImpl implements AuthRepository, AuthRepositoryContract {
   @override
   Future<AuthResponse> register({
     required String name,
+    required String nickname,
     required String email,
     required String password,
     required bool acceptedTerms,
@@ -86,7 +87,7 @@ class AuthRepositoryImpl implements AuthRepository, AuthRepositoryContract {
     try {
       final response = await _apiService.post(
         '/auth/register',
-        data: {'name': name, 'email': email, 'password': password},
+        data: {'name': name, 'nickname': nickname, 'email': email, 'password': password},
       );
       final auth = AuthResponse.fromJson(response.data);
       await _persistSession(auth.user, true);

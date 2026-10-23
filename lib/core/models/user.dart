@@ -12,6 +12,7 @@ class User with _$User {
     required String role,
     String? firstName,
     String? lastName,
+    String? nickname,
     String? avatarUrl,
     @Default(true) bool isActive,
     DateTime? createdAt,

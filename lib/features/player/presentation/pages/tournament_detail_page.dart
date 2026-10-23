@@ -132,6 +132,35 @@ class TournamentDetailPage extends ConsumerStatefulWidget {
 class _TournamentDetailPageState extends ConsumerState<TournamentDetailPage> {
   int _selected = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    // Проверяем статус турнира при загрузке
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final tournaments = ref.read(tournamentProvider);
+      final tournament = tournaments
+        .where((t) => t.id == widget.tournamentId)
+        .firstOrNull;
+      
+      if (tournament != null && (tournament.status == 'completed' || tournament.status == 'cancelled')) {
+        // Если турнир завершен, показываем сообщение и возвращаем назад
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Турнир ${tournament.status == 'completed' ? 'завершен' : 'отменен'}'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (mounted) {
+              context.pop();
+            }
+          });
+        }
+      }
+    });
+  }
+
   Future<void> _cancelRegistration() async {
     final authState = ref.read(currentAuthUserProvider);
     return authState.when(
@@ -324,9 +353,13 @@ class _TournamentDetailPageState extends ConsumerState<TournamentDetailPage> {
                   if (user == null) {
                     return const SizedBox.shrink();
                   }
+                  
+                  // Проверяем статус турнира
+                  final isTournamentActive = tournament != null && tournament.status != 'completed' && tournament.status != 'cancelled';
+                  
                   final isPending = isRegistered && tournament != null && tournament!.isPlayerPending(user.id);
                   return Column(mainAxisSize: MainAxisSize.min, children: [
-                    if (isPending)
+                    if (isPending && isTournamentActive)
                       Padding(
                         padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                         child: Container(
@@ -355,7 +388,7 @@ class _TournamentDetailPageState extends ConsumerState<TournamentDetailPage> {
                           ),
                         ),
                       ),
-                    if (!isPending)
+                    if (!isPending && isTournamentActive)
                       IosButton(
                         label: isRegistered ? 'Перейти к рассадке' : 'Зарегистрироваться',
                         filled: !isRegistered,
@@ -368,6 +401,29 @@ class _TournamentDetailPageState extends ConsumerState<TournamentDetailPage> {
                                   ref,
                                   widget.tournamentId,
                                 ),
+                      ),
+                    if (!isTournamentActive)
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.withValues(alpha: 0.4)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.emoji_events, color: Colors.grey, size: 20),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                tournament!.status == 'completed' 
+                                  ? 'Турнир завершен' 
+                                  : 'Турнир отменен',
+                                style: const TextStyle(color: Colors.grey, fontSize: 14),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                   ]);
                 },

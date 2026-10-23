@@ -27,6 +27,7 @@ mixin _$User {
   String get role => throw _privateConstructorUsedError;
   String? get firstName => throw _privateConstructorUsedError;
   String? get lastName => throw _privateConstructorUsedError;
+  String? get nickname => throw _privateConstructorUsedError;
   String? get avatarUrl => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
@@ -53,6 +54,7 @@ abstract class $UserCopyWith<$Res> {
     String role,
     String? firstName,
     String? lastName,
+    String? nickname,
     String? avatarUrl,
     bool isActive,
     DateTime? createdAt,
@@ -81,6 +83,7 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? role = null,
     Object? firstName = freezed,
     Object? lastName = freezed,
+    Object? nickname = freezed,
     Object? avatarUrl = freezed,
     Object? isActive = null,
     Object? createdAt = freezed,
@@ -88,46 +91,61 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
   }) {
     return _then(
       _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            login: null == login
-                ? _value.login
-                : login // ignore: cast_nullable_to_non_nullable
-                      as String,
-            email: null == email
-                ? _value.email
-                : email // ignore: cast_nullable_to_non_nullable
-                      as String,
-            role: null == role
-                ? _value.role
-                : role // ignore: cast_nullable_to_non_nullable
-                      as String,
-            firstName: freezed == firstName
-                ? _value.firstName
-                : firstName // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            lastName: freezed == lastName
-                ? _value.lastName
-                : lastName // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            avatarUrl: freezed == avatarUrl
-                ? _value.avatarUrl
-                : avatarUrl // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            isActive: null == isActive
-                ? _value.isActive
-                : isActive // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            createdAt: freezed == createdAt
-                ? _value.createdAt
-                : createdAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            lastLoginAt: freezed == lastLoginAt
-                ? _value.lastLoginAt
-                : lastLoginAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
+            id:
+                null == id
+                    ? _value.id
+                    : id // ignore: cast_nullable_to_non_nullable
+                        as String,
+            login:
+                null == login
+                    ? _value.login
+                    : login // ignore: cast_nullable_to_non_nullable
+                        as String,
+            email:
+                null == email
+                    ? _value.email
+                    : email // ignore: cast_nullable_to_non_nullable
+                        as String,
+            role:
+                null == role
+                    ? _value.role
+                    : role // ignore: cast_nullable_to_non_nullable
+                        as String,
+            firstName:
+                freezed == firstName
+                    ? _value.firstName
+                    : firstName // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            lastName:
+                freezed == lastName
+                    ? _value.lastName
+                    : lastName // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            nickname:
+                freezed == nickname
+                    ? _value.nickname
+                    : nickname // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            avatarUrl:
+                freezed == avatarUrl
+                    ? _value.avatarUrl
+                    : avatarUrl // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            isActive:
+                null == isActive
+                    ? _value.isActive
+                    : isActive // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            createdAt:
+                freezed == createdAt
+                    ? _value.createdAt
+                    : createdAt // ignore: cast_nullable_to_non_nullable
+                        as DateTime?,
+            lastLoginAt:
+                freezed == lastLoginAt
+                    ? _value.lastLoginAt
+                    : lastLoginAt // ignore: cast_nullable_to_non_nullable
+                        as DateTime?,
           )
           as $Val,
     );
@@ -149,6 +167,7 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
     String role,
     String? firstName,
     String? lastName,
+    String? nickname,
     String? avatarUrl,
     bool isActive,
     DateTime? createdAt,
@@ -174,6 +193,7 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? role = null,
     Object? firstName = freezed,
     Object? lastName = freezed,
+    Object? nickname = freezed,
     Object? avatarUrl = freezed,
     Object? isActive = null,
     Object? createdAt = freezed,
@@ -181,46 +201,61 @@ class __$$UserImplCopyWithImpl<$Res>
   }) {
     return _then(
       _$UserImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        login: null == login
-            ? _value.login
-            : login // ignore: cast_nullable_to_non_nullable
-                  as String,
-        email: null == email
-            ? _value.email
-            : email // ignore: cast_nullable_to_non_nullable
-                  as String,
-        role: null == role
-            ? _value.role
-            : role // ignore: cast_nullable_to_non_nullable
-                  as String,
-        firstName: freezed == firstName
-            ? _value.firstName
-            : firstName // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        lastName: freezed == lastName
-            ? _value.lastName
-            : lastName // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        avatarUrl: freezed == avatarUrl
-            ? _value.avatarUrl
-            : avatarUrl // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        isActive: null == isActive
-            ? _value.isActive
-            : isActive // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        createdAt: freezed == createdAt
-            ? _value.createdAt
-            : createdAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        lastLoginAt: freezed == lastLoginAt
-            ? _value.lastLoginAt
-            : lastLoginAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
+        id:
+            null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                    as String,
+        login:
+            null == login
+                ? _value.login
+                : login // ignore: cast_nullable_to_non_nullable
+                    as String,
+        email:
+            null == email
+                ? _value.email
+                : email // ignore: cast_nullable_to_non_nullable
+                    as String,
+        role:
+            null == role
+                ? _value.role
+                : role // ignore: cast_nullable_to_non_nullable
+                    as String,
+        firstName:
+            freezed == firstName
+                ? _value.firstName
+                : firstName // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        lastName:
+            freezed == lastName
+                ? _value.lastName
+                : lastName // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        nickname:
+            freezed == nickname
+                ? _value.nickname
+                : nickname // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        avatarUrl:
+            freezed == avatarUrl
+                ? _value.avatarUrl
+                : avatarUrl // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        isActive:
+            null == isActive
+                ? _value.isActive
+                : isActive // ignore: cast_nullable_to_non_nullable
+                    as bool,
+        createdAt:
+            freezed == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                    as DateTime?,
+        lastLoginAt:
+            freezed == lastLoginAt
+                ? _value.lastLoginAt
+                : lastLoginAt // ignore: cast_nullable_to_non_nullable
+                    as DateTime?,
       ),
     );
   }
@@ -236,6 +271,7 @@ class _$UserImpl implements _User {
     required this.role,
     this.firstName,
     this.lastName,
+    this.nickname,
     this.avatarUrl,
     this.isActive = true,
     this.createdAt,
@@ -258,6 +294,8 @@ class _$UserImpl implements _User {
   @override
   final String? lastName;
   @override
+  final String? nickname;
+  @override
   final String? avatarUrl;
   @override
   @JsonKey()
@@ -269,7 +307,7 @@ class _$UserImpl implements _User {
 
   @override
   String toString() {
-    return 'User(id: $id, login: $login, email: $email, role: $role, firstName: $firstName, lastName: $lastName, avatarUrl: $avatarUrl, isActive: $isActive, createdAt: $createdAt, lastLoginAt: $lastLoginAt)';
+    return 'User(id: $id, login: $login, email: $email, role: $role, firstName: $firstName, lastName: $lastName, nickname: $nickname, avatarUrl: $avatarUrl, isActive: $isActive, createdAt: $createdAt, lastLoginAt: $lastLoginAt)';
   }
 
   @override
@@ -285,6 +323,8 @@ class _$UserImpl implements _User {
                 other.firstName == firstName) &&
             (identical(other.lastName, lastName) ||
                 other.lastName == lastName) &&
+            (identical(other.nickname, nickname) ||
+                other.nickname == nickname) &&
             (identical(other.avatarUrl, avatarUrl) ||
                 other.avatarUrl == avatarUrl) &&
             (identical(other.isActive, isActive) ||
@@ -305,6 +345,7 @@ class _$UserImpl implements _User {
     role,
     firstName,
     lastName,
+    nickname,
     avatarUrl,
     isActive,
     createdAt,
@@ -333,6 +374,7 @@ abstract class _User implements User {
     required final String role,
     final String? firstName,
     final String? lastName,
+    final String? nickname,
     final String? avatarUrl,
     final bool isActive,
     final DateTime? createdAt,
@@ -353,6 +395,8 @@ abstract class _User implements User {
   String? get firstName;
   @override
   String? get lastName;
+  @override
+  String? get nickname;
   @override
   String? get avatarUrl;
   @override

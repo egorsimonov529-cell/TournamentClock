@@ -13,6 +13,7 @@ async function init() {
         password_hash TEXT NOT NULL,
         first_name VARCHAR(100),
         last_name VARCHAR(100),
+        nickname VARCHAR(50),
         phone_number VARCHAR(30),
         rating INTEGER NOT NULL DEFAULT 0,
         role VARCHAR(50) NOT NULL DEFAULT 'player',
@@ -348,6 +349,7 @@ async function init() {
     await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS rating INTEGER NOT NULL DEFAULT 0;`);
     await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS rps_points INTEGER NOT NULL DEFAULT 0;`);
     await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS rps_rank VARCHAR(50) NOT NULL DEFAULT 'FISH';`);
+    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS nickname VARCHAR(50);`);
     await client.query(`ALTER TABLE admin_workspace ADD COLUMN IF NOT EXISTS address TEXT;`);
     await client.query(`ALTER TABLE admin_workspace ADD COLUMN IF NOT EXISTS city VARCHAR(100);`);
     await client.query(`ALTER TABLE admin_workspace ADD COLUMN IF NOT EXISTS club_description TEXT;`);

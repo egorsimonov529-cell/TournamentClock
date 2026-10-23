@@ -28,7 +28,7 @@ class _IosProfilePageState extends ConsumerState<IosProfilePage> {
       setState(() => _uploadingAvatar = true);
 
       final result = await FilePicker.platform.pickFiles(
-        type: FileType.image,
+        type: FileType.custom,
         allowedExtensions: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
       );
 
@@ -46,7 +46,8 @@ class _IosProfilePageState extends ConsumerState<IosProfilePage> {
       }
 
       final file = MultipartFile.fromBytes(bytes, filename: fileName);
-      final formData = FormData.fromMap({'avatar': file});
+      final formData = FormData();
+      formData.files.add(MapEntry('avatar', file));
       final response = await dio.post('/users/avatar', data: formData);
 
       if (mounted) {

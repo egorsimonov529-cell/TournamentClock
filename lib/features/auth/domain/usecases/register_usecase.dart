@@ -9,6 +9,7 @@ class RegisterUseCase {
 
   Future<AuthResponse> call({
     required String name,
+    required String nickname,
     required String email,
     required String password,
     required bool acceptedTerms,
@@ -43,6 +44,7 @@ class RegisterUseCase {
 
     return _repository.register(
       name: name.trim(),
+      nickname: nickname.trim(),
       email: email.trim(),
       password: password,
       acceptedTerms: acceptedTerms,

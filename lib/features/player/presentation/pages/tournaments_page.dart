@@ -180,7 +180,9 @@ class TournamentsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final items = ref.watch(tournamentProvider);
+    final allItems = ref.watch(tournamentProvider);
+    // Показываем только активные турниры для регистрации
+    final items = allItems.where((t) => t.status != 'completed' && t.status != 'cancelled').toList();
     final isCompact = MediaQuery.sizeOf(context).width < 420;
 
     return ref.watch(currentAuthUserProvider).when(
@@ -384,6 +386,137 @@ class TournamentsPage extends ConsumerWidget {
                   },
                 ),
               ),
+            if (allItems.any((t) => t.status == 'completed' || t.status == 'cancelled')) ...[
+              const SizedBox(height: 24),
+              const Text(
+                'Завершенные турниры',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 18),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: allItems.where((t) => t.status == 'completed' || t.status == 'cancelled').length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final t = allItems.where((t) => t.status == 'completed' || t.status == 'cancelled').toList()[index];
+                    final registered = t.registeredPlayerIds.contains(user.id);
+                    final confirmed = t.isPlayerConfirmed(user.id);
+                    
+                    return IosCard(
+                      child: Padding(
+                        padding: EdgeInsets.all(isCompact ? 12 : 14),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.emoji_events,
+                                  color: AppColors.accent,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    t.name,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.withValues(alpha: 0.2),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Text(
+                                    'Завершен',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Взнос ₽${t.buyIn.toStringAsFixed(0)} • Игроки ${t.currentPlayers}/${t.maxPlayers}',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(color: Colors.white70),
+                            ),
+                            if (registered && confirmed) ...[
+                              const SizedBox(height: 10),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: AppColors.primary.withValues(alpha: 0.3),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Участвовал',
+                                  style: TextStyle(
+                                    color: AppColors.primary,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ],
+                            const SizedBox(height: 12),
+                            InkWell(
+                              onTap: () => _showTournamentDetails(context, t),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 4),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.visibility,
+                                      size: 16,
+                                      color: AppColors.accent,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    const Text(
+                                      'Посмотреть результаты',
+                                      style: TextStyle(
+                                        color: AppColors.accent,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ],
         ),
       ),

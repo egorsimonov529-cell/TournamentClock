@@ -20,6 +20,7 @@ class RegistrationPage extends ConsumerStatefulWidget {
 
 class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   final _nameController = TextEditingController();
+  final _nicknameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -30,6 +31,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   bool _obscureConfirm = true;
 
   String? _nameError;
+  String? _nicknameError;
   String? _emailError;
   String? _phoneError;
   String? _passwordError;
@@ -38,6 +40,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   @override
   void dispose() {
     _nameController.dispose();
+    _nicknameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
     _passwordController.dispose();
@@ -48,6 +51,16 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   String? _validateName(String? value) {
     if (value == null || value.isEmpty) return 'Введите имя';
     if (value.length < 2) return 'Минимум 2 символа';
+    return null;
+  }
+
+  String? _validateNickname(String? value) {
+    if (value == null || value.isEmpty) return 'Введите никнейм';
+    if (value.length < 3) return 'Минимум 3 символа';
+    if (value.length > 20) return 'Максимум 20 символов';
+    if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(value)) {
+      return 'Только буквы, цифры и _';
+    }
     return null;
   }
 
@@ -75,12 +88,14 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   bool _validateForm() {
     setState(() {
       _nameError = _validateName(_nameController.text);
+      _nicknameError = _validateNickname(_nicknameController.text);
       _emailError = _validateEmail(_emailController.text);
       _phoneError = _validatePhone(_phoneController.text);
       _passwordError = _validatePassword(_passwordController.text);
       _confirmError = _validateConfirm(_passwordConfirmController.text);
     });
     return _nameError == null &&
+        _nicknameError == null &&
         _emailError == null &&
         _phoneError == null &&
         _passwordError == null &&
@@ -94,6 +109,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
         .read(authStateProvider.notifier)
         .register(
           name: _nameController.text.trim(),
+          nickname: _nicknameController.text.trim(),
           email: _emailController.text.trim(),
           password: _passwordController.text,
           acceptedTerms: _agreeTerms,
@@ -177,6 +193,15 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
               hintText: "Иван Петров",
             ),
             if (_nameError != null) _buildError(_nameError!),
+
+            const SizedBox(height: 16),
+
+            AppTextField(
+              label: "Никнейм",
+              controller: _nicknameController,
+              hintText: "PokerPro_2024",
+            ),
+            if (_nicknameError != null) _buildError(_nicknameError!),
 
             const SizedBox(height: 16),
 

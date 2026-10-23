@@ -35,7 +35,21 @@ router.get('/', async (req, res) => {
       ORDER BY t.start_date DESC
     `);
 
-    res.json(result.rows.map(sanitizeTournament));
+    const allTournaments = result.rows.map(sanitizeTournament);
+    
+    // Разделяем на активные и завершенные
+    const activeTournaments = allTournaments.filter(t => 
+      t.status !== 'completed' && t.status !== 'cancelled'
+    );
+    
+    const completedTournaments = allTournaments.filter(t => 
+      t.status === 'completed' || t.status === 'cancelled'
+    );
+
+    res.json({
+      activeTournaments,
+      completedTournaments
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to fetch tournaments' });

@@ -9,8 +9,15 @@ const router = express.Router();
 
 // Настройка хранилища для multer
 const uploadsDir = path.join(__dirname, '..', '..', 'uploads', 'avatars');
+
+// Создаём папку если не существует
 if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+  try {
+    fs.mkdirSync(uploadsDir, { recursive: true, mode: 0o755 });
+    console.log(`Created uploads directory: ${uploadsDir}`);
+  } catch (error) {
+    console.error('Failed to create uploads directory:', error);
+  }
 }
 
 const storage = multer.diskStorage({

@@ -6,6 +6,7 @@ class PlayerProfile {
   final String email;
   final String? firstName;
   final String? lastName;
+  final String? nickname;
   final String? avatarUrl;
   final String role;
   final int level;
@@ -31,6 +32,7 @@ class PlayerProfile {
     required this.email,
     this.firstName,
     this.lastName,
+    this.nickname,
     this.avatarUrl,
     required this.role,
     required this.level,
@@ -59,6 +61,7 @@ class PlayerProfile {
       email: json['email'] as String? ?? '',
       firstName: (json['first_name'] ?? json['firstName']) as String?,
       lastName: (json['last_name'] ?? json['lastName']) as String?,
+      nickname: (json['nickname'] ?? json['nickName']) as String?,
       avatarUrl: (json['avatar_url'] ?? json['avatarUrl']) as String?,
       role: json['role'] as String? ?? 'player',
       level: (json['level'] as num?)?.toInt() ?? 1,
@@ -97,6 +100,7 @@ class PlayerProfile {
       email: json['email'] as String? ?? authUser.email,
       firstName: json['firstName'] as String? ?? json['first_name'] as String? ?? authUser.firstName,
       lastName: json['lastName'] as String? ?? json['last_name'] as String? ?? authUser.lastName,
+      nickname: json['nickname'] as String? ?? json['nickName'] as String? ?? authUser.nickname,
       avatarUrl: json['avatarUrl'] as String? ?? json['avatar_url'] as String? ?? authUser.avatarUrl,
       role: json['role'] as String? ?? 'player',
       level: (json['level'] as num?)?.toInt() ?? 1,

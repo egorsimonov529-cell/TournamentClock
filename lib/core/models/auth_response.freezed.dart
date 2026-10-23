@@ -75,22 +75,26 @@ class _$AuthResponseCopyWithImpl<$Res, $Val extends AuthResponse>
   }) {
     return _then(
       _value.copyWith(
-            accessToken: null == accessToken
-                ? _value.accessToken
-                : accessToken // ignore: cast_nullable_to_non_nullable
-                      as String,
-            refreshToken: null == refreshToken
-                ? _value.refreshToken
-                : refreshToken // ignore: cast_nullable_to_non_nullable
-                      as String,
-            user: null == user
-                ? _value.user
-                : user // ignore: cast_nullable_to_non_nullable
-                      as User,
-            requiresMfa: null == requiresMfa
-                ? _value.requiresMfa
-                : requiresMfa // ignore: cast_nullable_to_non_nullable
-                      as bool,
+            accessToken:
+                null == accessToken
+                    ? _value.accessToken
+                    : accessToken // ignore: cast_nullable_to_non_nullable
+                        as String,
+            refreshToken:
+                null == refreshToken
+                    ? _value.refreshToken
+                    : refreshToken // ignore: cast_nullable_to_non_nullable
+                        as String,
+            user:
+                null == user
+                    ? _value.user
+                    : user // ignore: cast_nullable_to_non_nullable
+                        as User,
+            requiresMfa:
+                null == requiresMfa
+                    ? _value.requiresMfa
+                    : requiresMfa // ignore: cast_nullable_to_non_nullable
+                        as bool,
           )
           as $Val,
     );
@@ -148,22 +152,26 @@ class __$$AuthResponseImplCopyWithImpl<$Res>
   }) {
     return _then(
       _$AuthResponseImpl(
-        accessToken: null == accessToken
-            ? _value.accessToken
-            : accessToken // ignore: cast_nullable_to_non_nullable
-                  as String,
-        refreshToken: null == refreshToken
-            ? _value.refreshToken
-            : refreshToken // ignore: cast_nullable_to_non_nullable
-                  as String,
-        user: null == user
-            ? _value.user
-            : user // ignore: cast_nullable_to_non_nullable
-                  as User,
-        requiresMfa: null == requiresMfa
-            ? _value.requiresMfa
-            : requiresMfa // ignore: cast_nullable_to_non_nullable
-                  as bool,
+        accessToken:
+            null == accessToken
+                ? _value.accessToken
+                : accessToken // ignore: cast_nullable_to_non_nullable
+                    as String,
+        refreshToken:
+            null == refreshToken
+                ? _value.refreshToken
+                : refreshToken // ignore: cast_nullable_to_non_nullable
+                    as String,
+        user:
+            null == user
+                ? _value.user
+                : user // ignore: cast_nullable_to_non_nullable
+                    as User,
+        requiresMfa:
+            null == requiresMfa
+                ? _value.requiresMfa
+                : requiresMfa // ignore: cast_nullable_to_non_nullable
+                    as bool,
       ),
     );
   }

@@ -11,6 +11,7 @@ abstract class AuthRepositoryContract {
 
   Future<AuthResponse> register({
     required String name,
+    required String nickname,
     required String email,
     required String password,
     required bool acceptedTerms,

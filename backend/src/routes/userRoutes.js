@@ -12,6 +12,7 @@ function sanitizeUser(user) {
     role: user.role,
     firstName: user.first_name,
     lastName: user.last_name,
+    nickname: user.nickname,
     avatarUrl: user.avatar_url,
     isActive: user.is_active,
     createdAt: user.created_at,
@@ -69,6 +70,7 @@ router.get('/profile', requireAuth, async (req, res) => {
       role: user.role,
       firstName: user.first_name,
       lastName: user.last_name,
+      nickname: user.nickname,
       avatarUrl: user.avatar_url,
       isActive: user.is_active,
       createdAt: user.created_at,
@@ -90,7 +92,7 @@ router.get('/profile', requireAuth, async (req, res) => {
 router.post('/profile', requireAuth, async (req, res) => {
   try {
     const userId = req.user.sub;
-    const { login, email, firstName, lastName, avatarUrl } = req.body || {};
+    const { login, email, firstName, lastName, nickname, avatarUrl } = req.body || {};
 
     const result = await query(
       `UPDATE users
@@ -98,10 +100,11 @@ router.post('/profile', requireAuth, async (req, res) => {
            email = COALESCE($2, email),
            first_name = COALESCE($3, first_name),
            last_name = COALESCE($4, last_name),
-           avatar_url = COALESCE($5, avatar_url)
-       WHERE id = $6
+           nickname = COALESCE($5, nickname),
+           avatar_url = COALESCE($6, avatar_url)
+       WHERE id = $7
        RETURNING *`,
-      [login, email, firstName, lastName, avatarUrl, userId]
+      [login, email, firstName, lastName, nickname, avatarUrl, userId]
     );
 
     if (!result.rows[0]) {

@@ -143,6 +143,7 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
 
   Future<bool> register({
     required String name,
+    required String nickname,
     required String email,
     required String password,
     required bool acceptedTerms,
@@ -151,6 +152,7 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     try {
       final response = await _registerUseCase(
         name: name,
+        nickname: nickname,
         email: email,
         password: password,
         acceptedTerms: acceptedTerms,

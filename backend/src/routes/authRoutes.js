@@ -80,6 +80,7 @@ router.post('/login', async (req, res) => {
         role: user.role,
         firstName: user.first_name,
         lastName: user.last_name,
+        nickname: user.nickname,
         avatarUrl: user.avatar_url,
         isActive: user.is_active,
         createdAt: user.created_at,
@@ -94,13 +95,14 @@ router.post('/login', async (req, res) => {
 
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password } = req.body || {};
+    const { name, email, password, nickname } = req.body || {};
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'name, email and password are required' });
     }
 
     const normalizedName = String(name).trim();
+    const normalizedNickname = nickname ? String(nickname).trim() : null;
     const normalizedEmail = String(email).trim().toLowerCase();
     const existing = await query(
       `SELECT id, login, email FROM users WHERE lower(email) = lower($1) OR lower(login) = lower($2) LIMIT 1`,
@@ -129,9 +131,9 @@ router.post('/register', async (req, res) => {
     const passwordHash = await hashPassword(password);
     const login = await buildUniqueLogin(normalizedName, normalizedEmail);
     const result = await query(
-      `INSERT INTO users (login, email, password_hash, first_name, role)
-       VALUES ($1, $2, $3, $4, 'player') RETURNING *`,
-      [login, normalizedEmail, passwordHash, normalizedName]
+      `INSERT INTO users (login, email, password_hash, first_name, nickname, role)
+       VALUES ($1, $2, $3, $4, $5, 'player') RETURNING *`,
+      [login, normalizedEmail, passwordHash, normalizedName, normalizedNickname]
     );
 
     const user = result.rows[0];
@@ -148,6 +150,7 @@ router.post('/register', async (req, res) => {
         role: user.role,
         firstName: user.first_name,
         lastName: user.last_name,
+        nickname: user.nickname,
         avatarUrl: user.avatar_url,
         isActive: user.is_active,
         createdAt: user.created_at,
@@ -188,6 +191,7 @@ router.post('/refresh', async (req, res) => {
         role: user.role,
         firstName: user.first_name,
         lastName: user.last_name,
+        nickname: user.nickname,
         avatarUrl: user.avatar_url,
         isActive: user.is_active,
         createdAt: user.created_at,
