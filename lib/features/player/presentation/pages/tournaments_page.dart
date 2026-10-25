@@ -236,7 +236,7 @@ class TournamentsPage extends ConsumerWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Взнос ₽${t.buyIn.toStringAsFixed(0)} • Игроки ${t.currentPlayers}/${t.maxPlayers}',
+                              'Взнос ₽${t.buyIn.toStringAsFixed(0)} • Игроки ${t.currentPlayers}/${t.maxPlayers} • ${_formatDate(t.startDate)}',
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(color: Colors.white70),
@@ -403,8 +403,8 @@ class TournamentsPage extends ConsumerWidget {
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final t = allItems.where((t) => t.status == 'completed' || t.status == 'cancelled').toList()[index];
-                    final registered = t.registeredPlayerIds.contains(user.id);
-                    final confirmed = t.isPlayerConfirmed(user.id);
+                    final registered = user != null && t.registeredPlayerIds.contains(user.id);
+                    final confirmed = user != null && t.isPlayerConfirmed(user.id);
                     
                     return IosCard(
                       child: Padding(
@@ -521,5 +521,16 @@ class TournamentsPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  String _formatDate(DateTime date) {
+    final days = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+    final months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+    final dayName = days[date.weekday % 7];
+    final day = date.day;
+    final month = months[date.month - 1];
+    final hour = date.hour.toString().padLeft(2, '0');
+    final minute = date.minute.toString().padLeft(2, '0');
+    return '$dayName, $day $month в $hour:$minute';
   }
 }

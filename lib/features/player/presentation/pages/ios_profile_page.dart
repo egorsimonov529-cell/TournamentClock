@@ -98,9 +98,9 @@ class _IosProfilePageState extends ConsumerState<IosProfilePage> {
   @override
   Widget build(BuildContext context) {
     final hasAvatar = widget.player.avatarUrl != null && widget.player.avatarUrl!.isNotEmpty;
-    final displayName = widget.player.firstName?.isNotEmpty == true
-      ? widget.player.firstName!
-      : (widget.player.lastName?.isNotEmpty == true ? widget.player.lastName! : widget.player.login);
+    final displayName = widget.player.nickname?.isNotEmpty == true
+      ? widget.player.nickname!
+      : (widget.player.firstName?.isNotEmpty == true ? widget.player.firstName! : (widget.player.lastName?.isNotEmpty == true ? widget.player.lastName! : widget.player.login));
     
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(middle: Text(displayName)),

@@ -70,8 +70,11 @@ class AdminPlayerProfileDialog extends ConsumerWidget {
           data['ratingHistory'] ?? data['rating_history'],
         );
 
-        final fullName = '${user['first_name'] ?? ''} ${user['last_name'] ?? ''}'.trim();
-        final displayName = fullName.isEmpty ? (user['login'] ?? '') : fullName;
+        final nickname = user['nickname'] as String?;
+        final fullName = nickname?.isNotEmpty == true
+            ? nickname
+            : '${user['first_name'] ?? ''} ${user['last_name'] ?? ''}'.trim();
+        final displayName = (fullName ?? '').isEmpty ? (user['login'] ?? '') : (fullName ?? '');
         final rpsPoints = int.tryParse((user['rps_points'] ?? 0).toString()) ?? 0;
         final rpsRankCode = user['rps_rank'] as String? ?? 'FISH';
         final rpsRank = RpsRankX.fromCode(rpsRankCode);

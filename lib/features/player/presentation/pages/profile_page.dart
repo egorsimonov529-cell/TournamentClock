@@ -23,11 +23,12 @@ class ProfilePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final fullName = '${player.firstName ?? ''} ${player.lastName ?? ''}'
-        .trim();
+    final fullName = (player.nickname ?? '').trim().isNotEmpty
+        ? (player.nickname ?? '')
+        : '${player.firstName ?? ''} ${player.lastName ?? ''}'.trim();
     final displayName = fullName.isNotEmpty ? fullName : player.login;
     final avatarUrl = player.avatarUrl?.trim();
-    final fallbackName = player.firstName ?? player.lastName ?? player.login;
+    final fallbackName = player.nickname ?? player.firstName ?? player.lastName ?? player.login;
     final initial = fallbackName.isNotEmpty
         ? fallbackName[0].toUpperCase()
         : '?';

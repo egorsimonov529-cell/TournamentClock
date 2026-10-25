@@ -66,7 +66,7 @@ class _GreetingBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = player.firstName ?? player.lastName ?? player.login;
+    final name = player.nickname ?? player.firstName ?? player.lastName ?? player.login;
     final initials = name.isNotEmpty ? name[0].toUpperCase() : 'W';
     final rating = player.rpsPoints;
     final rankLabel = player.rpsRank.name.toUpperCase();

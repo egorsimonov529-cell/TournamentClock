@@ -528,7 +528,9 @@ class PlayerDashboardPage extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${player.firstName ?? player.login} ${player.lastName ?? ''}'.trim(),
+                player.nickname?.isNotEmpty == true
+                    ? player.nickname!
+                    : '${player.firstName ?? player.login} ${player.lastName ?? ''}'.trim(),
                 style: TextStyle(
                   fontSize: isCompact ? 15 : 18,
                   fontWeight: FontWeight.w600,

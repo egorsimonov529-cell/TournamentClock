@@ -12,7 +12,9 @@ class PlayerHeader extends ConsumerWidget {
 
   const PlayerHeader({super.key, required this.player});
 
-  String _displayName(PlayerProfile p) => p.firstName?.isNotEmpty == true
+  String _displayName(PlayerProfile p) => p.nickname?.isNotEmpty == true
+      ? p.nickname!
+      : p.firstName?.isNotEmpty == true
       ? p.firstName!
       : p.lastName?.isNotEmpty == true
       ? p.lastName!
