@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/models/rps_rank.dart';
@@ -191,6 +192,10 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
           return false;
         }
 
+        print('[Seating] User ID: ${user.id}');
+        print('[Seating] Tournament ID: $tournamentId');
+        print('[Seating] Registered player IDs: ${tournament.registeredPlayerIds}');
+        
         if (!tournament.registeredPlayerIds.contains(user.id)) {
           print('Игрок не зарегистрирован на турнир');
           return false;
@@ -206,13 +211,57 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
       }
     }
 
+    // Если используется fallback-стол, создаём реальный стол на сервере
+    String actualTableId = table.id;
+    if (table.id == 'fallback') {
+      try {
+        print('[Seating] Creating real table for tournament: $tournamentId');
+        final createTableResponse = await ApiService().post('/tables', data: {
+          'name': 'Стол 1',
+          'capacity': 10,
+          'tournament_id': tournamentId,
+        });
+        
+        if (createTableResponse.data is Map<String, dynamic>) {
+          final responseData = createTableResponse.data as Map<String, dynamic>;
+          actualTableId = responseData['id'] as String;
+          print('[Seating] Table created with ID: $actualTableId');
+          
+          // Обновляем локальный стол новым ID
+          state = state.copyWith(selectedTableId: actualTableId);
+        } else {
+          print('[Seating] Error creating table: invalid response');
+          return false;
+        }
+      } catch (e) {
+        print('[Seating] Ошибка при создании стола: $e');
+        return false;
+      }
+    }
+
     // Отправляем на сервер
     try {
-      await ApiService().post(
-        '/tables/${table.id}/seats/$seatNumber/book',
+      print('[Seating] Booking seat $seatNumber at table $actualTableId');
+      final response = await ApiService().post(
+        '/tables/$actualTableId/seats/$seatNumber/book',
       );
-    } catch (e) {
-      print('Ошибка при бронировании места: $e');
+      print('[Seating] Booking response: ${response.data}');
+    } catch (e, stack) {
+      print('[Seating] ERROR booking seat: $e');
+      print('[Seating] Error type: ${e.runtimeType}');
+      print('[Seating] Stack trace: $stack');
+      if (e is DioException) {
+        print('[Seating] DioException type: ${e.type}');
+        print('[Seating] Status code: ${e.response?.statusCode}');
+        print('[Seating] Response data: ${e.response?.data}');
+        print('[Seating] Response headers: ${e.response?.headers}');
+        print('[Seating] Request data: ${e.requestOptions.data}');
+        print('[Seating] Request path: ${e.requestOptions.path}');
+        final errorMessage = e.response?.data?['message'];
+        if (errorMessage != null) {
+          print('[Seating] Server error message: $errorMessage');
+        }
+      }
       return false;
     }
 
@@ -236,11 +285,14 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
     );
     if (seatIndex < 0) return false;
 
+    String actualTableId = table.id;
+    
     // Отправляем на сервер
     try {
-      await ApiService().post(
-        '/tables/${table.id}/seats/$seatNumber/cancel',
+      final response = await ApiService().post(
+        '/tables/$actualTableId/seats/$seatNumber/cancel',
       );
+      print('[Seating] Cancel response: $response');
     } catch (e) {
       print('Ошибка при отмене бронирования: $e');
       return false;

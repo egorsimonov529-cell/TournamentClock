@@ -253,6 +253,22 @@ router.post('/:tableId/seats/:seatNumber/book', requireAuth, async (req, res) =>
     const { tableId, seatNumber } = req.params;
     const userId = req.user.sub;
 
+    console.log('[BOOKING] ===== START BOOKING =====');
+    console.log('[BOOKING] Table ID:', tableId);
+    console.log('[BOOKING] Seat Number:', seatNumber);
+    console.log('[BOOKING] User ID:', userId);
+
+    // Проверяем, что стол существует
+    const tableInfo = await query('SELECT id, name, tournament_id FROM tables WHERE id = $1', [tableId]);
+    console.log('[BOOKING] Table check:', tableInfo.rows.length > 0 ? 'FOUND' : 'NOT FOUND');
+    
+    if (!tableInfo.rows[0]) {
+      console.log('[BOOKING] ERROR: Table not found in database');
+      return res.status(404).json({ message: 'Стол не найден' });
+    }
+    
+    console.log('[BOOKING] Tournament ID from table:', tableInfo.rows[0].tournament_id);
+
     // Проверяем, свободно ли место
     const seatCheck = await query(
       `SELECT ts.*, u.id AS user_id
@@ -262,39 +278,49 @@ router.post('/:tableId/seats/:seatNumber/book', requireAuth, async (req, res) =>
       [tableId, seatNumber]
     );
 
+    console.log('[BOOKING] Seat check:', seatCheck.rows.length > 0 ? 'FOUND' : 'NOT FOUND');
+    
     if (!seatCheck.rows[0]) {
       return res.status(404).json({ message: 'Место не найдено' });
     }
 
     if (seatCheck.rows[0].user_id) {
+      console.log('[BOOKING] Seat already occupied by:', seatCheck.rows[0].user_id);
       return res.status(400).json({ message: 'Место уже занято' });
     }
 
     // Проверяем, зарегистрирован ли игрок на турнир
-    const tableInfo = await query('SELECT tournament_id FROM tables WHERE id = $1', [tableId]);
-    if (!tableInfo.rows[0]) {
-      return res.status(404).json({ message: 'Стол не найден' });
-    }
-
     const tournamentPlayer = await query(
-      `SELECT registration_status FROM tournament_players 
-       WHERE tournament_id = $1 AND user_id = $2 
-       AND registration_status IN ('pending', 'confirmed')`,
+      `SELECT registration_status, user_id FROM tournament_players 
+       WHERE tournament_id = $1 AND user_id = $2`,
       [tableInfo.rows[0].tournament_id, userId]
     );
-
+    
+    console.log('[BOOKING] Tournament player found:', tournamentPlayer.rows.length > 0 ? 'YES' : 'NO');
+    if (tournamentPlayer.rows[0]) {
+      console.log('[BOOKING] Registration status:', tournamentPlayer.rows[0].registration_status);
+    }
+    
     if (!tournamentPlayer.rows[0]) {
+      console.log('[BOOKING] ERROR: Player not registered for this tournament');
       return res.status(400).json({ message: 'Вы не зарегистрированы на этот турнир' });
+    }
+    
+    if (tournamentPlayer.rows[0].registration_status !== 'pending' && 
+        tournamentPlayer.rows[0].registration_status !== 'confirmed') {
+      console.log('[BOOKING] ERROR: Registration status is:', tournamentPlayer.rows[0].registration_status);
+      return res.status(400).json({ message: 'Регистрация не активна' });
     }
 
     // Проверяем, нет ли уже игрока за другим столом
     const existingSeat = await query(
-      `SELECT ts.table_id FROM table_seats ts
+      `SELECT ts.table_id, ts.seat_number FROM table_seats ts
        WHERE ts.user_id = $1`,
       [userId]
     );
 
     if (existingSeat.rows[0]) {
+      console.log('[BOOKING] User already has seat at table:', existingSeat.rows[0].table_id, 'seat', existingSeat.rows[0].seat_number);
       return res.status(400).json({ message: 'Вы уже заняли место за другим столом' });
     }
 
@@ -306,6 +332,9 @@ router.post('/:tableId/seats/:seatNumber/book', requireAuth, async (req, res) =>
       [userId, tableId, seatNumber]
     );
 
+    console.log('[BOOKING] SUCCESS: Seat booked');
+    console.log('[BOOKING] ===== END BOOKING =====');
+    
     res.json({ 
       success: true, 
       message: 'Место забронировано',
@@ -314,7 +343,7 @@ router.post('/:tableId/seats/:seatNumber/book', requireAuth, async (req, res) =>
       userId 
     });
   } catch (error) {
-    console.error(error);
+    console.error('[BOOKING] ERROR:', error);
     res.status(500).json({ message: 'Ошибка бронирования' });
   }
 });
