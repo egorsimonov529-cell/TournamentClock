@@ -1,6 +1,7 @@
 const express = require('express');
 const { query } = require('../config/database');
-const { hashPassword, comparePassword, signToken, requireAuth } = require('../utils/auth');
+const { hashPassword, comparePassword, signToken } = require('../utils/auth');
+const { requireAuth } = require('../middleware/authMiddleware');
 const jwt = require('jsonwebtoken');
 
 const router = express.Router();
