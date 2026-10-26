@@ -312,16 +312,17 @@ router.post('/:tableId/seats/:seatNumber/book', requireAuth, async (req, res) =>
       return res.status(400).json({ message: 'Регистрация не активна' });
     }
 
-    // Проверяем, нет ли уже игрока за другим столом
+    // Проверяем, нет ли уже игрока за другим столом в ЭТОМ турнире
     const existingSeat = await query(
       `SELECT ts.table_id, ts.seat_number FROM table_seats ts
-       WHERE ts.user_id = $1`,
-      [userId]
+       JOIN tables t ON t.id = ts.table_id
+       WHERE ts.user_id = $1 AND t.tournament_id = $2`,
+      [userId, tableInfo.rows[0].tournament_id]
     );
 
     if (existingSeat.rows[0]) {
-      console.log('[BOOKING] User already has seat at table:', existingSeat.rows[0].table_id, 'seat', existingSeat.rows[0].seat_number);
-      return res.status(400).json({ message: 'Вы уже заняли место за другим столом' });
+      console.log('[BOOKING] User already has seat in this tournament at table:', existingSeat.rows[0].table_id, 'seat', existingSeat.rows[0].seat_number);
+      return res.status(400).json({ message: 'Вы уже заняли место в этом турнире' });
     }
 
     // Бронируем место
