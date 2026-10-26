@@ -3,12 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tournament_clock/core/constants/app_constants.dart';
 import 'package:tournament_clock/core/services/secure_storage_service.dart';
 import 'package:tournament_clock/core/ui/ios/ios_card.dart';
 import '../../domain/models/player_model.dart';
 import '../../../../core/models/rps_rank.dart';
 import '../../../../core/ui/ios/ios_button.dart';
+import '../../../../core/ui/ios/ios_input.dart';
 import '../../../auth/domain/providers/auth_state_provider.dart';
 
 class IosProfilePage extends ConsumerStatefulWidget {
@@ -40,8 +42,8 @@ class _IosProfilePageState extends ConsumerState<IosProfilePage> {
       final fileName = result.files.single.name;
 
       final dio = Dio(BaseOptions(baseUrl: AppConstants.apiBaseUrl));
-      final token = await SecureStorageService().read('access_token');
-      if (token != null) {
+      final token = await SecureStorageService().read('auth_access_token');
+      if (token != null && token.isNotEmpty) {
         dio.options.headers['Authorization'] = 'Bearer $token';
       }
 
@@ -73,8 +75,8 @@ class _IosProfilePageState extends ConsumerState<IosProfilePage> {
   Future<void> _deleteAvatar() async {
     try {
       final dio = Dio(BaseOptions(baseUrl: AppConstants.apiBaseUrl));
-      final token = await SecureStorageService().read('access_token');
-      if (token != null) {
+      final token = await SecureStorageService().read('auth_access_token');
+      if (token != null && token.isNotEmpty) {
         dio.options.headers['Authorization'] = 'Bearer $token';
       }
 
@@ -182,9 +184,10 @@ class _IosProfilePageState extends ConsumerState<IosProfilePage> {
                     title: const Text('Изменить профиль', style: TextStyle(color: Colors.white)),
                     trailing: const Icon(CupertinoIcons.right_chevron),
                     onTap: () {
-                      // TODO: Navigate to edit profile screen
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Функция в разработке')),
+                      Navigator.of(context).push(
+                        CupertinoPageRoute(
+                          builder: (_) => _IosProfileSettingsPage(player: widget.player),
+                        ),
                       );
                     },
                   ),
@@ -194,9 +197,10 @@ class _IosProfilePageState extends ConsumerState<IosProfilePage> {
                     title: const Text('Изменить пароль', style: TextStyle(color: Colors.white)),
                     trailing: const Icon(CupertinoIcons.right_chevron),
                     onTap: () {
-                      // TODO: Navigate to change password screen
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Функция в разработке')),
+                      Navigator.of(context).push(
+                        CupertinoPageRoute(
+                          builder: (_) => _IosChangePasswordPage(player: widget.player),
+                        ),
                       );
                     },
                   ),
@@ -211,6 +215,299 @@ class _IosProfilePageState extends ConsumerState<IosProfilePage> {
             ),
             const SizedBox(height: 24),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// ===== iOS страница редактирования профиля =====
+class _IosProfileSettingsPage extends ConsumerStatefulWidget {
+  final PlayerProfile player;
+  
+  const _IosProfileSettingsPage({required this.player});
+
+  @override
+  ConsumerState<_IosProfileSettingsPage> createState() => _IosProfileSettingsPageState();
+}
+
+class _IosProfileSettingsPageState extends ConsumerState<_IosProfileSettingsPage> {
+  late final TextEditingController _firstName;
+  late final TextEditingController _lastName;
+  late final TextEditingController _nickname;
+  late final TextEditingController _email;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _firstName = TextEditingController(text: widget.player.firstName ?? '');
+    _lastName = TextEditingController(text: widget.player.lastName ?? '');
+    _nickname = TextEditingController(text: widget.player.nickname ?? '');
+    _email = TextEditingController(text: widget.player.email ?? '');
+  }
+
+  @override
+  void dispose() {
+    _firstName.dispose();
+    _lastName.dispose();
+    _nickname.dispose();
+    _email.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    if (_firstName.text.trim().isEmpty && 
+        _lastName.text.trim().isEmpty && 
+        _nickname.text.trim().isEmpty) {
+      _showMessage('Хотя бы одно поле должно быть заполнено');
+      return;
+    }
+
+    setState(() => _saving = true);
+    
+    try {
+      await ApiService().post('/users/profile', data: {
+        'firstName': _firstName.text.trim(),
+        'lastName': _lastName.text.trim(),
+        'nickname': _nickname.text.trim(),
+      });
+      
+      if (mounted) {
+        _showMessage('Данные сохранены', isSuccess: true);
+        Future.delayed(const Duration(milliseconds: 800), () {
+          if (mounted) Navigator.of(context).pop();
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        _showMessage('Ошибка: $e');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _saving = false);
+      }
+    }
+  }
+
+  void _showMessage(String text, {bool isSuccess = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+        backgroundColor: isSuccess ? const Color(0xFF34C759) : Colors.red,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: const Text('Редактировать профиль'),
+        previousPageTitle: 'Назад',
+        trailing: TextButton(
+          onPressed: _saving ? null : _save,
+          child: _saving
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text(
+                  'Сохранить',
+                  style: TextStyle(color: Color(0xFF007AFF)),
+                ),
+        ),
+      ),
+      child: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              IosCard(
+                child: Column(
+                  children: [
+                    IosInput(
+                      controller: _firstName,
+                      placeholder: 'Имя',
+                      prefixIcon: CupertinoIcons.person,
+                    ),
+                    const SizedBox(height: 12),
+                    IosInput(
+                      controller: _lastName,
+                      placeholder: 'Фамилия',
+                      prefixIcon: CupertinoIcons.person,
+                    ),
+                    const SizedBox(height: 12),
+                    IosInput(
+                      controller: _nickname,
+                      placeholder: 'Никнейм',
+                      prefixIcon: CupertinoIcons.at,
+                    ),
+                    const SizedBox(height: 12),
+                    IosInput(
+                      controller: _email,
+                      placeholder: 'Email',
+                      prefixIcon: CupertinoIcons.mail,
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ===== iOS страница смены пароля =====
+class _IosChangePasswordPage extends ConsumerStatefulWidget {
+  final PlayerProfile player;
+  
+  const _IosChangePasswordPage({required this.player});
+
+  @override
+  ConsumerState<_IosChangePasswordPage> createState() => _IosChangePasswordPageState();
+}
+
+class _IosChangePasswordPageState extends ConsumerState<_IosChangePasswordPage> {
+  final _currentPassword = TextEditingController();
+  final _newPassword = TextEditingController();
+  final _confirmPassword = TextEditingController();
+  bool _saving = false;
+
+  @override
+  void dispose() {
+    _currentPassword.dispose();
+    _newPassword.dispose();
+    _confirmPassword.dispose();
+    super.dispose();
+  }
+
+  Future<void> _changePassword() async {
+    final current = _currentPassword.text.trim();
+    final next = _newPassword.text.trim();
+    final confirm = _confirmPassword.text.trim();
+
+    if (current.isEmpty || next.isEmpty || confirm.isEmpty) {
+      _showMessage('Заполните все поля');
+      return;
+    }
+
+    if (next.length < 6) {
+      _showMessage('Новый пароль должен содержать минимум 6 символов');
+      return;
+    }
+
+    if (current == next) {
+      _showMessage('Новый пароль должен отличаться от текущего');
+      return;
+    }
+
+    if (next != confirm) {
+      _showMessage('Подтверждение пароля не совпадает');
+      return;
+    }
+
+    setState(() => _saving = true);
+    
+    try {
+      await ApiService().post('/auth/change-password', data: {
+        'currentPassword': current,
+        'newPassword': next,
+      });
+      
+      if (mounted) {
+        _showMessage('Пароль изменён', isSuccess: true);
+        _currentPassword.clear();
+        _newPassword.clear();
+        _confirmPassword.clear();
+        Future.delayed(const Duration(milliseconds: 800), () {
+          if (mounted) Navigator.of(context).pop();
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        _showMessage('Ошибка: $e');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _saving = false);
+      }
+    }
+  }
+
+  void _showMessage(String text, {bool isSuccess = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+        backgroundColor: isSuccess ? const Color(0xFF34C759) : Colors.red,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: const Text('Изменить пароль'),
+        previousPageTitle: 'Назад',
+        trailing: TextButton(
+          onPressed: _saving ? null : _changePassword,
+          child: _saving
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text(
+                  'Изменить',
+                  style: TextStyle(color: Color(0xFF007AFF)),
+                ),
+        ),
+      ),
+      child: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              IosCard(
+                child: Column(
+                  children: [
+                    IosInput(
+                      controller: _currentPassword,
+                      placeholder: 'Текущий пароль',
+                      prefixIcon: CupertinoIcons.lock,
+                      obscure: true,
+                    ),
+                    const SizedBox(height: 12),
+                    IosInput(
+                      controller: _newPassword,
+                      placeholder: 'Новый пароль',
+                      prefixIcon: CupertinoIcons.lock_fill,
+                      obscure: true,
+                    ),
+                    const SizedBox(height: 12),
+                    IosInput(
+                      controller: _confirmPassword,
+                      placeholder: 'Подтвердите пароль',
+                      prefixIcon: CupertinoIcons.checkmark_seal,
+                      obscure: true,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Минимум 6 символов',
+                      style: TextStyle(color: Colors.white54, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
     );

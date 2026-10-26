@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/ui/ios/ios_input.dart';
 import '../../../../core/ui/ios/ios_card.dart';
 import '../../../../core/ui/ios/ios_button.dart';
+import '../../../../core/services/api_service.dart';
 import '../../domain/models/player_model.dart';
+import '../../../auth/domain/providers/auth_state_provider.dart';
 // profile_text_field replaced by iOS inputs
 
-class ProfileSettingsPage extends StatefulWidget {
+class ProfileSettingsPage extends ConsumerStatefulWidget {
   final PlayerProfile player;
 
   const ProfileSettingsPage({super.key, required this.player});
 
   @override
-  State<ProfileSettingsPage> createState() => _ProfileSettingsPageState();
+  ConsumerState<ProfileSettingsPage> createState() => _ProfileSettingsPageState();
 }
 
-class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
+class _ProfileSettingsPageState extends ConsumerState<ProfileSettingsPage> {
   final _profileKey = GlobalKey<FormState>();
   final _passwordKey = GlobalKey<FormState>();
   late final TextEditingController _firstName;
@@ -57,10 +60,29 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
   Future<void> _saveProfile() async {
     if (!_profileKey.currentState!.validate()) return;
     setState(() => _savingProfile = true);
-    await Future<void>.delayed(const Duration(milliseconds: 350));
-    if (!mounted) return;
-    setState(() => _savingProfile = false);
-    _message('Данные профиля сохранены');
+    
+    try {
+      await ApiService().post('/users/profile', data: {
+        'firstName': _firstName.text.trim(),
+        'lastName': _lastName.text.trim(),
+        'nickname': _nickname.text.trim(),
+      });
+      
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Данные профиля сохранены'), backgroundColor: AppColors.primary),
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ошибка: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _savingProfile = false);
+      }
+    }
   }
 
   Future<void> _changePassword() async {
@@ -88,15 +110,33 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
       return;
     }
 
-    if (!_passwordKey.currentState!.validate()) return;
     setState(() => _savingPassword = true);
-    await Future<void>.delayed(const Duration(milliseconds: 350));
-    if (!mounted) return;
-    _currentPassword.clear();
-    _newPassword.clear();
-    _confirmPassword.clear();
-    setState(() => _savingPassword = false);
-    _message('Пароль изменён');
+    
+    try {
+      await ApiService().post('/auth/change-password', data: {
+        'currentPassword': current,
+        'newPassword': next,
+      });
+      
+      if (mounted) {
+        _currentPassword.clear();
+        _newPassword.clear();
+        _confirmPassword.clear();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Пароль изменён'), backgroundColor: AppColors.primary),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ошибка: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _savingPassword = false);
+      }
+    }
   }
 
   void _message(String text) {

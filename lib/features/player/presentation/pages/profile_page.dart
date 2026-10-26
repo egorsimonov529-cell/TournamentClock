@@ -154,11 +154,11 @@ class ProfilePage extends ConsumerWidget {
                 context,
                 CupertinoIcons.lock,
                 'Безопасность',
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Раздел безопасности скоро будет доступен')),
-                  );
-                },
+                onTap: () => Navigator.of(context).push(
+                  CupertinoPageRoute(
+                    builder: (_) => ProfileSettingsPage(player: player),
+                  ),
+                ),
               ),
               const SizedBox(height: 12),
               Padding(

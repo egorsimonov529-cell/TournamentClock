@@ -7,8 +7,19 @@ class IosInput extends StatelessWidget {
   final String? label; // alias for placeholder for compatibility
   final bool obscure;
   final int? maxLines;
+  final IconData? prefixIcon;
+  final TextInputType? keyboardType;
 
-  const IosInput({super.key, this.controller, this.placeholder, this.label, this.obscure = false, this.maxLines});
+  const IosInput({
+    super.key,
+    this.controller,
+    this.placeholder,
+    this.label,
+    this.obscure = false,
+    this.maxLines,
+    this.prefixIcon,
+    this.keyboardType,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +28,13 @@ class IosInput extends StatelessWidget {
       placeholder: placeholder ?? label,
       obscureText: obscure,
       maxLines: maxLines ?? 1,
+      keyboardType: keyboardType,
+      prefix: prefixIcon != null
+          ? Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Icon(prefixIcon, size: 18, color: Colors.white54),
+            )
+          : null,
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
       decoration: BoxDecoration(
         color: const Color(0xFF111418),

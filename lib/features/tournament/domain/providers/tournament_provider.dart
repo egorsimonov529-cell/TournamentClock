@@ -83,10 +83,14 @@ class TournamentNotifier extends StateNotifier<List<Tournament>> {
       final activeList = (data['activeTournaments'] as List<dynamic>? ?? []);
       final completedList = (data['completedTournaments'] as List<dynamic>? ?? []);
       
-      final allTournaments = [
-        ...activeList.map((item) => Tournament.fromJson(item as Map<String, dynamic>)),
-        ...completedList.map((item) => Tournament.fromJson(item as Map<String, dynamic>)),
-      ];
+      print('[TournamentProvider] Raw response: active=${activeList.length}, completed=${completedList.length}');
+      
+      final allTournaments = <Tournament>[];
+      for (final item in [...activeList, ...completedList]) {
+        final tournament = Tournament.fromJson(item as Map<String, dynamic>);
+        print('[TournamentProvider] Tournament ${tournament.id} (${tournament.name}): registered_players=${tournament.registeredPlayerIds}');
+        allTournaments.add(tournament);
+      }
       
       state = allTournaments;
     } catch (_) {

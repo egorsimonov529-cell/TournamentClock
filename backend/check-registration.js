@@ -13,46 +13,28 @@ async function checkRegistration() {
       'SELECT id, login, nickname FROM users WHERE id = $1',
       [userId]
     );
-    console.log('User:', userResult.rows[0] || 'NOT FOUND');
+    console.log('1. User:', userResult.rows[0] || 'NOT FOUND');
 
     // Check tournament
     const tournamentResult = await query(
       'SELECT id, name FROM tournaments WHERE id = $1',
       [tournamentId]
     );
-    console.log('Tournament:', tournamentResult.rows[0] || 'NOT FOUND');
+    console.log('2. Tournament:', tournamentResult.rows[0] || 'NOT FOUND');
 
-    // Check registration
-    const registrationResult = await query(
-      `SELECT tp.user_id, u.login, u.nickname, t.name, tp.registration_status, tp.registered_at 
-       FROM tournament_players tp 
-       JOIN users u ON u.id = tp.user_id 
-       JOIN tournaments t ON t.id = tp.tournament_id 
-       WHERE tp.user_id = $1`,
-      [userId]
-    );
-    console.log('\nAll registrations for user:');
-    if (registrationResult.rows.length === 0) {
-      console.log('  NO REGISTRATIONS FOUND!');
-    } else {
-      for (const row of registrationResult.rows) {
-        console.log(`  Tournament: ${row.name}`);
-        console.log(`    Status: ${row.registration_status}`);
-        console.log(`    Registered: ${row.registered_at}`);
-      }
-    }
-
-    // Check specific tournament registration
+    // Check registration for this tournament
     const specificReg = await query(
-      `SELECT registration_status FROM tournament_players 
+      `SELECT registration_status, user_id, registered_at 
+       FROM tournament_players 
        WHERE tournament_id = $1 AND user_id = $2`,
       [tournamentId, userId]
     );
-    console.log('\nRegistration for tournament', tournamentId);
+    console.log('\n3. Registration for tournament', tournamentId);
     if (specificReg.rows.length === 0) {
-      console.log('  NOT REGISTERED!');
+      console.log('   ❌ NOT REGISTERED!');
     } else {
-      console.log('  Status:', specificReg.rows[0].registration_status);
+      console.log('   ✅ Status:', specificReg.rows[0].registration_status);
+      console.log('   Registered:', specificReg.rows[0].registered_at);
     }
 
     // Check table
@@ -60,19 +42,19 @@ async function checkRegistration() {
       'SELECT id, name, tournament_id FROM tables WHERE id = $1',
       [tableId]
     );
-    console.log('\nTable:', tableResult.rows[0] || 'NOT FOUND');
+    console.log('\n4. Table:', tableResult.rows[0] || 'NOT FOUND');
 
     // Check all tables for this tournament
     const tablesResult = await query(
       'SELECT id, name, tournament_id FROM tables WHERE tournament_id = $1',
       [tournamentId]
     );
-    console.log('\nAll tables for tournament', tournamentId);
+    console.log('\n5. All tables for tournament', tournamentId);
     if (tablesResult.rows.length === 0) {
-      console.log('  NO TABLES FOUND!');
+      console.log('   ❌ NO TABLES FOUND!');
     } else {
       for (const table of tablesResult.rows) {
-        console.log(`  Table: ${table.name} (ID: ${table.id})`);
+        console.log(`   ✅ Table: ${table.name} (ID: ${table.id})`);
       }
     }
 
@@ -84,12 +66,13 @@ async function checkRegistration() {
        WHERE ts.table_id = $1`,
       [tableId]
     );
-    console.log('\nSeats for table', tableId);
+    console.log('\n6. Seats for table', tableId);
     if (seatsResult.rows.length === 0) {
-      console.log('  NO SEATS FOUND!');
+      console.log('   ❌ NO SEATS FOUND!');
     } else {
       for (const seat of seatsResult.rows) {
-        console.log(`  Seat ${seat.seat_number}: ${seat.user_id || 'FREE'} (${seat.login || 'empty'})`);
+        const status = seat.user_id ? `🔴 OCCUPIED by ${seat.login}` : '🟢 FREE';
+        console.log(`   Seat ${seat.seat_number}: ${status}`);
       }
     }
 
@@ -101,17 +84,40 @@ async function checkRegistration() {
        WHERE ts.user_id = $1`,
       [userId]
     );
-    console.log('\nCurrent seat for user:');
+    console.log('\n7. Current seat for user:');
     if (userSeat.rows.length === 0) {
-      console.log('  NO SEAT ASSIGNED');
+      console.log('   ✅ NO SEAT ASSIGNED (good for booking)');
     } else {
+      console.log('   ⚠️  USER HAS SEAT:');
       for (const seat of userSeat.rows) {
-        console.log(`  Table: ${seat.table_name}, Table ID: ${seat.table_id}, Seat: ${seat.seat_number}`);
+        console.log(`      Table: ${seat.table_name} (ID: ${seat.table_id}), Seat: ${seat.seat_number}`);
       }
     }
 
+    // Check ALL registrations for this user
+    const allRegs = await query(
+      `SELECT tp.user_id, u.login, t.name as tournament_name, tp.registration_status, tp.registered_at 
+       FROM tournament_players tp 
+       JOIN users u ON u.id = tp.user_id 
+       JOIN tournaments t ON t.id = tp.tournament_id 
+       WHERE tp.user_id = $1
+       ORDER BY tp.registered_at DESC`,
+      [userId]
+    );
+    console.log('\n8. ALL registrations for user:');
+    if (allRegs.rows.length === 0) {
+      console.log('   ❌ NO REGISTRATIONS FOUND!');
+    } else {
+      for (const reg of allRegs.rows) {
+        const statusIcon = (reg.registration_status === 'pending' || reg.registration_status === 'confirmed') ? '✅' : '⚠️';
+        console.log(`   ${statusIcon} ${reg.tournament_name}: ${reg.registration_status}`);
+      }
+    }
+
+    console.log('\n=== CHECK COMPLETE ===');
+
   } catch (error) {
-    console.error('ERROR:', error);
+    console.error('❌ ERROR:', error);
   } finally {
     process.exit(0);
   }

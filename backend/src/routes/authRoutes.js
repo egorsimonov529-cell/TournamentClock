@@ -207,4 +207,51 @@ router.post('/logout', (req, res) => {
   res.json({ ok: true });
 });
 
+// POST /api/v1/auth/change-password - Change password
+router.post('/change-password', requireAuth, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body || {};
+    const userId = req.user.sub;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Текущий и новый пароль обязательны' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'Новый пароль должен содержать минимум 6 символов' });
+    }
+
+    // Получаем пользователя
+    const userResult = await query(
+      `SELECT * FROM users WHERE id = $1`,
+      [userId]
+    );
+
+    const user = userResult.rows[0];
+    if (!user) {
+      return res.status(404).json({ message: 'Пользователь не найден' });
+    }
+
+    // Проверяем текущий пароль
+    const isValid = await comparePassword(currentPassword, user.password_hash);
+    if (!isValid) {
+      return res.status(401).json({ message: 'Неверный текущий пароль' });
+    }
+
+    // Хэшируем новый пароль
+    const newPasswordHash = await hashPassword(newPassword);
+
+    // Обновляем пароль
+    await query(
+      `UPDATE users SET password_hash = $1 WHERE id = $2`,
+      [newPasswordHash, userId]
+    );
+
+    res.json({ message: 'Пароль успешно изменён' });
+  } catch (error) {
+    console.error('Ошибка смены пароля:', error);
+    res.status(500).json({ message: 'Ошибка при смене пароля' });
+  }
+});
+
 module.exports = router;

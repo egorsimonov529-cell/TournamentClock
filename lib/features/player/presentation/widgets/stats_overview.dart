@@ -116,29 +116,170 @@ class StatsOverview extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            next == null
-                ? 'Максимальный ранг достигнут'
-                : 'До ранга ${next.label}: $remaining RPS',
-            style: const TextStyle(
-              color: AppColors.white,
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
-          ),
-          const SizedBox(height: 8),
-          TextButton.icon(
-            onPressed: () => showDialog(
-              context: context,
-              builder: (dialogContext) => _buildRanksDialog(dialogContext),
-            ),
-            icon: const Icon(Icons.grid_view, size: 16),
-            label: const Text('Все ранги'),
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.accent,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              backgroundColor: AppColors.accent.withValues(alpha: 0.1),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  next == null
+                      ? 'Максимальный ранг достигнут'
+                      : 'До ранга ${next.label}: $remaining RPS',
+                  style: const TextStyle(
+                    color: AppColors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () => showDialog(
+                  context: context,
+                  builder: (dialogContext) => AlertDialog(
+                    backgroundColor: const Color(0xFF1D232C),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    title: const Text(
+                      'Система рангов RPS',
+                      style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold),
+                    ),
+                    content: SizedBox(
+                      width: 400,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Накопляй RPS за участие в турнирах и поднимайся по лестнице рангов!',
+                            style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                          ),
+                          const SizedBox(height: 16),
+                          ...RpsRank.values.map((rank) {
+                            final isCurrent = player.rpsRank == rank;
+                            final isUnlocked = player.rpsPoints >= rank.baseScore;
+                            final nextRank = RpsRank.values[rank.index + 1];
+                            
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 8),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: isCurrent
+                                    ? AppColors.primary.withValues(alpha: 0.2)
+                                    : isUnlocked
+                                        ? AppColors.gold.withValues(alpha: 0.1)
+                                        : AppColors.card,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isCurrent
+                                      ? AppColors.primary
+                                      : isUnlocked
+                                          ? AppColors.gold.withValues(alpha: 0.4)
+                                          : AppColors.border.withValues(alpha: 0.2),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    isCurrent
+                                        ? Icons.emoji_events
+                                        : isUnlocked
+                                            ? Icons.check_circle
+                                            : Icons.lock,
+                                    color: isCurrent
+                                        ? AppColors.primary
+                                        : isUnlocked
+                                            ? AppColors.gold
+                                            : AppColors.textSecondary,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              rank.label,
+                                              style: TextStyle(
+                                                color: AppColors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                            if (isCurrent) ...[
+                                              const SizedBox(width: 8),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(
+                                                  horizontal: 8,
+                                                  vertical: 2,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.primary,
+                                                  borderRadius: BorderRadius.circular(6),
+                                                ),
+                                                child: const Text(
+                                                  'ТЫ',
+                                                  style: TextStyle(
+                                                    color: AppColors.white,
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ],
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          '${rank.baseScore} RPS',
+                                          style: TextStyle(
+                                            color: AppColors.textSecondary,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  if (nextRank != null)
+                                    Text(
+                                      '${nextRank.baseScore - rank.baseScore} RPS',
+                                      style: TextStyle(
+                                        color: AppColors.accent,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(dialogContext),
+                        child: const Text('Закрыть', style: TextStyle(color: AppColors.accent)),
+                      ),
+                    ],
+                  ),
+                ),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  minimumSize: const Size(0, 0),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: const Text(
+                  'Все ранги',
+                  style: TextStyle(
+                    color: AppColors.accent,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 12),
           Container(
@@ -167,137 +308,6 @@ class StatsOverview extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildRanksDialog(BuildContext dialogContext) {
-    return AlertDialog(
-      backgroundColor: const Color(0xFF1D232C),
-      title: const Text(
-        'Система рангов RPS',
-        style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold),
-      ),
-      content: SizedBox(
-        width: 400,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Накопляй RPS за участие в турнирах и поднимайся по лестнице рангов!',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
-            ),
-            const SizedBox(height: 16),
-            ...RpsRank.values.map((rank) {
-              final isCurrent = player.rpsRank == rank;
-              final isUnlocked = player.rpsPoints >= rank.baseScore;
-              final nextRank = RpsRank.values[rank.index + 1];
-              
-              return Container(
-                margin: const EdgeInsets.only(bottom: 8),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: isCurrent
-                      ? AppColors.primary.withValues(alpha: 0.2)
-                      : isUnlocked
-                          ? AppColors.gold.withValues(alpha: 0.1)
-                          : AppColors.card,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isCurrent
-                        ? AppColors.primary
-                        : isUnlocked
-                            ? AppColors.gold.withValues(alpha: 0.4)
-                            : AppColors.border.withValues(alpha: 0.2),
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      isCurrent
-                          ? Icons.emoji_events
-                          : isUnlocked
-                              ? Icons.check_circle
-                              : Icons.lock,
-                      color: isCurrent
-                          ? AppColors.primary
-                          : isUnlocked
-                              ? AppColors.gold
-                              : AppColors.textSecondary,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                rank.label,
-                                style: TextStyle(
-                                  color: AppColors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              if (isCurrent) ...[
-                                const SizedBox(width: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primary,
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: const Text(
-                                    'ТЫ',
-                                    style: TextStyle(
-                                      color: AppColors.white,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${rank.baseScore} RPS',
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (nextRank != null)
-                      Text(
-                        '${nextRank.baseScore - rank.baseScore} RPS',
-                        style: TextStyle(
-                          color: AppColors.accent,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                  ],
-                ),
-              );
-            }),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(dialogContext),
-          child: const Text('Закрыть', style: TextStyle(color: AppColors.accent)),
-        ),
-      ],
     );
   }
 
