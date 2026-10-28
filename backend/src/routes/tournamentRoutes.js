@@ -234,6 +234,27 @@ router.delete('/:id/players/:playerId', async (req, res) => {
   }
 });
 
+// GET /:id/registered-players — получить зарегистрированных игроков турнира
+router.get('/:id/registered-players', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await query(
+      `SELECT u.id, u.login, u.name, u.nickname
+       FROM tournament_players tp
+       JOIN users u ON u.id = tp.user_id
+       WHERE tp.tournament_id = $1
+       ORDER BY tp.created_at ASC`,
+      [id]
+    );
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to fetch registered players' });
+  }
+});
+
 // PATCH /:id/players/:playerId/confirm — подтвердить игрока (админ)
 router.patch('/:id/players/:playerId/confirm', requireAuth, requireAdmin, async (req, res) => {
   try {
