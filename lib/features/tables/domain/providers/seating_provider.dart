@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/models/rps_rank.dart';
 import '../../../../core/services/api_service.dart';
+import '../../../../core/services/seating_websocket_service.dart';
 import '../../../auth/domain/providers/auth_state_provider.dart';
 import '../../../tournament/domain/providers/tournament_provider.dart';
 
@@ -19,13 +22,65 @@ final seatingInitializedProvider = StateProvider<bool>((ref) => false);
 class SeatingNotifier extends StateNotifier<SeatingState> {
   final String tournamentId;
   final Ref? ref;
-  
+  final Map<String, bool> _lockedSeats = {}; // "tableId-seatNumber" -> locked
+
   SeatingNotifier({required this.tournamentId, this.ref, SeatingState? initialState})
     : super(initialState ?? _initialState()) {
     if (initialState == null) {
       loadFromBackend();
+      // Подписываемся на WebSocket события
+      _subscribeToWebSocket();
     }
   }
+
+  void _subscribeToWebSocket() {
+    try {
+      final wsService = ref!.read(seatingWebSocketProvider);
+      wsService.joinTournament(tournamentId);
+      // Регистрируем callback для real-time обновления
+      wsService.onSeatingUpdate = () {
+        print('[Seating] WebSocket update received, refreshing...');
+        refresh();
+      };
+      print('[Seating] Subscribed to WebSocket for tournament: $tournamentId');
+    } catch (e) {
+      print('[Seating] WebSocket subscription failed: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    // Отписываемся от WebSocket
+    try {
+      final wsService = ref!.read(seatingWebSocketProvider);
+      wsService.leaveTournament(tournamentId);
+      // Убираем callback
+      wsService.onSeatingUpdate = null;
+    } catch (e) {
+      // Ignore
+    }
+    super.dispose();
+  }
+
+  void _lockSeat(String tableId, int seatNumber) {
+    _lockedSeats['$tableId-$seatNumber'] = true;
+  }
+
+  void _unlockSeat(String tableId, int seatNumber) {
+    _lockedSeats.remove('$tableId-$seatNumber');
+  }
+
+  bool _isSeatLocked(String tableId, int seatNumber) {
+    return _lockedSeats.containsKey('$tableId-$seatNumber');
+  }
+
+  /// Проверка, заблокировано ли место (для UI)
+  bool isSeatLocked(String tableId, int seatNumber) {
+    return _isSeatLocked(tableId, seatNumber);
+  }
+
+  /// Получение всех заблокированных мест
+  Set<String> get lockedSeatsKeys => _lockedSeats.keys.toSet();
 
   static SeatingState _initialState() {
     final players = <Player>[];
@@ -72,7 +127,9 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
               final rank = rankCode != null ? RpsRankX.fromCode(rankCode) : RpsRank.fish;
               player = Player(
                 id: playerData['id'] as String,
-                name: playerData['name'] as String,
+                login: playerData['login'] as String? ?? playerData['name'] as String? ?? 'Игрок',
+                nickname: playerData['nickname'] as String?,
+                name: playerData['name'] as String?,
                 rpsRank: rank,
                 skillScore: (playerData['skillScore'] as num?)?.toInt() ?? rank.baseScore,
               );
@@ -126,37 +183,87 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
       final registeredPlayerIds = tournament.registeredPlayerIds.toSet();
       
       if (registeredPlayerIds.isEmpty) {
+        print('[Seating] No registered players for tournament $tournamentId');
         state = state.copyWith(unseatedPlayers: []);
         return;
       }
 
-      // Загружаем всех игроков
-      final response = await ApiService().get('/players');
-      final allPlayersData = response.data as List<dynamic>? ?? const [];
+      print('[Seating] Registered players: ${registeredPlayerIds.length}');
 
-      // Фильтруем только зарегистрированных в турнире
-      final seatedIds = state.tables
-          .expand((table) => table.seats)
-          .where((seat) => seat.player != null)
-          .map((seat) => seat.player!.id)
-          .toSet();
+      // Загружаем зарегистрированных игроков турнира напрямую с бэкенда
+      final response = await ApiService().get(
+        '/tournaments/$tournamentId/registered-players',
+      );
 
-      final tournamentPlayers = allPlayersData
-          .map((item) => item as Map<String, dynamic>)
-          .where((item) => registeredPlayerIds.contains(item['id']))
-          .where((item) => !seatedIds.contains(item['id']))
-          .map(
-            (item) => Player(
-              id: item['id'] as String,
-              name: item['name'] as String? ?? item['login'] as String? ?? 'Игрок',
-            ),
-          )
-          .toList();
+      List<Player> tournamentPlayers = [];
+      
+      if (response.data is List) {
+        final playersData = response.data as List<dynamic>;
+        
+        // Получаем уже seated IDs
+        final seatedIds = state.tables
+            .expand((table) => table.seats)
+            .where((seat) => seat.player != null)
+            .map((seat) => seat.player!.id)
+            .toSet();
 
+        tournamentPlayers = playersData
+            .map((item) => item as Map<String, dynamic>)
+            .where((item) => !seatedIds.contains(item['id']))
+            .map(
+              (item) => Player(
+                id: item['id'] as String,
+                login: item['login'] as String? ?? item['name'] as String? ?? 'Игрок',
+                name: item['name'] as String?,
+              ),
+            )
+            .toList();
+      }
+
+      print('[Seating] Loaded ${tournamentPlayers.length} unseated players');
       state = state.copyWith(unseatedPlayers: tournamentPlayers);
-    } catch (e) {
-      print('Ошибка загрузки игроков турнира: $e');
-      state = state.copyWith(unseatedPlayers: []);
+    } catch (e, stackTrace) {
+      print('[Seating] Error loading tournament players: $e');
+      print('[Seating] Stack trace: $stackTrace');
+      
+      // Fallback: пробуем загрузить всех игроков и фильтруем локально
+      try {
+        final response = await ApiService().get('/players');
+        final allPlayersData = response.data as List<dynamic>? ?? const [];
+        
+        final tournaments = ref!.read(tournamentProvider);
+        final tournament = tournaments.firstWhere(
+          (t) => t.id == tournamentId,
+          orElse: () => throw Exception('Турнир не найден'),
+        );
+        
+        final registeredPlayerIds = tournament.registeredPlayerIds.toSet();
+        
+        final seatedIds = state.tables
+            .expand((table) => table.seats)
+            .where((seat) => seat.player != null)
+            .map((seat) => seat.player!.id)
+            .toSet();
+
+        final tournamentPlayers = allPlayersData
+            .map((item) => item as Map<String, dynamic>)
+            .where((item) => registeredPlayerIds.contains(item['id']))
+            .where((item) => !seatedIds.contains(item['id']))
+            .map(
+              (item) => Player(
+                id: item['id'] as String,
+                login: item['login'] as String? ?? item['name'] as String? ?? 'Игрок',
+                name: item['name'] as String?,
+              ),
+            )
+            .toList();
+
+        print('[Seating] Fallback loaded ${tournamentPlayers.length} players');
+        state = state.copyWith(unseatedPlayers: tournamentPlayers);
+      } catch (fallbackError) {
+        print('[Seating] Fallback also failed: $fallbackError');
+        state = state.copyWith(unseatedPlayers: []);
+      }
     }
   }
 
@@ -167,6 +274,7 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
   }
 
   /// Бронирование места игроком (player-facing)
+  /// С seat locking + optimistic update + rollback on failure
   Future<bool> bookSeat(int seatNumber) async {
     final table = state.selectedTable;
     if (table == null) return false;
@@ -175,6 +283,58 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
       (seat) => seat.number == seatNumber && seat.status == SeatStatus.free,
     );
     if (seatIndex < 0) return false;
+
+    final actualTableId = table.id == 'fallback'
+        ? (state.tables.firstOrNull?.id ?? table.id)
+        : table.id;
+
+    // Lock seat to prevent double-clicks
+    _lockSeat(actualTableId, seatNumber);
+
+    // Save previous state for rollback
+    final previousTables = state.tables;
+    final previousSelectedTableId = state.selectedTableId;
+
+    // Если используется fallback-стол, используем первый доступный стол
+    if (table.id == 'fallback' && state.tables.isNotEmpty) {
+      state = state.copyWith(selectedTableId: actualTableId);
+      print('[Seating] Using existing table: $actualTableId');
+    } else if (table.id == 'fallback') {
+      // Если столов нет — создаём новый
+      try {
+        print('[Seating] Creating real table for tournament: $tournamentId');
+        final createTableResponse = await ApiService().post('/tables', data: {
+          'name': 'Стол 1',
+          'capacity': 10,
+          'tournament_id': tournamentId,
+        });
+        
+        if (createTableResponse.data is Map<String, dynamic>) {
+          final responseData = createTableResponse.data as Map<String, dynamic>;
+          final newId = responseData['id'] as String;
+          final tableName = responseData['name'] as String? ?? 'Стол 1';
+          
+          final newTable = PokerTable(
+            id: newId,
+            name: tableName,
+            seats: List.generate(10, (index) => TableSeat(number: index + 1)),
+          );
+          state = state.copyWith(
+            tables: [...state.tables, newTable],
+            selectedTableId: newId,
+          );
+          print('[Seating] Table created with ID: $newId');
+        } else {
+          print('[Seating] Error creating table: invalid response');
+          _unlockSeat(actualTableId, seatNumber);
+          return false;
+        }
+      } catch (e) {
+        print('[Seating] Ошибка при создании стола: $e');
+        _unlockSeat(actualTableId, seatNumber);
+        return false;
+      }
+    }
 
     // Проверяем, зарегистрирован ли игрок на турнир
     if (ref != null) {
@@ -189,6 +349,7 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
         final user = authState.valueOrNull;
         if (user == null) {
           print('Пользователь не авторизован');
+          _unlockSeat(actualTableId, seatNumber);
           return false;
         }
 
@@ -198,46 +359,34 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
         
         if (!tournament.registeredPlayerIds.contains(user.id)) {
           print('Игрок не зарегистрирован на турнир');
+          _unlockSeat(actualTableId, seatNumber);
           return false;
         }
 
         if (tournament.isPlayerEliminated(user.id)) {
           print('Игрок выбыл из турнира');
+          _unlockSeat(actualTableId, seatNumber);
           return false;
         }
       } catch (e) {
         print('Ошибка проверки регистрации: $e');
+        _unlockSeat(actualTableId, seatNumber);
         return false;
       }
     }
 
-    // Если используется fallback-стол, создаём реальный стол на сервере
-    String actualTableId = table.id;
-    if (table.id == 'fallback') {
-      try {
-        print('[Seating] Creating real table for tournament: $tournamentId');
-        final createTableResponse = await ApiService().post('/tables', data: {
-          'name': 'Стол 1',
-          'capacity': 10,
-          'tournament_id': tournamentId,
-        });
-        
-        if (createTableResponse.data is Map<String, dynamic>) {
-          final responseData = createTableResponse.data as Map<String, dynamic>;
-          actualTableId = responseData['id'] as String;
-          print('[Seating] Table created with ID: $actualTableId');
-          
-          // Обновляем локальный стол новым ID
-          state = state.copyWith(selectedTableId: actualTableId);
-        } else {
-          print('[Seating] Error creating table: invalid response');
-          return false;
-        }
-      } catch (e) {
-        print('[Seating] Ошибка при создании стола: $e');
-        return false;
-      }
-    }
+    // Обновляем локально оптимистично (optimistic update)
+    final updatedTable = state.tables.firstWhere(
+      (t) => t.id == actualTableId,
+      orElse: () => table,
+    );
+    final seats = [...updatedTable.seats];
+    seats[seatIndex] = seats[seatIndex].copyWith(
+      status: SeatStatus.booked,
+      isBookedByMe: true,
+    );
+    _updateTable(updatedTable.copyWith(seats: seats));
+    print('[Seating] Optimistic booking for seat $seatNumber at table $actualTableId');
 
     // Отправляем на сервер
     try {
@@ -246,6 +395,10 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
         '/tables/$actualTableId/seats/$seatNumber/book',
       );
       print('[Seating] Booking response: ${response.data}');
+      
+      // Success — keep optimistic update, unlock seat
+      _unlockSeat(actualTableId, seatNumber);
+      return true;
     } catch (e, stack) {
       print('[Seating] ERROR booking seat: $e');
       print('[Seating] Error type: ${e.runtimeType}');
@@ -262,20 +415,21 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
           print('[Seating] Server error message: $errorMessage');
         }
       }
+      
+      // Rollback optimistic update on failure
+      print('[Seating] Rolling back booking for seat $seatNumber');
+      state = SeatingState(
+        tables: previousTables,
+        unseatedPlayers: state.unseatedPlayers,
+        selectedTableId: previousSelectedTableId,
+      );
+      _unlockSeat(actualTableId, seatNumber);
       return false;
     }
-
-    // Обновляем локально
-    final seats = [...table.seats];
-    seats[seatIndex] = seats[seatIndex].copyWith(
-      status: SeatStatus.booked,
-      isBookedByMe: true,
-    );
-    _updateTable(table.copyWith(seats: seats));
-    return true;
   }
 
   /// Отмена бронирования места игроком (player-facing)
+  /// С seat locking + optimistic update + rollback on failure
   Future<bool> cancelSeat(int seatNumber) async {
     final table = state.selectedTable;
     if (table == null) return false;
@@ -285,20 +439,15 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
     );
     if (seatIndex < 0) return false;
 
-    String actualTableId = table.id;
+    final actualTableId = table.id;
     
-    // Отправляем на сервер
-    try {
-      final response = await ApiService().post(
-        '/tables/$actualTableId/seats/$seatNumber/cancel',
-      );
-      print('[Seating] Cancel response: $response');
-    } catch (e) {
-      print('Ошибка при отмене бронирования: $e');
-      return false;
-    }
-
-    // Обновляем локально
+    // Lock seat to prevent double-clicks
+    _lockSeat(actualTableId, seatNumber);
+    
+    // Save previous state for rollback
+    final previousTables = state.tables;
+    
+    // Обновляем локально оптимистично (optimistic update)
     final seats = [...table.seats];
     seats[seatIndex] = seats[seatIndex].copyWith(
       clearPlayer: true,
@@ -306,7 +455,31 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
       isBookedByMe: false,
     );
     _updateTable(table.copyWith(seats: seats));
-    return true;
+    print('[Seating] Optimistic cancel for seat $seatNumber at table $actualTableId');
+
+    // Отправляем на сервер
+    try {
+      final response = await ApiService().post(
+        '/tables/$actualTableId/seats/$seatNumber/cancel',
+      );
+      print('[Seating] Cancel response: $response');
+      
+      // Success — keep optimistic update, unlock seat
+      _unlockSeat(actualTableId, seatNumber);
+      return true;
+    } catch (e) {
+      print('Ошибка при отмене бронирования: $e');
+      
+      // Rollback optimistic update on failure
+      print('[Seating] Rolling back cancel for seat $seatNumber');
+      state = SeatingState(
+        tables: previousTables,
+        unseatedPlayers: state.unseatedPlayers,
+        selectedTableId: state.selectedTableId,
+      );
+      _unlockSeat(actualTableId, seatNumber);
+      return false;
+    }
   }
 
   /// Обновление состояния рассадки (перезагрузка)

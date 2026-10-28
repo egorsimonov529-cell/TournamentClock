@@ -21,6 +21,7 @@ import '../features/player/presentation/pages/about_club_page.dart';
 import '../features/tables/presentation/screens/seating_screen.dart';
 import '../features/tournament_clock/presentation/screens/tournament_clock_screen.dart';
 import '../features/tournament_clock/presentation/screens/tournament_clock_tv_screen.dart';
+import '../core/services/refresh_service.dart';
 
 String? authRedirect(AuthState auth, String location) {
   if (auth.status == AuthStatus.initializing) return null;
@@ -61,8 +62,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
   final router = GoRouter(
     initialLocation: '/login',
-    redirect: (context, state) =>
-        authRedirect(ref.read(authStateProvider), state.matchedLocation),
+    redirect: (context, state) {
+      // Обновляем данные при каждом переходе на страницу
+      if (state.matchedLocation != '/login' && 
+          state.matchedLocation != '/register' && 
+          state.matchedLocation != '/recovery' &&
+          state.matchedLocation != '/ios/login' &&
+          state.matchedLocation != '/ios/tournaments') {
+        ref.read(refreshServiceProvider).refreshAll();
+      }
+      return authRedirect(ref.read(authStateProvider), state.matchedLocation);
+    },
     routes: [
       // Авторизация
       GoRoute(path: "/login", builder: (context, state) => const LoginPage()),

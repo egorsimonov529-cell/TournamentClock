@@ -5,10 +5,10 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/ui/ios/ios_card.dart';
 import '../../../auth/domain/providers/auth_state_provider.dart';
+import '../../../tables/domain/providers/seating_provider.dart';
 import '../../../tables/domain/models/seating_models.dart';
 import '../../../tournament/domain/providers/tournament_provider.dart';
 import '../widgets/screen_widgets.dart';
-import '../../domain/providers/tournament_seating_provider.dart';
 
 /// Страница «Моя рассадка» — игрок видит столы и своё место
 class MySeatingPage extends ConsumerWidget {
@@ -50,84 +50,17 @@ class MySeatingPage extends ConsumerWidget {
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   final tournament = registeredTournaments[index];
-                  // Загружаем рассадку из API для каждого турнира
-                  final seatingAsync = ref.watch(
-                    tournamentSeatingProvider(tournament.id),
+                  // Используем seatingProvider с логикой бронирования
+                  final seatingState = ref.watch(
+                    seatingProvider(tournament.id),
                   );
 
-                  return seatingAsync.when(
-                    data: (tables) {
-                      if (tables.isEmpty) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.pageHorizontal,
-                            vertical: AppSpacing.sm,
-                          ),
-                          child: IosCard(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Center(
-                                child: Column(
-                                  children: [
-                                    Icon(
-                                      Icons.info_outline_rounded,
-                                      color: AppColors.textMuted,
-                                      size: 32,
-                                    ),
-                                    const SizedBox(height: AppSpacing.sm),
-                                    Text(
-                                      'Рассадка ещё не создана',
-                                      style: TextStyle(
-                                        color: AppColors.textSecondary,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const SizedBox(height: AppSpacing.xs),
-                                    Text(
-                                      'Администратор создаст рассадку перед турниром',
-                                      style: TextStyle(
-                                        color: AppColors.textMuted,
-                                        fontSize: 12,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }
-
-                      return _TournamentSeatingCard(
-                        tournament: tournament,
-                        tables: tables,
-                        playerId: user.id,
-                      );
-                    },
-                    loading: () => const Padding(
-                      padding: EdgeInsets.all(32),
-                      child: Center(child: CircularProgressIndicator()),
-                    ),
-                    error: (error, stack) => Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.pageHorizontal,
-                        vertical: AppSpacing.sm,
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppColors.card,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.error),
-                        ),
-                        child: Text(
-                          'Ошибка загрузки: $error',
-                          style: const TextStyle(color: AppColors.error),
-                        ),
-                      ),
-                    ),
+                  return _TournamentSeatingCard(
+                    tournament: tournament,
+                    seatingState: seatingState,
+                    playerId: user.id,
+                    tournamentId: tournament.id,
+                    ref: ref,
                   );
                 },
                 childCount: registeredTournaments.length,
@@ -207,14 +140,22 @@ class _EmptySeating extends StatelessWidget {
 
 class _TournamentSeatingCard extends StatelessWidget {
   final dynamic tournament;
-  final List<PokerTable> tables;
+  final SeatingState seatingState;
   final String playerId;
+  final String tournamentId;
+  final WidgetRef ref;
 
   const _TournamentSeatingCard({
     required this.tournament,
-    required this.tables,
+    required this.seatingState,
     required this.playerId,
+    required this.tournamentId,
+    required this.ref,
   });
+
+  SeatingNotifier _getNotifier() {
+    return ref.read(seatingProvider(tournamentId).notifier);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -287,17 +228,44 @@ class _TournamentSeatingCard extends StatelessWidget {
               ),
             ),
             const Divider(height: 1),
+            // Refresh button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.card, vertical: AppSpacing.sm),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  onPressed: () {
+                    ref.read(seatingProvider(tournament.id).notifier).refresh();
+                  },
+                  icon: const Icon(Icons.refresh, size: 16),
+                  label: const Text('Обновить'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.primary,
+                  ),
+                ),
+              ),
+            ),
             // Tables grid
             Padding(
               padding: const EdgeInsets.all(AppSpacing.card),
               child: Wrap(
                 spacing: AppSpacing.md,
                 runSpacing: AppSpacing.md,
-                children: tables
+                children: seatingState.tables
                     .map(
                       (table) => _PlayerTableWidget(
                         table: table,
                         playerId: playerId,
+                        tournamentId: tournamentId,
+                        selectedTableId: seatingState.selectedTableId,
+                        notifier: _getNotifier(),
+                        onTableSelected: (tableId) {
+                          _getNotifier().selectTable(tableId);
+                        },
+                        onSeatBooked: () {
+                          // Перезагружаем состояние после бронирования
+                          _getNotifier().refresh();
+                        },
                       ),
                     )
                     .toList(),
@@ -325,18 +293,83 @@ class _TournamentSeatingCard extends StatelessWidget {
   }
 }
 
-class _PlayerTableWidget extends StatelessWidget {
+class _PlayerTableWidget extends StatefulWidget {
   final PokerTable table;
   final String playerId;
+  final String tournamentId;
+  final String selectedTableId;
+  final SeatingNotifier notifier;
+  final Function(String) onTableSelected;
+  final VoidCallback onSeatBooked;
 
   const _PlayerTableWidget({
     required this.table,
     required this.playerId,
+    required this.tournamentId,
+    required this.selectedTableId,
+    required this.notifier,
+    required this.onTableSelected,
+    required this.onSeatBooked,
   });
 
   @override
+  State<_PlayerTableWidget> createState() => _PlayerTableWidgetState();
+}
+
+class _PlayerTableWidgetState extends State<_PlayerTableWidget> {
+  bool _booking = false;
+
+  Future<void> _bookSeat(int seatNumber) async {
+    // Проверяем, заблокировано ли место
+    if (widget.notifier.isSeatLocked(widget.table.id, seatNumber)) return;
+    if (_booking) return;
+    
+    // Выбираем стол
+    widget.notifier.selectTable(widget.table.id);
+    
+    setState(() => _booking = true);
+    final success = await widget.notifier.bookSeat(seatNumber);
+    setState(() => _booking = false);
+    
+    if (success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Место ${seatNumber} забронировано'),
+          backgroundColor: AppColors.primary,
+        ),
+      );
+      widget.onSeatBooked();
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Не удалось забронировать место'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
+
+  Future<void> _cancelSeat(int seatNumber) async {
+    // Проверяем, заблокировано ли место
+    if (widget.notifier.isSeatLocked(widget.table.id, seatNumber)) return;
+    
+    final success = await widget.notifier.cancelSeat(seatNumber);
+    
+    if (success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Бронирование отменено'),
+          backgroundColor: AppColors.primary,
+        ),
+      );
+      widget.onSeatBooked();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final isMyTable = table.seats.any((seat) => seat.player?.id == playerId);
+    final isMyTable = widget.table.seats.any((seat) => seat.player?.id == widget.playerId);
+    final isSelected = widget.selectedTableId == widget.table.id;
 
     return Container(
       width: 280,
@@ -346,8 +379,8 @@ class _PlayerTableWidget extends StatelessWidget {
             : AppColors.cardSecondary,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isMyTable ? AppColors.accent : AppColors.border,
-          width: isMyTable ? 2 : 1,
+          color: isSelected ? AppColors.accent : (isMyTable ? AppColors.accent : AppColors.border),
+          width: isSelected ? 2.5 : 1,
         ),
       ),
       child: Column(
@@ -357,7 +390,7 @@ class _PlayerTableWidget extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
-              color: isMyTable
+              color: isSelected
                   ? AppColors.primary.withValues(alpha: 0.15)
                   : AppColors.input,
               borderRadius: const BorderRadius.vertical(
@@ -368,24 +401,24 @@ class _PlayerTableWidget extends StatelessWidget {
               children: [
                 Icon(
                   Icons.casino_rounded,
-                  color: isMyTable ? AppColors.accent : AppColors.textSecondary,
+                  color: isSelected ? AppColors.accent : AppColors.textSecondary,
                   size: 20,
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
-                    table.name,
+                    widget.table.name,
                     style: TextStyle(
-                      color: isMyTable ? AppColors.accent : AppColors.white,
+                      color: isSelected ? AppColors.accent : AppColors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
                 Text(
-                  '${table.occupiedCount}/${table.capacity}',
+                  '${widget.table.occupiedCount}/${widget.table.capacity}',
                   style: TextStyle(
-                    color: isMyTable
+                    color: isSelected
                         ? AppColors.accent
                         : AppColors.textSecondary,
                     fontSize: 12,
@@ -407,12 +440,25 @@ class _PlayerTableWidget extends StatelessWidget {
                 crossAxisSpacing: 6,
                 mainAxisSpacing: 6,
               ),
-              itemCount: table.seats.length,
+              itemCount: widget.table.seats.length,
               itemBuilder: (context, seatIndex) {
-                final seat = table.seats[seatIndex];
-                final isMySeat = seat.player?.id == playerId;
+                final seat = widget.table.seats[seatIndex];
+                final isMySeat = seat.player?.id == widget.playerId;
+                final isLocked = widget.notifier.isSeatLocked(
+                  widget.table.id,
+                  seat.number,
+                );
+                final isFree = seat.status == SeatStatus.free;
 
-                return _SeatWidget(seat: seat, isMySeat: isMySeat);
+                return _SeatWidget(
+                  seat: seat,
+                  isMySeat: isMySeat,
+                  isFree: isFree,
+                  onBook: isFree ? () => _bookSeat(seat.number) : null,
+                  onCancel: isMySeat ? () => _cancelSeat(seat.number) : null,
+                  booking: _booking,
+                  isLocked: isLocked,
+                );
               },
             ),
           ),
@@ -425,58 +471,95 @@ class _PlayerTableWidget extends StatelessWidget {
 class _SeatWidget extends StatelessWidget {
   final TableSeat seat;
   final bool isMySeat;
+  final bool isFree;
+  final VoidCallback? onBook;
+  final VoidCallback? onCancel;
+  final bool booking;
+  final bool isLocked;
 
   const _SeatWidget({
     required this.seat,
     required this.isMySeat,
+    required this.isFree,
+    this.onBook,
+    this.onCancel,
+    this.booking = false,
+    this.isLocked = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isMySeat
-            ? AppColors.accent
-            : (seat.isOccupied ? AppColors.cardPrimary : AppColors.input),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
+    final isInteractive = !isLocked && !booking && ((isMySeat && onCancel != null) || (isFree && onBook != null));
+
+    return GestureDetector(
+      onTap: () {
+        if (isLocked || booking) return;
+        if (isMySeat && onCancel != null) {
+          onCancel!();
+        } else if (isFree && onBook != null) {
+          onBook!();
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
           color: isMySeat
-              ? AppColors.goldLight
-              : (seat.isOccupied ? AppColors.border : AppColors.border),
-          width: isMySeat ? 2.5 : 1,
+              ? AppColors.accent
+              : (seat.isOccupied ? AppColors.cardPrimary : AppColors.input),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isMySeat
+                ? AppColors.goldLight
+                : (seat.isOccupied ? AppColors.border : AppColors.border),
+            width: isMySeat ? 2.5 : 1,
+          ),
+          boxShadow: isMySeat
+              ? [
+                  BoxShadow(
+                    color: AppColors.accent.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  ),
+                ]
+              : null,
         ),
-        boxShadow: isMySeat
-            ? [
-                BoxShadow(
-                  color: AppColors.accent.withValues(alpha: 0.3),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-              ]
-            : null,
-      ),
-      child: Center(
-        child: seat.isOccupied
-            ? Text(
-                seat.player!.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: isMySeat
-                      ? AppColors.background
-                      : AppColors.white,
-                  fontSize: 9,
-                  fontWeight: isMySeat ? FontWeight.bold : FontWeight.w500,
-                ),
-              )
-            : Text(
-                '${seat.number}',
-                style: TextStyle(
-                  color: AppColors.textMuted,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+        child: Center(
+          child: isLocked
+              ? SizedBox(
+                  width: 12,
+                  height: 12,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.textMuted,
+                    ),
+                  ),
+                )
+              : seat.isOccupied
+                  ? Text(
+                      seat.player!.nickname?.isNotEmpty == true
+                          ? seat.player!.nickname!
+                          : seat.player!.login,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: isMySeat
+                            ? AppColors.background
+                            : AppColors.white,
+                        fontSize: 9,
+                        fontWeight: isMySeat ? FontWeight.bold : FontWeight.w500,
+                      ),
+                    )
+                  : Text(
+                      '${seat.number}',
+                      style: TextStyle(
+                        color: isInteractive
+                            ? AppColors.accent
+                            : AppColors.textMuted,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+        ),
       ),
     );
   }

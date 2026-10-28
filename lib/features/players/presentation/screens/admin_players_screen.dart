@@ -87,7 +87,7 @@ class _PlayerTile extends ConsumerWidget {
           context: context,
           builder: (_) => AdminPlayerProfileDialog(playerId: player.id),
         ),
-        leading: CircleAvatar(child: Text(player.login[0].toUpperCase())),
+        leading: CircleAvatar(child: Text(player.name.isNotEmpty ? player.name[0].toUpperCase() : 'A')),
         title: Text(player.name),
         subtitle: Text(
           '@${player.login} • ${player.email} • ${player.rpsPoints} RPS (${player.rank.label})',
@@ -104,7 +104,7 @@ class _PlayerTile extends ConsumerWidget {
                         context: context,
                         builder: (_) => EditPlayerRpsDialog(
                           playerId: player.id,
-                          playerName: player.name,
+                          playerName: player.login,
                           currentRps: player.rpsPoints,
                           currentRank: player.rank,
                         ),
@@ -169,7 +169,7 @@ class _PlayerTile extends ConsumerWidget {
                         context: context,
                         builder: (_) => EditPlayerRpsDialog(
                           playerId: player.id,
-                          playerName: player.name,
+                          playerName: player.login,
                           currentRps: player.rpsPoints,
                           currentRank: player.rank,
                         ),

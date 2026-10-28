@@ -69,7 +69,7 @@ class _SeatingScreenState extends ConsumerState<SeatingScreen> {
                     final player = state.unseatedPlayers[index];
                     return ListTile(
                       leading: const CircleAvatar(child: Icon(Icons.person)),
-                      title: Text(player.name),
+                      title: Text(player.name ?? player.login),
                       onTap: () {
                         Navigator.pop(dialogContext, player);
                       },
@@ -308,6 +308,7 @@ class _SeatingScreenState extends ConsumerState<SeatingScreen> {
                   child: _RoundTableCanvas(
                     table: state.tables[selectedTableIndex],
                     tournamentId: tournamentId,
+                    isAdmin: isAdmin,
                   ),
                 ),
               ],
@@ -319,8 +320,9 @@ class _SeatingScreenState extends ConsumerState<SeatingScreen> {
 class _RoundTableCanvas extends ConsumerStatefulWidget {
   final PokerTable table;
   final String tournamentId;
+  final bool isAdmin;
 
-  const _RoundTableCanvas({required this.table, required this.tournamentId});
+  const _RoundTableCanvas({required this.table, required this.tournamentId, required this.isAdmin});
 
   @override
   ConsumerState<_RoundTableCanvas> createState() => _RoundTableCanvasState();
@@ -328,6 +330,14 @@ class _RoundTableCanvas extends ConsumerStatefulWidget {
 
 class _RoundTableCanvasState extends ConsumerState<_RoundTableCanvas> {
   Offset? _selectedSeat;
+
+  String _getPlayerLabel(TableSeat seat) {
+    if (seat.player == null) return 'Свободно';
+    // Админ видит имена, игроки видят никнеймы
+    return widget.isAdmin
+        ? (seat.player!.name ?? seat.player!.login)
+        : seat.player!.displayName;
+  }
 
   void _handleTap(TapDownDetails details, Size size) {
     final table = widget.table;
@@ -481,6 +491,7 @@ class _RoundTableCanvasState extends ConsumerState<_RoundTableCanvas> {
               painter: _TablePainter(
                 table: widget.table,
                 size: size,
+                isAdmin: widget.isAdmin,
               ),
             ),
             ...List.generate(widget.table.seats.length, (index) {
@@ -554,8 +565,14 @@ class _SeatGeometry {
 class _TablePainter extends CustomPainter {
   final PokerTable table;
   final Size size;
+  final bool isAdmin;
 
-  _TablePainter({required this.table, required this.size});
+  _TablePainter({required this.table, required this.size, required this.isAdmin});
+
+  String _getPlayerLabel(TableSeat seat) {
+    if (seat.player == null) return 'Свободно';
+    return isAdmin ? (seat.player!.name ?? seat.player!.login) : seat.player!.displayName;
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -685,7 +702,7 @@ class _TablePainter extends CustomPainter {
       numText.layout();
       numText.paint(canvas, Offset(seatX - numText.width / 2, seatY - 12));
 
-      final playerLabel = seat.player?.name ?? (isFree ? 'Свободно' : 'Занято');
+      final playerLabel = _getPlayerLabel(seat);
       final nameText = TextPainter(
         text: TextSpan(text: playerLabel, style: TextStyle(fontSize: 9.5, fontWeight: isBookedByMe ? FontWeight.w600 : FontWeight.normal, color: textColor)),
         textDirection: TextDirection.ltr,

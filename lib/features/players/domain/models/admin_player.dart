@@ -4,6 +4,7 @@ class AdminPlayer {
   final String id;
   final String login;
   final String name;
+  final String? nickname;
   final String email;
   final RpsRank rank;
   final int rpsPoints;
@@ -16,6 +17,7 @@ class AdminPlayer {
     required this.id,
     required this.login,
     required this.name,
+    this.nickname,
     required this.email,
     required this.rank,
     required this.rpsPoints,
@@ -31,6 +33,7 @@ class AdminPlayer {
       id: json['id'] as String? ?? '',
       login: json['login'] as String? ?? '',
       name: json['name'] as String? ?? json['login'] as String? ?? '',
+      nickname: json['nickname'] as String?,
       email: json['email'] as String? ?? '',
       rank: rpsRankCode != null ? RpsRankX.fromCode(rpsRankCode) : RpsRank.fish,
       rpsPoints: json['rps_points'] as int? ?? 0,
@@ -46,17 +49,24 @@ class AdminPlayer {
     int? rpsPoints,
     int? rankPoints,
     int? rating,
+    String? nickname,
+    int? tournaments,
+    int? wins,
   }) =>
       AdminPlayer(
         id: id,
         login: login,
         name: name,
+        nickname: nickname ?? this.nickname,
         email: email,
         rank: rank ?? this.rank,
         rpsPoints: rpsPoints ?? this.rpsPoints,
         rankPoints: rankPoints ?? this.rankPoints,
         rating: rating ?? this.rating,
-        tournaments: tournaments,
-        wins: wins,
+        tournaments: tournaments ?? this.tournaments,
+        wins: wins ?? this.wins,
       );
+
+  /// Отображаемое имя: nickname если есть, иначе login
+  String get displayName => nickname?.isNotEmpty == true ? nickname! : login;
 }

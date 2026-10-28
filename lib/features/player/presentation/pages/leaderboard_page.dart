@@ -111,7 +111,7 @@ class LeaderboardPage extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            player.name,
+            player.displayName,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
@@ -214,7 +214,7 @@ class LeaderboardPage extends ConsumerWidget {
                           children: [
                             Flexible(
                               child: Text(
-                                player.name,
+                                player.login,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   color: Colors.white,

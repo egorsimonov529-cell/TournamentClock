@@ -79,8 +79,8 @@ class _RegisterPlayersDialogState extends ConsumerState<RegisterPlayersDialog> {
         : players
               .where(
                 (player) =>
-                    player.login.toLowerCase().contains(query) ||
-                    player.name.toLowerCase().contains(query),
+                    player.name.toLowerCase().contains(query) ||
+                    player.login.toLowerCase().contains(query),
               )
               .toList();
 
@@ -177,7 +177,7 @@ class _RegisterPlayersDialogState extends ConsumerState<RegisterPlayersDialog> {
                           ? const Color(0xFF1ABC9C)
                           : const Color(0xff2A2D35),
                       child: Text(
-                        player.login[0].toUpperCase(),
+                        player.name[0].toUpperCase(),
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -189,7 +189,7 @@ class _RegisterPlayersDialogState extends ConsumerState<RegisterPlayersDialog> {
                       style: const TextStyle(color: Colors.white),
                     ),
                     subtitle: Text(
-                      player.login,
+                      '@${player.login}',
                       style: const TextStyle(color: Colors.white54),
                     ),
                     trailing: FilledButton.tonalIcon(

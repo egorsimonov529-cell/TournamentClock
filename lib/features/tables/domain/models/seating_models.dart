@@ -32,13 +32,17 @@ enum SeatStatus {
 
 class Player {
   final String id;
-  final String name;
+  final String login;
+  final String? nickname;
+  final String? name;
   final RpsRank rpsRank;
   final int skillScore;
 
   Player({
     required this.id,
-    required this.name,
+    required this.login,
+    this.nickname,
+    this.name,
     this.rpsRank = RpsRank.fish,
     int? skillScore,
   }) : skillScore = skillScore ?? rpsRank.baseScore;
@@ -48,7 +52,9 @@ class Player {
     final rank = rankCode != null ? RpsRankX.fromCode(rankCode) : RpsRank.fish;
     return Player(
       id: json['id'] as String,
-      name: json['name'] as String,
+      login: json['login'] as String? ?? json['name'] as String? ?? 'Игрок',
+      nickname: json['nickname'] as String?,
+      name: json['name'] as String?,
       rpsRank: rank,
       skillScore: (json['skillScore'] as num?)?.toInt() ?? rank.baseScore,
     );
@@ -56,17 +62,24 @@ class Player {
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'name': name,
+    'login': login,
+    if (nickname != null) 'nickname': nickname,
+    if (name != null) 'name': name,
     'rpsRank': rpsRank.label,
     'skillScore': skillScore,
   };
 
-  Player copyWith({RpsRank? rpsRank, int? skillScore}) => Player(
+  Player copyWith({RpsRank? rpsRank, int? skillScore, String? login, String? nickname, String? name}) => Player(
     id: id,
-    name: name,
+    login: login ?? this.login,
+    nickname: nickname ?? this.nickname,
+    name: name ?? this.name,
     rpsRank: rpsRank ?? this.rpsRank,
     skillScore: skillScore ?? (rpsRank?.baseScore ?? this.skillScore),
   );
+
+  /// Отображаемое имя: nickname если есть, иначе login
+  String get displayName => nickname?.isNotEmpty == true ? nickname! : login;
 }
 
 class TableSeat {
@@ -104,7 +117,9 @@ class TableSeat {
     if (playerData != null) {
       player = Player(
         id: playerData['id'] as String,
-        name: playerData['name'] as String,
+        login: playerData['login'] as String? ?? playerData['name'] as String? ?? 'Игрок',
+        nickname: playerData['nickname'] as String?,
+        name: playerData['name'] as String?,
       );
     }
     final statusStr = json['status'] as String? ?? 'free';

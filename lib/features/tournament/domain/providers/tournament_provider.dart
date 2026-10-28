@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/services/api_service.dart';
+import '../../../../core/services/seating_websocket_service.dart';
 import '../../../auth/domain/providers/auth_state_provider.dart';
 import '../../data/datasources/tournament_remote_data_source.dart';
 import '../../data/repositories/tournament_repository_impl.dart';
@@ -62,12 +63,36 @@ class TournamentStats {
 }
 
 class TournamentNotifier extends StateNotifier<List<Tournament>> {
-  final bool autoLoad;
+  final Ref ref;
 
-  TournamentNotifier({this.autoLoad = true}) : super(const []) {
-    if (autoLoad) {
-      load();
+  TournamentNotifier({required this.ref}) : super(const []) {
+    load();
+    // Подписываемся на WebSocket обновления статуса турнира
+    _subscribeToWebSocket();
+  }
+  
+  void _subscribeToWebSocket() {
+    try {
+      final wsService = ref.read(seatingWebSocketProvider);
+      wsService.onTournamentStatusUpdate = () {
+        print('[Tournament] WebSocket update received, reloading...');
+        load();
+      };
+      print('[Tournament] Subscribed to WebSocket for status updates');
+    } catch (e) {
+      print('[Tournament] WebSocket subscription failed: $e');
     }
+  }
+
+  @override
+  void dispose() {
+    try {
+      final wsService = ref.read(seatingWebSocketProvider);
+      wsService.onTournamentStatusUpdate = null;
+    } catch (e) {
+      // Ignore
+    }
+    super.dispose();
   }
 
   Future<void> load() async {
@@ -352,5 +377,5 @@ class TournamentNotifier extends StateNotifier<List<Tournament>> {
 
 final tournamentProvider =
     StateNotifierProvider<TournamentNotifier, List<Tournament>>(
-      (ref) => TournamentNotifier(),
+      (ref) => TournamentNotifier(ref: ref),
     );

@@ -1,4 +1,5 @@
 const { query } = require('../config/database');
+const { io } = require('../server');
 
 const reminderKeys = new Set();
 let lifecycleInterval = null;
@@ -91,6 +92,11 @@ async function processTournamentLifecycle() {
           `${tournament.name} начался. Приятной игры!`,
           { tournament_name: tournament.name }
         );
+        // Emit WebSocket event
+        io.to(`tournament:${tournament.id}`).emit('tournament_status_updated', {
+          tournamentId: tournament.id,
+          status: nextStatus,
+        });
       }
 
       if (nextStatus === 'completed') {
@@ -101,6 +107,11 @@ async function processTournamentLifecycle() {
           `Турнир "${tournament.name}" завершён. Посмотрите результаты.`,
           { tournament_name: tournament.name }
         );
+        // Emit WebSocket event
+        io.to(`tournament:${tournament.id}`).emit('tournament_status_updated', {
+          tournamentId: tournament.id,
+          status: nextStatus,
+        });
       }
     }
 

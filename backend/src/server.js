@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const http = require('http');
 const os = require('os');
 const path = require('path');
 const { query } = require('./config/database');
@@ -7,8 +8,20 @@ const { init } = require('./db/init');
 require('dotenv').config();
 
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 4000;
 const HOST = process.env.HOST || '0.0.0.0';
+
+// Socket.IO setup
+const { Server } = require('socket.io');
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CORS_ORIGIN || '*',
+    methods: ['GET', 'POST'],
+  },
+});
+
+module.exports = { io, server };
 
 const getLocalNetworkIp = () => {
   const interfaces = os.networkInterfaces();
@@ -70,17 +83,42 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Internal server error' });
 });
 
+// Socket.IO connection handling
+io.on('connection', (socket) => {
+  console.log(`[WS] Client connected: ${socket.id}`);
+  
+  // Join tournament room
+  socket.on('join_tournament', (tournamentId) => {
+    socket.join(`tournament:${tournamentId}`);
+    console.log(`[WS] ${socket.id} joined tournament:${tournamentId}`);
+  });
+  
+  // Leave tournament room
+  socket.on('leave_tournament', (tournamentId) => {
+    socket.leave(`tournament:${tournamentId}`);
+    console.log(`[WS] ${socket.id} left tournament:${tournamentId}`);
+  });
+  
+  // Disconnect
+  socket.on('disconnect', () => {
+    console.log(`[WS] Client disconnected: ${socket.id}`);
+  });
+});
+
 async function start() {
   try {
     await init();
     await query('SELECT 1');
     startTournamentLifecycleScheduler();
-    app.listen(PORT, HOST, () => {
+    
+    server.listen(PORT, HOST, () => {
       const lanIp = getLocalNetworkIp();
       console.log(`Backend running on http://0.0.0.0:${PORT}`);
       console.log(`Local access: http://localhost:${PORT}`);
       console.log(`Network access: http://${lanIp}:${PORT}`);
+      console.log(`WebSocket: ws://${lanIp}:${PORT}`);
       console.log('Android emulator should use http://10.0.2.2:4000/api/v1');
+      console.log('[WS] Socket.IO ready');
     });
   } catch (error) {
     console.error('Postgres connection failed. Start PostgreSQL and rerun.');
@@ -90,5 +128,3 @@ async function start() {
 }
 
 start();
-
-module.exports = app;

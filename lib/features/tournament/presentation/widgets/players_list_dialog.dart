@@ -243,7 +243,7 @@ class _PlayersListDialogState extends ConsumerState<PlayersListDialog> {
                     final isConfirmed = widget.tournament.isPlayerConfirmed(player.id);
                     final isEliminated = widget.tournament.isPlayerEliminated(player.id);
                     final initial = player.login.isNotEmpty
-                        ? player.login[0].toUpperCase()
+                        ? player.name[0].toUpperCase()
                         : '?';
 
                     return ListTile(

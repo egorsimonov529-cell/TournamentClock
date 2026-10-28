@@ -1,6 +1,7 @@
 const express = require('express');
 const { query } = require('../config/database');
 const { requireAuth } = require('../middleware/authMiddleware');
+const { io } = require('../server');
 
 const router = express.Router();
 
@@ -163,6 +164,17 @@ router.post('/:tableId/seats/save-all', requireAuth, async (req, res) => {
     }
 
     console.log('[TABLES] save-all completed successfully');
+    
+    // Emit WebSocket event for all seats
+    const tableInfo = await query('SELECT tournament_id FROM tables WHERE id = $1', [tableId]);
+    if (tableInfo.rows[0]) {
+      io.to(`tournament:${tableInfo.rows[0].tournament_id}`).emit('seating_updated', {
+        tableId,
+        seats: seats.map(s => ({ seatNumber: s.number, userId: s.userId })),
+        action: 'admin_save_all',
+      });
+    }
+    
     res.json({ 
       success: true, 
       message: 'Рассадка сохранена',
@@ -231,6 +243,17 @@ router.patch('/:tableId/seats/:seatNumber', requireAuth, async (req, res) => {
         [tableId, seatNumber]
       );
       console.log('[TABLES] PATCH: seat', seatNumber, 'cleared');
+    }
+
+    // Emit WebSocket event
+    const tableInfo = await query('SELECT tournament_id FROM tables WHERE id = $1', [tableId]);
+    if (tableInfo.rows[0]) {
+      io.to(`tournament:${tableInfo.rows[0].tournament_id}`).emit('seating_updated', {
+        tableId,
+        seatNumber: parseInt(seatNumber),
+        userId: user_id,
+        action: user_id ? 'admin_assigned' : 'admin_released',
+      });
     }
 
     res.json({ 
@@ -336,6 +359,15 @@ router.post('/:tableId/seats/:seatNumber/book', requireAuth, async (req, res) =>
     console.log('[BOOKING] SUCCESS: Seat booked');
     console.log('[BOOKING] ===== END BOOKING =====');
     
+    // Emit WebSocket event to tournament room
+    const tournamentId = tableInfo.rows[0].tournament_id;
+    io.to(`tournament:${tournamentId}`).emit('seating_updated', {
+      tableId,
+      seatNumber: parseInt(seatNumber),
+      userId,
+      action: 'booked',
+    });
+    
     res.json({ 
       success: true, 
       message: 'Место забронировано',
@@ -374,6 +406,17 @@ router.post('/:tableId/seats/:seatNumber/cancel', requireAuth, async (req, res) 
        WHERE table_id = $1 AND seat_number = $2`,
       [tableId, seatNumber]
     );
+
+    // Emit WebSocket event (need to get tournament_id first)
+    const tableInfo = await query('SELECT tournament_id FROM tables WHERE id = $1', [tableId]);
+    if (tableInfo.rows[0]) {
+      io.to(`tournament:${tableInfo.rows[0].tournament_id}`).emit('seating_updated', {
+        tableId,
+        seatNumber: parseInt(seatNumber),
+        userId,
+        action: 'cancelled',
+      });
+    }
 
     res.json({ 
       success: true, 
