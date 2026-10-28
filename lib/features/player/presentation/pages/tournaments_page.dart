@@ -176,6 +176,21 @@ class TournamentsPage extends ConsumerWidget {
                                         child: const Text('Отменить регистрацию'),
                                       ),
                                     ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: OutlinedButton(
+                                        onPressed: () => context.push('/tournament/${t.id}/seating'),
+                                        style: OutlinedButton.styleFrom(
+                                          foregroundColor: AppColors.accent,
+                                          side: const BorderSide(color: AppColors.accent),
+                                          padding: const EdgeInsets.symmetric(vertical: 12),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                        ),
+                                        child: const Text('Рассадка'),
+                                      ),
+                                    ),
                                   ],
                                 )
                               else
