@@ -325,7 +325,7 @@ class _PlayerTableWidgetState extends State<_PlayerTableWidget> {
     if (_booking) return;
     
     setState(() => _booking = true);
-    final success = await widget.notifier.bookSeat(seatNumber);
+    final success = await widget.notifier.bookSeat(seatNumber, tableId: widget.table.id);
     setState(() => _booking = false);
     
     if (success && mounted) {

@@ -275,11 +275,14 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
 
   /// Бронирование места игроком (player-facing)
   /// С seat locking + optimistic update + rollback on failure
-  Future<bool> bookSeat(int seatNumber) async {
-    // Always use selectedTableId directly, not state.selectedTable
+  Future<bool> bookSeat(int seatNumber, {String? tableId}) async {
+    // Use provided tableId or fall back to selectedTableId
+    final actualTableId = tableId ?? state.selectedTableId;
+    
+    // Find the table by actualTableId
     final selectedTable = state.tables.firstWhere(
-      (t) => t.id == state.selectedTableId,
-      orElse: () => state.tables.firstOrNull ?? PokerTable(
+      (t) => t.id == actualTableId,
+      orElse: () => PokerTable(
         id: 'fallback',
         name: 'Стол 1',
         seats: List.generate(10, (index) => TableSeat(number: index + 1)),
@@ -296,8 +299,6 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
       (seat) => seat.number == seatNumber && seat.status == SeatStatus.free,
     );
     if (seatIndex < 0) return false;
-
-    final actualTableId = selectedTable.id;
 
     // Lock seat to prevent double-clicks
     _lockSeat(actualTableId, seatNumber);

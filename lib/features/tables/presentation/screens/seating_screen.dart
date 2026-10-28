@@ -464,7 +464,7 @@ class _RoundTableCanvasState extends ConsumerState<_RoundTableCanvas> {
         ),
       );
       if (confirmed == true && mounted) {
-        final success = await ref.read(seatingProvider(widget.tournamentId).notifier).bookSeat(seat.number);
+        final success = await ref.read(seatingProvider(widget.tournamentId).notifier).bookSeat(seat.number, tableId: widget.table.id);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
