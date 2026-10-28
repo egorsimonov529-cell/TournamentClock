@@ -30,21 +30,16 @@ class _SeatingScreenState extends ConsumerState<SeatingScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      print('[SeatingScreen] INIT — refreshing seating for tournament: $tournamentId');
       ref.read(seatingProvider(tournamentId).notifier).refresh();
     });
   }
 
   void _showAssignPlayerDialog(BuildContext context, WidgetRef ref) {
     final state = ref.read(seatingProvider(tournamentId));
-    final table = state.selectedTable;
-    if (table == null) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Нет доступных столов')),
-        );
-      }
-      return;
-    }
+    // Use selectedTableId to find the actual selected table
+    final table = state.selectedTable ?? state.tables.first;
+    print('[UI] Assign dialog opened for table: ${table.id} (${table.name})');
     final freeSeats = table.seats.where((s) => s.status == SeatStatus.free).toList();
     
     if (freeSeats.isEmpty) {
