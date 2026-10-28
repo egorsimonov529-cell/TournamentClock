@@ -150,12 +150,10 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
 
         state = state.copyWith(
           tables: tables,
-          // Only reset selectedTableId if current value is not valid
-          selectedTableId: tables.isNotEmpty
-              ? (state.tables.any((t) => t.id == state.selectedTableId)
-                  ? state.selectedTableId
-                  : tables.first.id)
-              : 'fallback',
+          // Only reset selectedTableId if it's not in the new tables list
+          selectedTableId: tables.any((t) => t.id == state.selectedTableId)
+              ? state.selectedTableId
+              : tables.first.id,
         );
         print('[Seating] State updated with ${tables.length} tables, selectedTableId: ${state.selectedTableId}');
       } else {
