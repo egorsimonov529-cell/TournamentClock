@@ -369,7 +369,7 @@ class _PlayerTableWidgetState extends State<_PlayerTableWidget> {
     final isSelected = widget.selectedTableId == widget.table.id;
 
     return GestureDetector(
-      onTap: () => widget.onTableSelected(widget.table.id),
+      onTapDown: (_) => widget.onTableSelected(widget.table.id),
       child: Container(
         width: 280,
         decoration: BoxDecoration(
