@@ -350,7 +350,7 @@ class _PlayerTableWidgetState extends State<_PlayerTableWidget> {
     // Проверяем, заблокировано ли место
     if (widget.notifier.isSeatLocked(widget.table.id, seatNumber)) return;
     
-    final success = await widget.notifier.cancelSeat(seatNumber);
+    final success = await widget.notifier.cancelSeat(seatNumber, tableId: widget.table.id);
     
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(

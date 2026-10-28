@@ -442,10 +442,11 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
 
   /// Отмена бронирования места игроком (player-facing)
   /// С seat locking + optimistic update + rollback on failure
-  Future<bool> cancelSeat(int seatNumber) async {
-    // Always use selectedTableId directly
+  Future<bool> cancelSeat(int seatNumber, {String? tableId}) async {
+    // Use provided tableId or fall back to selectedTableId
+    final actualTableId = tableId ?? state.selectedTableId;
     final selectedTable = state.tables.firstWhere(
-      (t) => t.id == state.selectedTableId,
+      (t) => t.id == actualTableId,
       orElse: () => PokerTable(
         id: 'fallback',
         name: 'Стол 1',
@@ -457,8 +458,6 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
       (seat) => seat.number == seatNumber && seat.isBookedByMe,
     );
     if (seatIndex < 0) return false;
-
-    final actualTableId = selectedTable.id;
     
     // Lock seat to prevent double-clicks
     _lockSeat(actualTableId, seatNumber);
@@ -506,7 +505,7 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
     await loadFromBackend();
   }
 
-  Future<void> assignPlayer(String playerId, int seatNumber) async {
+  Future<void> assignPlayer(String playerId, int seatNumber, {String? tableId}) async {
     final candidates = state.unseatedPlayers.where((p) => p.id == playerId);
     if (candidates.isEmpty) return;
 
@@ -518,8 +517,18 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
       return;
     }
 
-    final table = state.selectedTable;
-    if (table == null) return;
+    // Use provided tableId or fall back to selectedTableId
+    final actualTableId = tableId ?? state.selectedTableId;
+    final table = state.tables.firstWhere(
+      (t) => t.id == actualTableId,
+      orElse: () {
+        final st = state.selectedTable;
+        if (st != null) return st;
+        // Fallback to first table or create empty
+        if (state.tables.isNotEmpty) return state.tables.first;
+        return PokerTable(id: 'fallback', name: 'Стол 1', seats: List.generate(10, (index) => TableSeat(number: index + 1)));
+      },
+    );
     final seatIndex = table.seats.indexWhere(
       (seat) => seat.number == seatNumber && !seat.isOccupied,
     );

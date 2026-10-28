@@ -133,7 +133,7 @@ class _SeatingScreenState extends ConsumerState<SeatingScreen> {
         
         if (seat != null) {
           final notifier = ref.read(seatingProvider(tournamentId).notifier);
-          await notifier.assignPlayer(selectedPlayer.id, seat.number);
+          await notifier.assignPlayer(selectedPlayer.id, seat.number, tableId: table.id);
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -402,7 +402,7 @@ class _RoundTableCanvasState extends ConsumerState<_RoundTableCanvas> {
         ),
       );
       if (confirmed == true && mounted) {
-        final success = await ref.read(seatingProvider(widget.tournamentId).notifier).cancelSeat(seat.number);
+        final success = await ref.read(seatingProvider(widget.tournamentId).notifier).cancelSeat(seat.number, tableId: widget.table.id);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
