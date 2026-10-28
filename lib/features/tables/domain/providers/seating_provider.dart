@@ -307,10 +307,10 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
     final previousSelectedTableId = state.selectedTableId;
 
     // Если используется fallback-стол, используем первый доступный стол
-    if (table.id == 'fallback' && state.tables.isNotEmpty) {
+    if (selectedTable.id == 'fallback' && state.tables.isNotEmpty) {
       state = state.copyWith(selectedTableId: actualTableId);
       print('[Seating] Using existing table: $actualTableId');
-    } else if (table.id == 'fallback') {
+    } else if (selectedTable.id == 'fallback') {
       // Если столов нет — создаём новый
       try {
         print('[Seating] Creating real table for tournament: $tournamentId');
@@ -389,7 +389,7 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
     // Обновляем локально оптимистично (optimistic update)
     final updatedTable = state.tables.firstWhere(
       (t) => t.id == actualTableId,
-      orElse: () => table,
+      orElse: () => selectedTable,
     );
     final seats = [...updatedTable.seats];
     seats[seatIndex] = seats[seatIndex].copyWith(
@@ -466,13 +466,13 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
     final previousTables = state.tables;
     
     // Обновляем локально оптимистично (optimistic update)
-    final seats = [...table.seats];
+    final seats = [...selectedTable.seats];
     seats[seatIndex] = seats[seatIndex].copyWith(
       clearPlayer: true,
       status: SeatStatus.free,
       isBookedByMe: false,
     );
-    _updateTable(table.copyWith(seats: seats));
+    _updateTable(selectedTable.copyWith(seats: seats));
     print('[Seating] Optimistic cancel for seat $seatNumber at table $actualTableId');
 
     // Отправляем на сервер
