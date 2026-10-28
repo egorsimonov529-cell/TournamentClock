@@ -139,6 +139,7 @@ class _SeatingScreenState extends ConsumerState<SeatingScreen> {
         );
         
         if (seat != null) {
+          print('[SeatingScreen] Assigning player ${selectedPlayer.id} to table ${table.id} (${table.name}) seat ${seat.number}');
           final notifier = ref.read(seatingProvider(tournamentId).notifier);
           await notifier.assignPlayer(selectedPlayer.id, seat.number, tableId: table.id);
           if (context.mounted) {

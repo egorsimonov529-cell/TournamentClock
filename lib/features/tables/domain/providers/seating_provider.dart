@@ -292,8 +292,12 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
   }
 
   void selectTable(String tableId) {
+    print('[selectTable] Selecting table: $tableId');
     if (state.tables.any((table) => table.id == tableId)) {
       state = state.copyWith(selectedTableId: tableId);
+      print('[selectTable] SelectedTableId updated to: $tableId');
+    } else {
+      print('[selectTable] Table $tableId not found in state.tables');
     }
   }
 
@@ -530,6 +534,10 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
   }
 
   Future<void> assignPlayer(String playerId, int seatNumber, {String? tableId}) async {
+    print('[assignPlayer] Called with tableId: $tableId');
+    print('[assignPlayer] state.selectedTableId: ${state.selectedTableId}');
+    print('[assignPlayer] Tables: ${state.tables.map((t) => '${t.id}(${t.name})').join(', ')}');
+    
     final candidates = state.unseatedPlayers.where((p) => p.id == playerId);
     if (candidates.isEmpty) return;
 
@@ -543,16 +551,17 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
 
     // Use provided tableId or fall back to selectedTableId
     final actualTableId = tableId ?? state.selectedTableId;
+    print('[assignPlayer] Using tableId: $actualTableId');
+    
     final table = state.tables.firstWhere(
       (t) => t.id == actualTableId,
       orElse: () {
-        final st = state.selectedTable;
-        if (st != null) return st;
-        // Fallback to first table or create empty
+        print('[assignPlayer] Table $actualTableId not found, using first table');
         if (state.tables.isNotEmpty) return state.tables.first;
         return PokerTable(id: 'fallback', name: 'Стол 1', seats: List.generate(10, (index) => TableSeat(number: index + 1)));
       },
     );
+    print('[assignPlayer] Selected table: ${table.id} (${table.name})');
     final seatIndex = table.seats.indexWhere(
       (seat) => seat.number == seatNumber && !seat.isOccupied,
     );
