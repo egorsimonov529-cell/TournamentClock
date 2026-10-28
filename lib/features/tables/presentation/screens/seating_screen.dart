@@ -25,7 +25,6 @@ class SeatingScreen extends ConsumerStatefulWidget {
 
 class _SeatingScreenState extends ConsumerState<SeatingScreen> {
   String get tournamentId => widget.tournamentId;
-  int selectedTableIndex = 0;
 
   @override
   void initState() {
@@ -37,7 +36,15 @@ class _SeatingScreenState extends ConsumerState<SeatingScreen> {
 
   void _showAssignPlayerDialog(BuildContext context, WidgetRef ref) {
     final state = ref.read(seatingProvider(tournamentId));
-    final table = state.tables[selectedTableIndex];
+    final table = state.selectedTable;
+    if (table == null) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Нет доступных столов')),
+        );
+      }
+      return;
+    }
     final freeSeats = table.seats.where((s) => s.status == SeatStatus.free).toList();
     
     if (freeSeats.isEmpty) {
@@ -278,7 +285,7 @@ class _SeatingScreenState extends ConsumerState<SeatingScreen> {
                       itemCount: state.tables.length,
                       itemBuilder: (context, index) {
                         final table = state.tables[index];
-                        final isSelected = index == selectedTableIndex;
+                        final isSelected = table.id == state.selectedTableId;
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4),
                           child: Material(
@@ -286,7 +293,7 @@ class _SeatingScreenState extends ConsumerState<SeatingScreen> {
                             borderRadius: BorderRadius.circular(8),
                             child: InkWell(
                               borderRadius: BorderRadius.circular(8),
-                              onTap: () => setState(() => selectedTableIndex = index),
+                              onTap: () => ref.read(seatingProvider(tournamentId).notifier).selectTable(table.id),
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                 child: Text(
@@ -306,7 +313,7 @@ class _SeatingScreenState extends ConsumerState<SeatingScreen> {
                   ),
                 Expanded(
                   child: _RoundTableCanvas(
-                    table: state.tables[selectedTableIndex],
+                    table: state.selectedTable ?? state.tables.first,
                     tournamentId: tournamentId,
                     isAdmin: isAdmin,
                   ),
