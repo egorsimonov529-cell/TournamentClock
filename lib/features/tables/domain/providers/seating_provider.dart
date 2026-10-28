@@ -211,11 +211,23 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
             .map((item) => item as Map<String, dynamic>)
             .where((item) => !seatedIds.contains(item['id']))
             .map(
-              (item) => Player(
-                id: item['id'] as String,
-                login: item['login'] as String? ?? item['name'] as String? ?? 'Игрок',
-                name: item['name'] as String?,
-              ),
+              (item) {
+                final firstName = item['first_name'] as String?;
+                final lastName = item['last_name'] as String?;
+                final name = item['name'] as String?;
+                String? fullName;
+                if (name != null) {
+                  fullName = name;
+                } else if (firstName != null || lastName != null) {
+                  final parts = [firstName, lastName].where((p) => p?.isNotEmpty == true).toList();
+                  fullName = parts.isEmpty ? null : parts.join(' ');
+                }
+                return Player(
+                  id: item['id'] as String,
+                  login: item['login'] as String? ?? fullName ?? 'Игрок',
+                  name: fullName,
+                );
+              },
             )
             .toList();
       }
@@ -250,11 +262,23 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
             .where((item) => registeredPlayerIds.contains(item['id']))
             .where((item) => !seatedIds.contains(item['id']))
             .map(
-              (item) => Player(
-                id: item['id'] as String,
-                login: item['login'] as String? ?? item['name'] as String? ?? 'Игрок',
-                name: item['name'] as String?,
-              ),
+              (item) {
+                final firstName = item['first_name'] as String?;
+                final lastName = item['last_name'] as String?;
+                final name = item['name'] as String?;
+                String? fullName;
+                if (name != null) {
+                  fullName = name;
+                } else if (firstName != null || lastName != null) {
+                  final parts = [firstName, lastName].where((p) => p?.isNotEmpty == true).toList();
+                  fullName = parts.isEmpty ? null : parts.join(' ');
+                }
+                return Player(
+                  id: item['id'] as String,
+                  login: item['login'] as String? ?? fullName ?? 'Игрок',
+                  name: fullName,
+                );
+              },
             )
             .toList();
 

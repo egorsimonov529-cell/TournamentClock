@@ -50,11 +50,21 @@ class Player {
   factory Player.fromJson(Map<String, dynamic> json) {
     final rankCode = json['rpsRank'] as String?;
     final rank = rankCode != null ? RpsRankX.fromCode(rankCode) : RpsRank.fish;
+    final firstName = json['first_name'] as String?;
+    final lastName = json['last_name'] as String?;
+    final nameFromBackend = json['name'] as String?;
+    String? fullName;
+    if (nameFromBackend != null) {
+      fullName = nameFromBackend;
+    } else if (firstName != null || lastName != null) {
+      final parts = [firstName, lastName].where((p) => p?.isNotEmpty == true).toList();
+      fullName = parts.isEmpty ? null : parts.join(' ');
+    }
     return Player(
       id: json['id'] as String,
-      login: json['login'] as String? ?? json['name'] as String? ?? 'Игрок',
+      login: json['login'] as String? ?? fullName ?? 'Игрок',
       nickname: json['nickname'] as String?,
-      name: json['name'] as String?,
+      name: fullName,
       rpsRank: rank,
       skillScore: (json['skillScore'] as num?)?.toInt() ?? rank.baseScore,
     );

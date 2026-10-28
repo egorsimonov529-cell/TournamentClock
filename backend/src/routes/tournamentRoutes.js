@@ -240,7 +240,7 @@ router.get('/:id/registered-players', async (req, res) => {
     const { id } = req.params;
 
     const result = await query(
-      `SELECT u.id, u.login, u.name, u.nickname
+      `SELECT u.id, u.login, u.first_name, u.last_name, u.nickname
        FROM tournament_players tp
        JOIN users u ON u.id = tp.user_id
        WHERE tp.tournament_id = $1
