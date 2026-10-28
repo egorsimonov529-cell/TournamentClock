@@ -150,9 +150,14 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
 
         state = state.copyWith(
           tables: tables,
-          selectedTableId: tables.isNotEmpty ? tables.first.id : 'fallback',
+          // Only reset selectedTableId if current value is not valid
+          selectedTableId: tables.isNotEmpty
+              ? (state.tables.any((t) => t.id == state.selectedTableId)
+                  ? state.selectedTableId
+                  : tables.first.id)
+              : 'fallback',
         );
-        print('[Seating] State updated with ${tables.length} tables');
+        print('[Seating] State updated with ${tables.length} tables, selectedTableId: ${state.selectedTableId}');
       } else {
         // Если нет столов для турнира, показываем пустой список
         print('[Seating] No tables found for tournament $tournamentId');
