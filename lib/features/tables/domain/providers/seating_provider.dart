@@ -276,17 +276,28 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
   /// Бронирование места игроком (player-facing)
   /// С seat locking + optimistic update + rollback on failure
   Future<bool> bookSeat(int seatNumber) async {
-    final table = state.selectedTable;
-    if (table == null) return false;
-
-    final seatIndex = table.seats.indexWhere(
+    // Always use selectedTableId directly, not state.selectedTable
+    final selectedTable = state.tables.firstWhere(
+      (t) => t.id == state.selectedTableId,
+      orElse: () => state.tables.firstOrNull ?? PokerTable(
+        id: 'fallback',
+        name: 'Стол 1',
+        seats: List.generate(10, (index) => TableSeat(number: index + 1)),
+      ),
+    );
+    
+    if (selectedTable.id == 'fallback' && state.tables.isNotEmpty) {
+      // Fallback - use first available table
+      state = state.copyWith(selectedTableId: state.tables.first.id);
+      return bookSeat(seatNumber); // Retry with correct table
+    }
+    
+    final seatIndex = selectedTable.seats.indexWhere(
       (seat) => seat.number == seatNumber && seat.status == SeatStatus.free,
     );
     if (seatIndex < 0) return false;
 
-    final actualTableId = table.id == 'fallback'
-        ? (state.tables.firstOrNull?.id ?? table.id)
-        : table.id;
+    final actualTableId = selectedTable.id;
 
     // Lock seat to prevent double-clicks
     _lockSeat(actualTableId, seatNumber);
@@ -431,15 +442,22 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
   /// Отмена бронирования места игроком (player-facing)
   /// С seat locking + optimistic update + rollback on failure
   Future<bool> cancelSeat(int seatNumber) async {
-    final table = state.selectedTable;
-    if (table == null) return false;
+    // Always use selectedTableId directly
+    final selectedTable = state.tables.firstWhere(
+      (t) => t.id == state.selectedTableId,
+      orElse: () => PokerTable(
+        id: 'fallback',
+        name: 'Стол 1',
+        seats: List.generate(10, (index) => TableSeat(number: index + 1)),
+      ),
+    );
     
-    final seatIndex = table.seats.indexWhere(
+    final seatIndex = selectedTable.seats.indexWhere(
       (seat) => seat.number == seatNumber && seat.isBookedByMe,
     );
     if (seatIndex < 0) return false;
 
-    final actualTableId = table.id;
+    final actualTableId = selectedTable.id;
     
     // Lock seat to prevent double-clicks
     _lockSeat(actualTableId, seatNumber);
