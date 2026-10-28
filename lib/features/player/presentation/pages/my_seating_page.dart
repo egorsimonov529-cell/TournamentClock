@@ -368,18 +368,20 @@ class _PlayerTableWidgetState extends State<_PlayerTableWidget> {
     final isMyTable = widget.table.seats.any((seat) => seat.player?.id == widget.playerId);
     final isSelected = widget.selectedTableId == widget.table.id;
 
-    return Container(
-      width: 280,
-      decoration: BoxDecoration(
-        color: isMyTable
-            ? AppColors.primary.withValues(alpha: 0.08)
-            : AppColors.cardSecondary,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isSelected ? AppColors.accent : (isMyTable ? AppColors.accent : AppColors.border),
-          width: isSelected ? 2.5 : 1,
+    return GestureDetector(
+      onTap: () => widget.onTableSelected(widget.table.id),
+      child: Container(
+        width: 280,
+        decoration: BoxDecoration(
+          color: isMyTable
+              ? AppColors.primary.withValues(alpha: 0.08)
+              : AppColors.cardSecondary,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? AppColors.accent : (isMyTable ? AppColors.accent : AppColors.border),
+            width: isSelected ? 2.5 : 1,
+          ),
         ),
-      ),
       child: Column(
         children: [
           // Table header
@@ -461,6 +463,7 @@ class _PlayerTableWidgetState extends State<_PlayerTableWidget> {
           ),
         ],
       ),
+    ),
     );
   }
 }
