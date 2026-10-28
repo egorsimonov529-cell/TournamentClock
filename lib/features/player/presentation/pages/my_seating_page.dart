@@ -324,6 +324,9 @@ class _PlayerTableWidgetState extends State<_PlayerTableWidget> {
     if (widget.notifier.isSeatLocked(widget.table.id, seatNumber)) return;
     if (_booking) return;
     
+    // Явно выбираем стол перед бронированием
+    widget.notifier.selectTable(widget.table.id);
+    
     setState(() => _booking = true);
     final success = await widget.notifier.bookSeat(seatNumber, tableId: widget.table.id);
     setState(() => _booking = false);
