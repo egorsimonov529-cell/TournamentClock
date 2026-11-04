@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/models/rps_rank.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/admin_player.dart';
 import '../../domain/providers/admin_players_provider.dart';
 import '../widgets/admin_player_profile_dialog.dart';
@@ -19,6 +18,13 @@ class AdminPlayersScreen extends ConsumerStatefulWidget {
 class _AdminPlayersScreenState extends ConsumerState<AdminPlayersScreen> {
   String query = '';
 
+  void _showSeasonReset() {
+    showDialog(
+      context: context,
+      builder: (context) => const SeasonResetDialog(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(adminPlayersProvider);
@@ -27,69 +33,62 @@ class _AdminPlayersScreenState extends ConsumerState<AdminPlayersScreen> {
       return player.name.toLowerCase().contains(value) ||
           player.login.toLowerCase().contains(value);
     }).toList();
-    return Stack(
+    return Column(
       children: [
-        Column(
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
-                hintText: 'Поиск игрока...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              onChanged: (value) => setState(() => query = value),
+        // Поиск
+        TextField(
+          decoration: InputDecoration(
+            prefixIcon: const Icon(Icons.search),
+            hintText: 'Поиск игрока...',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: state.isLoading && state.players.isEmpty
-                  ? const Center(child: CircularProgressIndicator())
-                  : state.error != null && state.players.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Не удалось загрузить игроков: ${state.error}'),
-                          const SizedBox(height: 12),
-                          FilledButton(
-                            onPressed: () => ref
-                                .read(adminPlayersProvider.notifier)
-                                .load(),
-                            child: const Text('Повторить'),
-                          ),
-                        ],
-                      ),
-                    )
-                  : players.isEmpty
-                  ? const Center(child: Text('Игроки не найдены'))
-                  : ListView.separated(
-                      itemCount: players.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 8),
-                      itemBuilder: (context, index) =>
-                          _PlayerTile(player: players[index]),
-                    ),
-            ),
-          ],
+          ),
+          onChanged: (value) => setState(() => query = value),
         ),
-        // FAB для сезонного сброса
-        Positioned(
-          right: 16,
-          bottom: 16,
+        const SizedBox(height: 12),
+        // Кнопка сезонного сброса
+        Align(
+          alignment: Alignment.centerRight,
           child: FilledButton.icon(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => const SeasonResetDialog(),
-              );
-            },
+            onPressed: _showSeasonReset,
             icon: const Icon(Icons.autorenew),
             label: const Text('Сезонный сброс'),
             style: FilledButton.styleFrom(
               backgroundColor: Colors.red,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             ),
           ),
+        ),
+        const SizedBox(height: 12),
+        // Список игроков
+        Expanded(
+          child: state.isLoading && state.players.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : state.error != null && state.players.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('Не удалось загрузить игроков: ${state.error}'),
+                      const SizedBox(height: 12),
+                      FilledButton(
+                        onPressed: () => ref
+                            .read(adminPlayersProvider.notifier)
+                            .load(),
+                        child: const Text('Повторить'),
+                      ),
+                    ],
+                  ),
+                )
+              : players.isEmpty
+              ? const Center(child: Text('Игроки не найдены'))
+              : ListView.separated(
+                  itemCount: players.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 8),
+                  itemBuilder: (context, index) =>
+                      _PlayerTile(player: players[index]),
+                ),
         ),
       ],
     );
