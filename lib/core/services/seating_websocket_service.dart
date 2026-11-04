@@ -77,6 +77,14 @@ class SeatingWebSocketService {
       _handleTournamentStatusUpdate(data);
     });
 
+    // Слушаем события подтверждения игрока
+    _socket!.on('player_confirmed', (data) {
+      print('[WS] Player confirmed: $data');
+      if (onSeatingUpdate != null) {
+        onSeatingUpdate!();
+      }
+    });
+
     _socket!.connect();
   }
 
@@ -133,6 +141,17 @@ class SeatingWebSocketService {
     _joinedTournaments.clear();
     onSeatingUpdate = null;
     onTournamentStatusUpdate = null;
+  }
+
+  /// Отправить событие подтверждения игрока
+  void broadcastPlayerConfirmed(String tournamentId, String playerId) {
+    if (_socket?.connected == true) {
+      _socket!.emit('player_confirmed', {
+        'tournamentId': tournamentId,
+        'playerId': playerId,
+      });
+      print('[WS] Broadcast player confirmed: $playerId in tournament $tournamentId');
+    }
   }
 }
 

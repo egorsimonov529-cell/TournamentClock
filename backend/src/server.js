@@ -99,6 +99,18 @@ io.on('connection', (socket) => {
     console.log(`[WS] ${socket.id} left tournament:${tournamentId}`);
   });
   
+  // Player confirmed
+  socket.on('player_confirmed', (data) => {
+    const { tournamentId, playerId } = data || {};
+    if (tournamentId && playerId) {
+      io.to(`tournament:${tournamentId}`).emit('player_confirmed', {
+        tournamentId,
+        playerId,
+      });
+      console.log(`[WS] Player confirmed: ${playerId} in tournament ${tournamentId}`);
+    }
+  });
+  
   // Disconnect
   socket.on('disconnect', () => {
     console.log(`[WS] Client disconnected: ${socket.id}`);

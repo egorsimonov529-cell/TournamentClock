@@ -78,6 +78,10 @@ class TournamentNotifier extends StateNotifier<List<Tournament>> {
         print('[Tournament] WebSocket update received, reloading...');
         load();
       };
+      wsService.onSeatingUpdate = () {
+        print('[Tournament] Seating update received, reloading...');
+        load();
+      };
       print('[Tournament] Subscribed to WebSocket for status updates');
     } catch (e) {
       print('[Tournament] WebSocket subscription failed: $e');
@@ -89,6 +93,7 @@ class TournamentNotifier extends StateNotifier<List<Tournament>> {
     try {
       final wsService = ref.read(seatingWebSocketProvider);
       wsService.onTournamentStatusUpdate = null;
+      wsService.onSeatingUpdate = null;
     } catch (e) {
       // Ignore
     }
@@ -271,6 +276,17 @@ class TournamentNotifier extends StateNotifier<List<Tournament>> {
           else
             item,
       ];
+
+      // Отправляем WebSocket событие для real-time обновления
+      try {
+        final wsService = ref.read(seatingWebSocketProvider);
+        wsService.broadcastPlayerConfirmed(tournamentId, playerId);
+      } catch (e) {
+        print('[Tournament] WebSocket broadcast failed: $e');
+      }
+
+      // Перезагружаем турниры с сервера
+      await load();
       return true;
     } catch (e) {
       print('Ошибка подтверждения игрока: $e');
