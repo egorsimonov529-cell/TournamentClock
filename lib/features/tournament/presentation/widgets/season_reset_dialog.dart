@@ -34,7 +34,9 @@ class _SeasonResetDialogState extends ConsumerState<SeasonResetDialog> {
         backgroundColor: AppColors.surface,
         title: const Text('Подтвердите сезонный сброс'),
         content: const Text(
-          'Все игроки будут переведены на базовый уровень текущего ранга.\n\n'
+          'Все игроки будут сброшены:\n'
+          '• Рейтинг → 0\n'
+          '• RPS → базовый уровень текущего ранга\n\n'
           'Например: игрок с 240 RPS (Bronze) получит 200 RPS.',
         ),
         actions: [
@@ -102,7 +104,7 @@ class _SeasonResetDialogState extends ConsumerState<SeasonResetDialog> {
             Row(
               children: [
                 const Text(
-                  'Сезонный сброс RPS',
+                  'Сезонный сброс — рейтинг и RPS',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -136,6 +138,7 @@ class _SeasonResetDialogState extends ConsumerState<SeasonResetDialog> {
                   ),
                   SizedBox(height: 8),
                   Text(
+                    '• Рейтинг сбрасывается до 0\n'
                     '• RPS сбрасывается до базового значения текущего ранга\n'
                     '• Fish (0): 0 RPS\n'
                     '• Bronze (200): 200 RPS\n'
@@ -176,7 +179,7 @@ class _SeasonResetDialogState extends ConsumerState<SeasonResetDialog> {
                     backgroundColor: Colors.red,
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   ),
-                  child: const Text('Сбросить RPS'),
+                  child: const Text('Сбросить всё'),
                 ),
               ],
             ),

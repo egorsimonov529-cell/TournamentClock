@@ -16,6 +16,7 @@ class AdminPlayersScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminPlayersScreenState extends ConsumerState<AdminPlayersScreen> {
+  final TextEditingController _searchController = TextEditingController();
   String query = '';
 
   void _showSeasonReset() {
@@ -23,6 +24,12 @@ class _AdminPlayersScreenState extends ConsumerState<AdminPlayersScreen> {
       context: context,
       builder: (context) => const SeasonResetDialog(),
     );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -35,36 +42,43 @@ class _AdminPlayersScreenState extends ConsumerState<AdminPlayersScreen> {
     }).toList();
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Поиск
-        TextField(
-          decoration: InputDecoration(
-            prefixIcon: const Icon(Icons.search),
-            hintText: 'Поиск игрока...',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.search),
+              hintText: 'Поиск игрока...',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
-          ),
-          onChanged: (value) => setState(() => query = value),
-        ),
-        const SizedBox(height: 12),
-        // Кнопка сезонного сброса — большая и заметная
-        SizedBox(
-          width: double.infinity,
-          child: FilledButton.icon(
-            onPressed: _showSeasonReset,
-            icon: const Icon(Icons.autorenew),
-            label: const Text('Сезонный сброс RPS — всем игрокам'),
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-              textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+            onChanged: (value) => setState(() => query = value),
           ),
         ),
-        const SizedBox(height: 12),
+        // Кнопка сезонного сброса
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: SizedBox(
+            width: double.infinity,
+            height: 56,
+            child: FilledButton.icon(
+              onPressed: _showSeasonReset,
+              icon: const Icon(Icons.autorenew),
+              label: const Text(
+                'Сезонный сброс — рейтинг и RPS',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
         // Список игроков
         Expanded(
           child: state.isLoading && state.players.isEmpty
