@@ -37,7 +37,9 @@ class _SeasonResetDialogState extends ConsumerState<SeasonResetDialog> {
           'Все игроки будут сброшены:\n'
           '• Рейтинг → 0\n'
           '• RPS → базовый уровень текущего ранга\n\n'
-          'Например: игрок с 240 RPS (Bronze) получит 200 RPS.',
+          'Fish (0): 0 RPS | Bronze (200): 200 RPS\n'
+          'Silver (400): 400 RPS | Gold (600): 600 RPS\n'
+          'Platinum (800): 800 RPS',
         ),
         actions: [
           TextButton(

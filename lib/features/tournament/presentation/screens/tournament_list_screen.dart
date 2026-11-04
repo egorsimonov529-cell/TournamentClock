@@ -167,7 +167,7 @@ class _TournamentListScreenState extends ConsumerState<TournamentListScreen> {
             );
           },
           icon: const Icon(Icons.autorenew),
-          label: const Text('Сезонный сброс'),
+          label: const Text('Сезонный сброс — рейтинг и RPS'),
           style: FilledButton.styleFrom(
             backgroundColor: Colors.red,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),

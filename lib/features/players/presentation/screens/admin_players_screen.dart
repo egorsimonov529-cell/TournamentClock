@@ -6,7 +6,6 @@ import '../../domain/models/admin_player.dart';
 import '../../domain/providers/admin_players_provider.dart';
 import '../widgets/admin_player_profile_dialog.dart';
 import '../../../tournament/presentation/widgets/edit_player_rps_dialog.dart';
-import '../../../tournament/presentation/widgets/season_reset_dialog.dart';
 
 class AdminPlayersScreen extends ConsumerStatefulWidget {
   const AdminPlayersScreen({super.key});
@@ -16,21 +15,7 @@ class AdminPlayersScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminPlayersScreenState extends ConsumerState<AdminPlayersScreen> {
-  final TextEditingController _searchController = TextEditingController();
   String query = '';
-
-  void _showSeasonReset() {
-    showDialog(
-      context: context,
-      builder: (context) => const SeasonResetDialog(),
-    );
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +32,6 @@ class _AdminPlayersScreenState extends ConsumerState<AdminPlayersScreen> {
         Padding(
           padding: const EdgeInsets.all(12),
           child: TextField(
-            controller: _searchController,
             decoration: InputDecoration(
               prefixIcon: const Icon(Icons.search),
               hintText: 'Поиск игрока...',
@@ -58,27 +42,6 @@ class _AdminPlayersScreenState extends ConsumerState<AdminPlayersScreen> {
             onChanged: (value) => setState(() => query = value),
           ),
         ),
-        // Кнопка сезонного сброса
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: FilledButton.icon(
-              onPressed: _showSeasonReset,
-              icon: const Icon(Icons.autorenew),
-              label: const Text(
-                'Сезонный сброс — рейтинг и RPS',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              style: FilledButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
         // Список игроков
         Expanded(
           child: state.isLoading && state.players.isEmpty
