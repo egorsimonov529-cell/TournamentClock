@@ -160,7 +160,7 @@ class RpsNotifier extends StateNotifier<RpsState> {
       return false;
     } catch (e) {
       print('Ошибка сезонного сброса: $e');
-      return false;
+      rethrow;
     }
   }
 }

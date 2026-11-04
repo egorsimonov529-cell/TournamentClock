@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 
 import '../../core/constants/app_constants.dart';
@@ -7,6 +9,8 @@ import '../../core/services/secure_storage_service.dart';
 /// HTTP-сервис для работы с API
 class ApiService {
   late final Dio _dio;
+  bool _isRefreshing = false;
+  Completer<bool>? _refreshCompleter;
 
   ApiService()
     : _dio = Dio(
@@ -31,14 +35,123 @@ class ApiService {
           return handler.next(options);
         },
         onError: (error, handler) async {
-          // Если 401 — очищаем сессию
+          // Если 401 — пытаемся обновить токен
           if (error.response?.statusCode == 401) {
-            await _clearAllTokens();
+            final shouldRetry = await _handleUnauthorized(error.requestOptions);
+            if (shouldRetry) {
+              final retryResponse = await _retryRequest(error.requestOptions);
+              return handler.resolve(retryResponse);
+            }
           }
           return handler.next(error);
         },
       ),
     );
+  }
+
+  /// Обработка 401: пробуем обновить токен через refresh_token
+  Future<bool> _handleUnauthorized(RequestOptions options) async {
+    if (_isRefreshing) {
+      // Уже обновляем токен — ждём завершения
+      final refreshResult = await _refreshCompleter!.future;
+      if (refreshResult) {
+        final newToken = await _getAccessToken();
+        if (newToken != null && newToken.isNotEmpty) {
+          options.headers['Authorization'] = 'Bearer $newToken';
+        }
+        return true;
+      }
+      return false;
+    }
+
+    _isRefreshing = true;
+    _refreshCompleter = Completer<bool>();
+
+    try {
+      final success = await refreshToken();
+      if (success) {
+        // Обновляем токен в заголовках текущего запроса
+        final newToken = await _getAccessToken();
+        if (newToken != null && newToken.isNotEmpty) {
+          options.headers['Authorization'] = 'Bearer $newToken';
+        }
+        _refreshCompleter!.complete(true);
+        return true;
+      } else {
+        // Обновление не удалось — очищаем сессию
+        await _clearAllTokens();
+        _refreshCompleter!.complete(false);
+        return false;
+      }
+    } catch (e) {
+      print('Ошибка обновления токена: $e');
+      await _clearAllTokens();
+      _refreshCompleter!.complete(false);
+      return false;
+    } finally {
+      _isRefreshing = false;
+      _refreshCompleter = null;
+    }
+  }
+
+  /// Повторный запрос с обновлённым токеном
+  Future<Response> _retryRequest(RequestOptions options) async {
+    final token = await _getAccessToken();
+    if (token != null && token.isNotEmpty) {
+      options.headers['Authorization'] = 'Bearer $token';
+    }
+    return _dio.request(
+      options.path,
+      data: options.data,
+      queryParameters: options.queryParameters,
+      cancelToken: options.cancelToken,
+      options: Options(
+        method: options.method,
+        headers: options.headers,
+        responseType: options.responseType,
+        contentType: options.contentType,
+      ),
+    );
+  }
+
+  /// Обновление access token через refresh token
+  Future<bool> refreshToken() async {
+    try {
+      final storage = SecureStorageService();
+      final storedRefreshToken = await storage.read(AppConstants.refreshTokenKey);
+      if (storedRefreshToken == null || storedRefreshToken.isEmpty) {
+        return false;
+      }
+
+      final response = await _dio.post(
+        '/auth/refresh',
+        data: {'refreshToken': storedRefreshToken},
+      );
+
+      if (response.statusCode == 200 && response.data != null) {
+        final data = response.data as Map<String, dynamic>;
+        final newAccessToken = data['accessToken'] as String?;
+        final newRefreshToken = data['refreshToken'] as String?;
+
+        if (newAccessToken != null && newAccessToken.isNotEmpty) {
+          await storage.write(
+            key: AppConstants.accessTokenKey,
+            value: newAccessToken,
+          );
+          if (newRefreshToken != null && newRefreshToken.isNotEmpty) {
+            await storage.write(
+              key: AppConstants.refreshTokenKey,
+              value: newRefreshToken,
+            );
+          }
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      print('Ошибка обновления токена: $e');
+      return false;
+    }
   }
 
   /// Получить access token из secure storage
