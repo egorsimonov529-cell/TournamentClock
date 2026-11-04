@@ -52,11 +52,11 @@ router.post('/settings', requireAuth, requireAdmin, async (req, res) => {
 
 // ===== Helper: Get RPS rank from points =====
 function getRankFromPoints(points) {
-  if (points >= 800) return { rank: 'Platinum', code: 'PLATINUM' };
-  if (points >= 600) return { rank: 'Gold', code: 'GOLD' };
-  if (points >= 400) return { rank: 'Silver', code: 'SILVER' };
-  if (points >= 200) return { rank: 'Bronze', code: 'BRONZE' };
-  return { rank: 'Fish', code: 'FISH' };
+  if (points >= 800) return { rank: 'Platinum', code: 'PLATINUM', baseScore: 800 };
+  if (points >= 600) return { rank: 'Gold', code: 'GOLD', baseScore: 600 };
+  if (points >= 400) return { rank: 'Silver', code: 'SILVER', baseScore: 400 };
+  if (points >= 200) return { rank: 'Bronze', code: 'BRONZE', baseScore: 200 };
+  return { rank: 'Fish', code: 'FISH', baseScore: 0 };
 }
 
 // ===== Tournament Results =====
@@ -251,7 +251,7 @@ router.post('/season-reset', requireAuth, requireAdmin, async (req, res) => {
     const { reason } = req.body || {};
     
     // Получаем всех игроков
-    const usersRes = await query('SELECT id, rps_points, rps_rank, rating FROM users');
+    const usersRes = await query('SELECT id, COALESCE(rps_points, 0) as rps_points, rps_rank, COALESCE(rating, 0) as rating FROM users');
     
     const results = [];
     
