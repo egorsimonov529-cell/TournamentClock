@@ -120,20 +120,24 @@ class ApiService {
       final storage = SecureStorageService();
       final storedRefreshToken = await storage.read(AppConstants.refreshTokenKey);
       if (storedRefreshToken == null || storedRefreshToken.isEmpty) {
+        print('🔄 Refresh token отсутствует');
         return false;
       }
 
+      print('🔄 Отправка refresh token на сервер...');
       final response = await _dio.post(
         '/auth/refresh',
         data: {'refreshToken': storedRefreshToken},
       );
 
+      print('🔄 Ответ сервера: ${response.statusCode}');
       if (response.statusCode == 200 && response.data != null) {
         final data = response.data as Map<String, dynamic>;
         final newAccessToken = data['accessToken'] as String?;
         final newRefreshToken = data['refreshToken'] as String?;
 
         if (newAccessToken != null && newAccessToken.isNotEmpty) {
+          print('✅ Токены обновлены');
           await storage.write(
             key: AppConstants.accessTokenKey,
             value: newAccessToken,
@@ -147,9 +151,10 @@ class ApiService {
           return true;
         }
       }
+      print('❌ Не удалось обновить токены');
       return false;
     } catch (e) {
-      print('Ошибка обновления токена: $e');
+      print('❌ Ошибка обновления токена: $e');
       return false;
     }
   }

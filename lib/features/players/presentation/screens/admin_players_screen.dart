@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/models/rps_rank.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/admin_player.dart';
 import '../../domain/providers/admin_players_provider.dart';
 import '../widgets/admin_player_profile_dialog.dart';
 import '../../../tournament/presentation/widgets/edit_player_rps_dialog.dart';
+import '../../../tournament/presentation/widgets/season_reset_dialog.dart';
 
 class AdminPlayersScreen extends ConsumerStatefulWidget {
   const AdminPlayersScreen({super.key});
@@ -25,46 +27,69 @@ class _AdminPlayersScreenState extends ConsumerState<AdminPlayersScreen> {
       return player.name.toLowerCase().contains(value) ||
           player.login.toLowerCase().contains(value);
     }).toList();
-    return Column(
+    return Stack(
       children: [
-        TextField(
-          decoration: InputDecoration(
-            prefixIcon: const Icon(Icons.search),
-            hintText: 'Поиск игрока...',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+        Column(
+          children: [
+            TextField(
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.search),
+                hintText: 'Поиск игрока...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onChanged: (value) => setState(() => query = value),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: state.isLoading && state.players.isEmpty
+                  ? const Center(child: CircularProgressIndicator())
+                  : state.error != null && state.players.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Не удалось загрузить игроков: ${state.error}'),
+                          const SizedBox(height: 12),
+                          FilledButton(
+                            onPressed: () => ref
+                                .read(adminPlayersProvider.notifier)
+                                .load(),
+                            child: const Text('Повторить'),
+                          ),
+                        ],
+                      ),
+                    )
+                  : players.isEmpty
+                  ? const Center(child: Text('Игроки не найдены'))
+                  : ListView.separated(
+                      itemCount: players.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 8),
+                      itemBuilder: (context, index) =>
+                          _PlayerTile(player: players[index]),
+                    ),
+            ),
+          ],
+        ),
+        // FAB для сезонного сброса
+        Positioned(
+          right: 16,
+          bottom: 16,
+          child: FilledButton.icon(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => const SeasonResetDialog(),
+              );
+            },
+            icon: const Icon(Icons.autorenew),
+            label: const Text('Сезонный сброс'),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             ),
           ),
-          onChanged: (value) => setState(() => query = value),
-        ),
-        const SizedBox(height: 16),
-        Expanded(
-          child: state.isLoading && state.players.isEmpty
-              ? const Center(child: CircularProgressIndicator())
-              : state.error != null && state.players.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('Не удалось загрузить игроков: ${state.error}'),
-                      const SizedBox(height: 12),
-                      FilledButton(
-                        onPressed: () => ref
-                            .read(adminPlayersProvider.notifier)
-                            .load(),
-                        child: const Text('Повторить'),
-                      ),
-                    ],
-                  ),
-                )
-              : players.isEmpty
-              ? const Center(child: Text('Игроки не найдены'))
-              : ListView.separated(
-                  itemCount: players.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 8),
-                  itemBuilder: (context, index) =>
-                      _PlayerTile(player: players[index]),
-                ),
         ),
       ],
     );
@@ -158,6 +183,35 @@ class _PlayerTile extends ConsumerWidget {
                     icon: const Icon(Icons.add_chart_rounded),
                     visualDensity: VisualDensity.compact,
                   ),
+                  IconButton(
+                    onPressed: () async {
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Сбросить рейтинг'),
+                          content: const Text('Вы уверены, что хотите сбросить рейтинг игрока до нуля?'),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Отмена')),
+                            FilledButton(
+                              onPressed: () => Navigator.pop(ctx, true),
+                              style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                              child: const Text('Сбросить'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirmed != true) return;
+                      try {
+                        await ref.read(adminPlayersProvider.notifier).resetRating(player.id);
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Рейтинг сброшен')));
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ошибка: ${e.toString()}')));
+                      }
+                    },
+                    icon: const Icon(Icons.restore_rounded),
+                    tooltip: 'Сбросить рейтинг',
+                    visualDensity: VisualDensity.compact,
+                  ),
                 ],
               )
             : Row(
@@ -220,6 +274,34 @@ class _PlayerTile extends ConsumerWidget {
                       }
                     },
                     icon: const Icon(Icons.add_chart_rounded),
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('Сбросить рейтинг'),
+                          content: const Text('Вы уверены, что хотите сбросить рейтинг игрока до нуля?'),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Отмена')),
+                            FilledButton(
+                              onPressed: () => Navigator.pop(ctx, true),
+                              style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                              child: const Text('Сбросить'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirmed != true) return;
+                      try {
+                        await ref.read(adminPlayersProvider.notifier).resetRating(player.id);
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Рейтинг сброшен')));
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ошибка: ${e.toString()}')));
+                      }
+                    },
+                    icon: const Icon(Icons.restore_rounded),
+                    tooltip: 'Сбросить рейтинг',
                   ),
                   const SizedBox(width: 8),
                   const Icon(Icons.chevron_right),
