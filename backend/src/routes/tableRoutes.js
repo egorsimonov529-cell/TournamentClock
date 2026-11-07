@@ -1,5 +1,5 @@
 const express = require('express');
-const { query } = require('../config/database');
+const { query, pool } = require('../config/database');
 const { requireAuth } = require('../middleware/authMiddleware');
 const { io } = require('../server');
 
@@ -43,7 +43,7 @@ router.get('/', async (req, res) => {
     const result = [];
     for (const table of tables) {
       let seatsQuery = `
-        SELECT ts.*, u.id AS user_id, u.login, u.first_name, u.last_name, u.rps_rank, u.rating
+        SELECT ts.*, u.id AS user_id, u.login, u.first_name, u.last_name, u.rps_rank, u.rating, u.avatar_url
         FROM table_seats ts
         LEFT JOIN users u ON u.id = ts.user_id
         WHERE ts.table_id = $1
@@ -68,6 +68,8 @@ router.get('/', async (req, res) => {
               ? {
                   id: seat.user_id,
                   name: `${seat.first_name || seat.login || 'Player'}`,
+                  login: seat.login || seat.first_name || 'Player',
+                  avatarUrl: seat.avatar_url || null,
                   rpsRank: seat.rps_rank || 'FISH',
                   skillScore: Number(seat.rating) || 0,
                   isCurrentUser: isBookedByMe,
@@ -217,15 +219,30 @@ router.patch('/:tableId/seats/:seatNumber', requireAuth, async (req, res) => {
 
     // Обновляем место: либо сажаем игрока, либо освобождаем
     if (user_id) {
-      // Проверяем, нет ли уже игрока за другим столом
+      const tournamentInfo = await query(
+        `SELECT tournament_id FROM tables WHERE id = $1`,
+        [tableId],
+      );
+
+      const tournamentId = tournamentInfo.rows[0]?.tournament_id;
+      if (!tournamentId) {
+        return res.status(400).json({ message: 'Стол не привязан к турниру' });
+      }
+
+      // Игрок может занимать только 1 бокс в рамках текущего турнира,
+      // но может одновременно иметь боксы в других турнирах.
       const existingSeat = await query(
-        `SELECT ts.table_id FROM table_seats ts
-         WHERE ts.user_id = $1 AND ts.table_id != $2`,
-        [user_id, tableId]
+        `SELECT ts.table_id, ts.seat_number
+         FROM table_seats ts
+         JOIN tables t ON t.id = ts.table_id
+         WHERE ts.user_id = $1
+           AND t.tournament_id = $2
+           AND ts.table_id != $3`,
+        [user_id, tournamentId, tableId]
       );
 
       if (existingSeat.rows[0]) {
-        return res.status(400).json({ message: 'Игрок уже занят за другим столом' });
+        return res.status(400).json({ message: 'Игрок уже занят за другим столом в этом турнире' });
       }
 
       await query(
@@ -433,25 +450,107 @@ router.post('/:tableId/seats/:seatNumber/cancel', requireAuth, async (req, res) 
 
 // DELETE /api/v1/tables/:tableId - Удаление стола (только админ)
 router.delete('/:tableId', requireAuth, async (req, res) => {
+  const client = await pool.connect();
+
   try {
     const { tableId } = req.params;
-    
+
     // Проверяем, что пользователь админ
     if (req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Доступ запрещён' });
     }
 
-    // Удаляем стол (места удалятся автоматически из-за ON DELETE CASCADE)
-    await query('DELETE FROM tables WHERE id = $1', [tableId]);
+    await client.query('BEGIN');
 
-    res.json({ 
-      success: true, 
-      message: 'Стол удалён',
-      tableId 
+    const tableInfo = await client.query(
+      `SELECT id, tournament_id FROM tables WHERE id = $1`,
+      [tableId],
+    );
+
+    if (!tableInfo.rows[0]) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ message: 'Стол не найден' });
+    }
+
+    const tournamentId = tableInfo.rows[0].tournament_id;
+    const occupiedSeats = await client.query(
+      `SELECT ts.user_id, ts.seat_number
+       FROM table_seats ts
+       WHERE ts.table_id = $1 AND ts.user_id IS NOT NULL
+       ORDER BY ts.seat_number ASC`,
+      [tableId],
+    );
+
+    const otherTables = await client.query(
+      `SELECT t.id, t.name
+       FROM tables t
+       WHERE t.tournament_id = $1 AND t.id <> $2
+       ORDER BY t.created_at ASC`,
+      [tournamentId, tableId],
+    );
+
+    const freeSeatSlots = [];
+    for (const table of otherTables.rows) {
+      const tableSeats = await client.query(
+        `SELECT ts.seat_number
+         FROM table_seats ts
+         WHERE ts.table_id = $1 AND ts.user_id IS NULL
+         ORDER BY ts.seat_number ASC`,
+        [table.id],
+      );
+
+      for (const seat of tableSeats.rows) {
+        freeSeatSlots.push({
+          tableId: table.id,
+          seatNumber: seat.seat_number,
+        });
+      }
+    }
+
+    if (occupiedSeats.rows.length > freeSeatSlots.length) {
+      await client.query('ROLLBACK');
+      return res.status(409).json({
+        message: 'Недостаточно свободных мест для пересадки игроков. Удаление стола отменено.',
+      });
+    }
+
+    for (const occupiedSeat of occupiedSeats.rows) {
+      const nextFreeSeat = freeSeatSlots.shift();
+      if (!nextFreeSeat) {
+        await client.query('ROLLBACK');
+        return res.status(409).json({
+          message: 'Недостаточно свободных мест для пересадки игроков. Удаление стола отменено.',
+        });
+      }
+
+      await client.query(
+        `UPDATE table_seats
+         SET user_id = $1
+         WHERE table_id = $2 AND seat_number = $3`,
+        [occupiedSeat.user_id, nextFreeSeat.tableId, nextFreeSeat.seatNumber],
+      );
+    }
+
+    await client.query('DELETE FROM tables WHERE id = $1', [tableId]);
+    await client.query('COMMIT');
+
+    io.to(`tournament:${tournamentId}`).emit('seating_updated', {
+      tableId,
+      action: 'table_deleted',
+      reallocatedPlayers: occupiedSeats.rows.map((seat) => seat.user_id),
+    });
+
+    res.json({
+      success: true,
+      message: 'Стол удалён и игроки пересажены',
+      tableId,
     });
   } catch (error) {
-    console.error(error);
+    await client.query('ROLLBACK').catch(() => {});
+    console.error('[TABLES] Error deleting table:', error);
     res.status(500).json({ message: 'Ошибка удаления стола' });
+  } finally {
+    client.release();
   }
 });
 

@@ -84,6 +84,36 @@ class AdminPlayersNotifier extends StateNotifier<AdminPlayersState> {
     await load();
   }
 
+  Future<void> resetRating(String playerId) async {
+    try {
+      final response = await ApiService().post('/players/$playerId/rating/reset');
+      final data = _jsonMap(response.data);
+      final newRankCode = data?['newRank'];
+      
+      RpsRank newRank = RpsRank.fish;
+      if (newRankCode != null) {
+        newRank = RpsRankX.fromCode(newRankCode.toString());
+      }
+      
+      state = AdminPlayersState(players: [
+        for (final player in state.players)
+          if (player.id == playerId)
+            player.copyWith(
+              rating: 0,
+              rpsPoints: 0,
+              rank: newRank,
+            )
+          else
+            player,
+      ]);
+      
+      // Reload from server to ensure all UI components see the updated data
+      await load();
+    } catch (e) {
+      throw Exception('Failed to reset rating: $e');
+    }
+  }
+
   void updateRank(String playerId, RpsRank rank) {
     state = AdminPlayersState(players: [
       for (final player in state.players)

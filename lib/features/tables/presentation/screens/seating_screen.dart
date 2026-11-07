@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_radius.dart';
@@ -213,6 +214,47 @@ class _SeatingScreenState extends ConsumerState<SeatingScreen> {
                 }
               },
             ),
+          if (isAdmin && state.tables.length > 1)
+            IconButton(
+              icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+              tooltip: 'Удалить текущий стол',
+              onPressed: () async {
+                final selectedTable = state.selectedTable ?? state.tables.first;
+                final confirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (dialogContext) => AlertDialog(
+                    backgroundColor: AppColors.surface,
+                    title: const Text('Удалить стол?'),
+                    content: Text('Игроки за столом "${selectedTable.name}" будут пересажены на другие свободные места. Если мест не хватит, стол не будет удалён.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(dialogContext, false),
+                        child: const Text('Отмена'),
+                      ),
+                      FilledButton(
+                        onPressed: () => Navigator.pop(dialogContext, true),
+                        style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                        child: const Text('Удалить'),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (confirmed != true) return;
+
+                final success = await ref.read(seatingProvider(tournamentId).notifier).deleteTable(selectedTable.id);
+                if (!mounted) return;
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      success ? 'Стол удалён и игроки пересажены' : 'Недостаточно свободных мест — стол не удалён',
+                    ),
+                    backgroundColor: success ? AppColors.accent : Colors.red,
+                  ),
+                );
+              },
+            ),
           if (isAdmin)
             IconButton(
               icon: const Icon(Icons.groups, color: AppColors.accent),
@@ -340,6 +382,30 @@ class _RoundTableCanvasState extends ConsumerState<_RoundTableCanvas> {
     return widget.isAdmin
         ? (seat.player!.name ?? seat.player!.login)
         : seat.player!.displayName;
+  }
+
+  String? _resolveAvatarUrl(String? avatarUrl) {
+    if (avatarUrl == null || avatarUrl.trim().isEmpty) return null;
+    if (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://')) {
+      return avatarUrl;
+    }
+    final baseUrl = AppConstants.apiBaseUrl.replaceAll('/api/v1', '');
+    return '$baseUrl$avatarUrl';
+  }
+
+  Color _rankColor(RpsRank rank) {
+    switch (rank) {
+      case RpsRank.fish:
+        return const Color(0xFF8B4513);
+      case RpsRank.bronze:
+        return const Color(0xFFCD7F32);
+      case RpsRank.silver:
+        return const Color(0xFFC0C0C0);
+      case RpsRank.gold:
+        return const Color(0xFFFFD700);
+      case RpsRank.platinum:
+        return const Color(0xFFE5E4E2);
+    }
   }
 
   void _handleTap(TapDownDetails details, Size size) {
@@ -502,6 +568,8 @@ class _RoundTableCanvasState extends ConsumerState<_RoundTableCanvas> {
               final seatX = geometry.centerX + math.cos(-math.pi / 2 + (2 * math.pi * index / widget.table.seats.length)) * geometry.seatRadiusX;
               final seatY = geometry.centerY + math.sin(-math.pi / 2 + (2 * math.pi * index / widget.table.seats.length)) * geometry.seatRadiusY;
 
+              final avatarUrl = _resolveAvatarUrl(seat.player?.avatarUrl);
+
               return Positioned(
                 left: seatX - geometry.seatWidth / 2,
                 top: seatY - geometry.seatHeight / 2,
@@ -510,13 +578,52 @@ class _RoundTableCanvasState extends ConsumerState<_RoundTableCanvas> {
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () => _handleSeatTap(seat),
-                  child: const SizedBox.expand(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                      ),
-                    ),
-                  ),
+                  child: seat.player == null
+                      ? const SizedBox.expand()
+                      : Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              width: geometry.seatWidth * 0.76,
+                              height: geometry.seatHeight * 0.7,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                            ),
+                            Positioned(
+                              top: 0,
+                              child: CircleAvatar(
+                                radius: (geometry.seatWidth * 0.76) / 2.2,
+                                backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+                                backgroundColor: AppColors.surface,
+                                child: avatarUrl == null
+                                    ? Text(
+                                        (seat.player!.name ?? seat.player!.login).trim().isNotEmpty
+                                            ? (seat.player!.name ?? seat.player!.login).substring(0, 1).toUpperCase()
+                                            : '?',
+                                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                      )
+                                    : null,
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 3,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: _rankColor(seat.player!.rpsRank),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: Colors.white.withValues(alpha: 0.6), width: 1),
+                                ),
+                                child: Text(
+                                  seat.player!.rpsRank.label,
+                                  style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.black87),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                 ),
               );
             }),

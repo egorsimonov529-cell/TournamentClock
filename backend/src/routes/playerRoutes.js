@@ -106,4 +106,30 @@ router.post('/:id/rating', requireAuth, requireAdmin, async (req, res) => {
   }
 });
 
+// Admin: reset rating to zero
+router.post('/:id/rating/reset', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await pool.query('BEGIN');
+    const userRes = await pool.query('SELECT rating, rps_points FROM users WHERE id = $1 FOR UPDATE', [id]);
+    if (userRes.rows.length === 0) {
+      await pool.query('ROLLBACK');
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const prev = userRes.rows[0].rating || 0;
+    const prevRpsPoints = userRes.rows[0].rps_points || 0;
+    
+    await pool.query('UPDATE users SET rating = 0, rps_points = 0, rps_rank = \'FISH\' WHERE id = $1', [id]);
+    await pool.query('INSERT INTO rating_history (user_id, delta, reason) VALUES ($1, $2, $3)', [id, -prev, 'Сброс рейтинга администратором']);
+    await pool.query('COMMIT');
+
+    res.json({ id, prev, next: 0, prevRpsPoints, nextRpsPoints: 0, newRank: 'FISH' });
+  } catch (error) {
+    try { await pool.query('ROLLBACK'); } catch (_) {}
+    console.error(error);
+    res.status(500).json({ message: 'Failed to reset rating' });
+  }
+});
+
 module.exports = router;

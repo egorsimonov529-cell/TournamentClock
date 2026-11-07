@@ -234,6 +234,74 @@ void main() {
       },
     );
 
+    test('deleteTable can reassign players only when enough free seats exist', () {
+      final a = player('a', RpsRank.gold);
+      final b = player('b', RpsRank.silver);
+      final notifier = SeatingNotifier(
+        initialState: state([], [2, 2]),
+        ref: null,
+        tournamentId: 't1',
+      );
+      notifier.state = notifier.state.copyWith(
+        tables: [
+          PokerTable(
+            id: 't0',
+            name: 'Table 0',
+            seats: [
+              TableSeat(number: 1, player: a, status: SeatStatus.occupied),
+              TableSeat(number: 2, player: b, status: SeatStatus.occupied),
+            ],
+          ),
+          PokerTable(
+            id: 't1',
+            name: 'Table 1',
+            seats: [
+              TableSeat(number: 1, status: SeatStatus.free),
+              TableSeat(number: 2, status: SeatStatus.free),
+            ],
+          ),
+        ],
+      );
+
+      expect(notifier.canDeleteTable('t0'), isTrue);
+      expect(
+        notifier.buildDeletionAssignments('t0'),
+        {'a': 't1:1', 'b': 't1:2'},
+      );
+    });
+
+    test('deleteTable blocks removal when remaining tables do not have enough free seats', () {
+      final a = player('a', RpsRank.gold);
+      final b = player('b', RpsRank.silver);
+      final notifier = SeatingNotifier(
+        initialState: state([], [2, 1]),
+        ref: null,
+        tournamentId: 't1',
+      );
+      notifier.state = notifier.state.copyWith(
+        tables: [
+          PokerTable(
+            id: 't0',
+            name: 'Table 0',
+            seats: [
+              TableSeat(number: 1, player: a, status: SeatStatus.occupied),
+              TableSeat(number: 2, player: b, status: SeatStatus.occupied),
+            ],
+          ),
+          PokerTable(
+            id: 't1',
+            name: 'Table 1',
+            seats: [
+              TableSeat(number: 1, status: SeatStatus.free),
+            ],
+          ),
+        ],
+      );
+
+      expect(notifier.canDeleteTable('t0'), isFalse);
+      expect(notifier.buildDeletionAssignments('t0'), isEmpty);
+    });
+
     test('autoSeat works with one table', () async {
       final notifier = SeatingNotifier(
         initialState: state(

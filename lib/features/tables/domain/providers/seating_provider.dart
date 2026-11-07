@@ -130,6 +130,7 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
                 login: playerData['login'] as String? ?? playerData['name'] as String? ?? 'Игрок',
                 nickname: playerData['nickname'] as String?,
                 name: playerData['name'] as String?,
+                avatarUrl: playerData['avatarUrl'] as String? ?? playerData['avatar_url'] as String?,
                 rpsRank: rank,
                 skillScore: (playerData['skillScore'] as num?)?.toInt() ?? rank.baseScore,
               );
@@ -229,6 +230,7 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
                   id: item['id'] as String,
                   login: item['login'] as String? ?? fullName ?? 'Игрок',
                   name: fullName,
+                  avatarUrl: item['avatarUrl'] as String? ?? item['avatar_url'] as String?,
                 );
               },
             )
@@ -280,6 +282,7 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
                   id: item['id'] as String,
                   login: item['login'] as String? ?? fullName ?? 'Игрок',
                   name: fullName,
+                  avatarUrl: item['avatarUrl'] as String? ?? item['avatar_url'] as String?,
                 );
               },
             )
@@ -805,18 +808,85 @@ class SeatingNotifier extends StateNotifier<SeatingState> {
     );
   }
 
+  bool canDeleteTable(String tableId) {
+    final table = state.tables.firstWhere(
+      (item) => item.id == tableId,
+      orElse: () => const PokerTable(id: '', name: '', seats: []),
+    );
+    if (table.id.isEmpty) return false;
+
+    final players = table.seats.where((seat) => seat.player != null).toList();
+    final availableSlots = <({String tableId, int seatNumber})>[];
+
+    for (final candidate in state.tables) {
+      if (candidate.id == tableId) continue;
+      for (final seat in candidate.seats) {
+        if (seat.player == null) {
+          availableSlots.add((tableId: candidate.id, seatNumber: seat.number));
+        }
+      }
+    }
+
+    if (players.length > availableSlots.length) {
+      return false;
+    }
+
+    return true;
+  }
+
+  Map<String, String> buildDeletionAssignments(String tableId) {
+    final table = state.tables.firstWhere(
+      (item) => item.id == tableId,
+      orElse: () => const PokerTable(id: '', name: '', seats: []),
+    );
+    if (table.id.isEmpty) return {};
+
+    final players = table.seats
+        .where((seat) => seat.player != null)
+        .map((seat) => seat.player!)
+        .toList();
+
+    final availableSlots = <({String tableId, int seatNumber})>[];
+    for (final candidate in state.tables) {
+      if (candidate.id == tableId) continue;
+      for (final seat in candidate.seats) {
+        if (seat.player == null) {
+          availableSlots.add((tableId: candidate.id, seatNumber: seat.number));
+        }
+      }
+    }
+
+    if (players.length > availableSlots.length) {
+      return {};
+    }
+
+    final assignments = <String, String>{};
+    for (var index = 0; index < players.length; index++) {
+      final slot = availableSlots[index];
+      assignments[players[index].id] = '${slot.tableId}:${slot.seatNumber}';
+    }
+    return assignments;
+  }
+
   Future<bool> deleteTable(String tableId) async {
     try {
-      await ApiService().delete('/tables/$tableId');
-      
+      final response = await ApiService().delete('/tables/$tableId');
+      final message = response.data is Map<String, dynamic>
+          ? (response.data as Map<String, dynamic>)['message'] as String?
+          : null;
+
       state = state.copyWith(
         tables: state.tables.where((t) => t.id != tableId).toList(),
         selectedTableId: state.selectedTableId == tableId
-            ? (state.tables.length > 1
+            ? (state.tables.any((t) => t.id != tableId)
                 ? state.tables.firstWhere((t) => t.id != tableId).id
                 : 'fallback')
             : state.selectedTableId,
       );
+
+      if (message != null && message.contains('Недостаточно')) {
+        return false;
+      }
       return true;
     } catch (e) {
       print('Ошибка при удалении стола: $e');

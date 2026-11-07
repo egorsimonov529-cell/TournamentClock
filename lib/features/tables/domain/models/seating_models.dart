@@ -35,17 +35,20 @@ class Player {
   final String login;
   final String? nickname;
   final String? name;
+  final String? avatarUrl;
   final RpsRank rpsRank;
   final int skillScore;
 
   Player({
     required this.id,
-    required this.login,
+    String? login,
     this.nickname,
     this.name,
+    this.avatarUrl,
     this.rpsRank = RpsRank.fish,
     int? skillScore,
-  }) : skillScore = skillScore ?? rpsRank.baseScore;
+  }) : login = login ?? name ?? 'Игрок',
+       skillScore = skillScore ?? rpsRank.baseScore;
 
   factory Player.fromJson(Map<String, dynamic> json) {
     final rankCode = json['rpsRank'] as String?;
@@ -65,6 +68,7 @@ class Player {
       login: json['login'] as String? ?? fullName ?? 'Игрок',
       nickname: json['nickname'] as String?,
       name: fullName,
+      avatarUrl: json['avatarUrl'] as String? ?? json['avatar_url'] as String?,
       rpsRank: rank,
       skillScore: (json['skillScore'] as num?)?.toInt() ?? rank.baseScore,
     );
@@ -75,15 +79,17 @@ class Player {
     'login': login,
     if (nickname != null) 'nickname': nickname,
     if (name != null) 'name': name,
+    if (avatarUrl != null) 'avatarUrl': avatarUrl,
     'rpsRank': rpsRank.label,
     'skillScore': skillScore,
   };
 
-  Player copyWith({RpsRank? rpsRank, int? skillScore, String? login, String? nickname, String? name}) => Player(
+  Player copyWith({RpsRank? rpsRank, int? skillScore, String? login, String? nickname, String? name, String? avatarUrl}) => Player(
     id: id,
     login: login ?? this.login,
     nickname: nickname ?? this.nickname,
     name: name ?? this.name,
+    avatarUrl: avatarUrl ?? this.avatarUrl,
     rpsRank: rpsRank ?? this.rpsRank,
     skillScore: skillScore ?? (rpsRank?.baseScore ?? this.skillScore),
   );
